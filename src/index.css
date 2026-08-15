@@ -22,6 +22,10 @@
   --color-warning-soft: var(--color-warning-soft);
   --color-graphite: var(--color-graphite);
 
+  --chart-accent: var(--chart-accent);
+  --chart-warning: var(--chart-warning);
+  --chart-success: var(--chart-success);
+
   --font-display: var(--font-display);
   --font-body: var(--font-body);
   --font-mono: var(--font-mono);

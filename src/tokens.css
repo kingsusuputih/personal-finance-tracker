@@ -34,6 +34,11 @@
   /* dark graphite band */
   --color-graphite: oklch(22% 0.016 260);
 
+  /* chart primitives — hex (canvas/zrender-safe), match token hues */
+  --chart-accent: #0f6fff;
+  --chart-warning: #d9971b;
+  --chart-success: #2e9e5b;
+
   /* type */
   --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
   --font-body: "Inter", ui-sans-serif, system-ui, sans-serif;

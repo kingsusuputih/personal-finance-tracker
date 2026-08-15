@@ -1,18 +1,63 @@
-import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts'
+import { useEffect, useRef } from 'react'
+import * as echarts from 'echarts/core'
+import { PieChart } from 'echarts/charts'
+import { TooltipComponent } from 'echarts/components'
+import { CanvasRenderer } from 'echarts/renderers'
 import { Card } from '../ui/Card.jsx'
 import { Skeleton } from '../ui/Skeleton.jsx'
 import { useT } from '../../i18n/LanguageProvider.jsx'
 import { formatIDR } from '../../utils/financeFormulas.js'
 
-const COLORS = {
-  Needs: 'var(--color-accent)',
-  Lifestyle: 'var(--color-warning)',
-  Investment: 'var(--color-success)',
+echarts.use([PieChart, TooltipComponent, CanvasRenderer])
+
+function chartColors() {
+  const cs = getComputedStyle(document.documentElement)
+  const get = (name, fallback) => (cs.getPropertyValue(name) || fallback).trim()
+  return {
+    Needs: get('--chart-accent', '#0f6fff'),
+    Lifestyle: get('--chart-warning', '#d9971b'),
+    Investment: get('--chart-success', '#2e9e5b'),
+  }
 }
 
 export function SpendingChart({ data = [], loading = false }) {
-  const total = data.reduce((sum, d) => sum + d.value, 0)
+  const containerRef = useRef(null)
   const t = useT()
+  const total = data.reduce((sum, d) => sum + d.value, 0)
+
+  useEffect(() => {
+    if (loading || !total || !containerRef.current) return
+    const colors = chartColors()
+    const chart = echarts.init(containerRef.current)
+    chart.setOption({
+      tooltip: {
+        trigger: 'item',
+        formatter: (p) => `${p.name}<br/><strong>${formatIDR(p.value)}</strong>`,
+      },
+      series: [
+        {
+          type: 'pie',
+          radius: ['62%', '90%'],
+          center: ['50%', '50%'],
+          avoidLabelOverlap: true,
+          itemStyle: { borderWidth: 0 },
+          label: { show: false },
+          emphasis: { scaleSize: 4 },
+          data: data.map((d) => ({
+            name: d.name,
+            value: d.value,
+            itemStyle: { color: colors[d.name] },
+          })),
+        },
+      ],
+    })
+    const ro = new ResizeObserver(() => chart.resize())
+    ro.observe(containerRef.current)
+    return () => {
+      ro.disconnect()
+      chart.dispose()
+    }
+  }, [loading, total, data])
 
   if (loading) {
     return (
@@ -37,33 +82,14 @@ export function SpendingChart({ data = [], loading = false }) {
         <p className="mt-4 text-sm text-ink-3">{t('chart.empty')}</p>
       ) : (
         <div className="mt-4 flex flex-col items-center gap-6 sm:flex-row">
-          <div className="h-48 w-48 shrink-0">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={data}
-                  dataKey="value"
-                  nameKey="name"
-                  innerRadius="62%"
-                  outerRadius="90%"
-                  paddingAngle={2}
-                  strokeWidth={0}
-                >
-                  {data.map((d) => (
-                    <Cell key={d.name} fill={COLORS[d.name]} />
-                  ))}
-                </Pie>
-                <Tooltip formatter={(value) => formatIDR(Number(value))} />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
+          <div ref={containerRef} className="h-48 w-48 shrink-0" />
           <ul className="w-full space-y-2">
             {data.map((d) => (
               <li key={d.name} className="flex items-center justify-between gap-3 text-sm">
                 <span className="flex min-w-0 items-center gap-2 text-ink-2">
                   <span
                     className="h-2 w-2 shrink-0 rounded-full"
-                    style={{ background: COLORS[d.name] }}
+                    style={{ background: chartColors()[d.name] }}
                   />
                   {d.name}
                 </span>

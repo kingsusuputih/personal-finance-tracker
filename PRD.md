@@ -81,7 +81,7 @@ A React-based SPA that authenticates via Google SSO, automatically provisions a 
 | Auth | @react-oauth/google | latest |
 | Google API Client | googleapis (browser) via gapi | v3 |
 | State Management | Zustand | ^4.x |
-| Charts | Recharts | ^2.x |
+| Charts | Apache ECharts | ^6.x (modular import) |
 | Routing | React Router DOM | ^6.x |
 | Deployment | Vercel | Free tier |
 | Database | Google Sheets API | v4 |
@@ -267,7 +267,7 @@ VITE_GOOGLE_CLIENT_ID=xxxxxxxxxxxx.apps.googleusercontent.com
 - [ ] Display **Fund Target Cards** (based on total monthly expenses):
   - Emergency Fund Target = 6 × Total Monthly Expenses
   - Retirement Fund Target = 300 × Total Monthly Expenses
-- [ ] Display **Spending Chart**: bar or donut chart showing expense breakdown by category for current month
+- [ ] Display **Spending Chart**: Apache ECharts donut (pie) chart showing expense breakdown by category for current month
 - [ ] All currency displayed in IDR format (`Rp 1.000.000`)
 
 **Components:** `DashboardPage.jsx`, `AllocationCard.jsx`, `FundTargetCard.jsx`, `SpendingChart.jsx`
@@ -413,7 +413,7 @@ npm create vite@latest finance-tracker -- --template react
 cd finance-tracker
 
 # 2. Install dependencies
-npm install @react-oauth/google zustand react-router-dom recharts
+npm install @react-oauth/google zustand react-router-dom echarts
 
 # 3. Install Tailwind CSS
 npm install -D tailwindcss postcss autoprefixer
@@ -518,7 +518,7 @@ cp .env.example .env.local
   - Props: `label`, `targetAmount`
   - Display large formatted IDR amount
 - [ ] Create `src/components/dashboard/SpendingChart.jsx`
-  - Recharts `PieChart` or `BarChart` showing spending by category for current month
+  - Apache ECharts (modular import: `echarts/core` + `PieChart` + `TooltipComponent` + `CanvasRenderer`) donut showing spending by category for current month
 - [ ] Create `src/pages/DashboardPage.jsx` — compose all dashboard components
 - [ ] Test: income + expenses → correct allocation targets → correct fund targets
 

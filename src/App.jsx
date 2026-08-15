@@ -1,8 +1,26 @@
+import { lazy, Suspense } from 'react'
 import { BrowserRouter, Navigate, Outlet, Route, Routes } from 'react-router-dom'
 import { useAuth } from './hooks/useAuth.js'
 import LoginPage from './pages/LoginPage.jsx'
-import DashboardPage from './pages/DashboardPage.jsx'
-import LedgerPage from './pages/LedgerPage.jsx'
+import { Skeleton } from './components/ui/Skeleton.jsx'
+
+const DashboardPage = lazy(() => import('./pages/DashboardPage.jsx'))
+const LedgerPage = lazy(() => import('./pages/LedgerPage.jsx'))
+
+function PageFallback() {
+  return (
+    <div className="mx-auto max-w-5xl px-4 pb-32 pt-6 md:px-8 md:py-10">
+      <div className="mb-8">
+        <Skeleton className="mb-2 h-4 w-24" />
+        <Skeleton className="h-10 w-56" />
+      </div>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Skeleton className="h-24 w-full" />
+        <Skeleton className="h-24 w-full" />
+      </div>
+    </div>
+  )
+}
 
 function RequireAuth() {
   const { isAuthed } = useAuth()
@@ -24,8 +42,22 @@ export default function App() {
           <Route path="/login" element={<LoginPage />} />
         </Route>
         <Route element={<RequireAuth />}>
-          <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/ledger" element={<LedgerPage />} />
+          <Route
+            path="/dashboard"
+            element={
+              <Suspense fallback={<PageFallback />}>
+                <DashboardPage />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/ledger"
+            element={
+              <Suspense fallback={<PageFallback />}>
+                <LedgerPage />
+              </Suspense>
+            }
+          />
         </Route>
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
