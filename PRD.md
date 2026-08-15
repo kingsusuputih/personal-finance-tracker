@@ -168,7 +168,13 @@ VITE_GOOGLE_CLIENT_ID=your_google_oauth_client_id.apps.googleusercontent.com
 VITE_GOOGLE_CLIENT_ID=xxxxxxxxxxxx.apps.googleusercontent.com
 ```
 
-### Vercel Environment Variables (set in dashboard)
+### `.env.production` (committed — client ID is public)
+Vite loads this file automatically for `vite build`. Committing it guarantees the production build carries a valid `client_id` without dashboard configuration. Optionally set the same value in Vercel dashboard — if both exist, the Vercel variable wins.
+```env
+VITE_GOOGLE_CLIENT_ID=xxxxxxxxxxxx.apps.googleusercontent.com
+```
+
+### Vercel Environment Variables (set in dashboard, optional)
 | Key | Value |
 |---|---|
 | `VITE_GOOGLE_CLIENT_ID` | OAuth Client ID from GCP |
