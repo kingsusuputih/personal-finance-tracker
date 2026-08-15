@@ -1,0 +1,69 @@
+/* Hallmark · macrostructure: app-shell (dashboard) · genre: modern-minimal
+ * theme: cobalt · nav: N3 side-rail · anchor hue: electric-cobalt
+ * pre-emit critique: P5 H5 E5 S5 R5 V5
+ */
+:root {
+  /* paper band — cool engineered near-white */
+  --color-paper: oklch(98.5% 0.004 250);
+  --color-paper-2: oklch(95.5% 0.006 250);
+  --color-paper-3: oklch(92.5% 0.008 250);
+
+  /* ink — cool charcoal, never #000 */
+  --color-ink: oklch(24% 0.02 258);
+  --color-ink-2: oklch(34% 0.018 257);
+  --color-ink-3: oklch(50% 0.014 255);
+
+  /* rules — hairlines do the work */
+  --color-rule: oklch(90% 0.008 250);
+  --color-rule-2: oklch(82% 0.01 252);
+
+  /* the one signal — electric cobalt */
+  --color-accent: oklch(58% 0.2 256);
+  --color-accent-strong: oklch(50% 0.2 256);
+  --color-accent-ink: oklch(100% 0 0);
+  --color-accent-soft: oklch(94% 0.035 255);
+
+  /* status — semantic, kept from PRD (on-track / over-budget) */
+  --color-success: oklch(55% 0.13 150);
+  --color-success-soft: oklch(93% 0.04 150);
+  --color-danger: oklch(55% 0.19 25);
+  --color-danger-soft: oklch(94% 0.03 25);
+  --color-warning: oklch(62% 0.14 75);
+  --color-warning-soft: oklch(95% 0.04 80);
+
+  /* dark graphite band */
+  --color-graphite: oklch(22% 0.016 260);
+
+  /* type */
+  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  /* radii — drawn with a ruler */
+  --radius-btn: 6px;
+  --radius-input: 6px;
+  --radius-card: 10px;
+
+  /* space — 4pt scale */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-xl: 24px;
+  --space-2xl: 32px;
+  --space-3xl: 48px;
+  --space-4xl: 64px;
+
+  /* type scale */
+  --text-display: clamp(2rem, 4.5vw, 3rem);
+  --text-display-s: clamp(1.5rem, 3vw, 2.25rem);
+  --text-title: 1.25rem;
+
+  /* motion — named easings only */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-in-out: cubic-bezier(0.45, 0, 0.55, 1);
+  --dur-fast: 120ms;
+  --dur-base: 200ms;
+  --dur-slow: 400ms;
+}
