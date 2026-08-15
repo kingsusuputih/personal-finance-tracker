@@ -1,4 +1,5 @@
 import { createContext, useCallback, useContext, useMemo, useRef, useState } from 'react'
+import { useT } from '../../i18n/LanguageProvider.jsx'
 
 const ToastContext = createContext(null)
 let nextId = 0
@@ -9,11 +10,16 @@ const toneStyles = {
   info: 'border-l-accent',
 }
 
-const toneLabels = { success: 'Saved', error: 'Error', info: 'Note' }
-
 export function ToastProvider({ children }) {
   const [toasts, setToasts] = useState([])
   const timers = useRef({})
+  const t = useT()
+
+  const toneLabels = {
+    success: t('toast.saved'),
+    error: t('toast.error'),
+    info: t('toast.note'),
+  }
 
   const dismiss = useCallback((id) => {
     setToasts((prev) => prev.filter((t) => t.id !== id))

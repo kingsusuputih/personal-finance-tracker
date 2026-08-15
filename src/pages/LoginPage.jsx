@@ -3,9 +3,11 @@ import { useAuth } from '../hooks/useAuth.js'
 import { LoginButton } from '../components/auth/LoginButton.jsx'
 import { Card } from '../components/ui/Card.jsx'
 import { Badge } from '../components/ui/Badge.jsx'
+import { useT } from '../i18n/LanguageProvider.jsx'
 
 export default function LoginPage() {
   const { isAuthed } = useAuth()
+  const t = useT()
 
   if (isAuthed) return <Navigate to="/dashboard" replace />
 
@@ -17,27 +19,21 @@ export default function LoginPage() {
             F
           </div>
           <h1 className="font-bold leading-tight text-[clamp(1.75rem,6vw,2.5rem)]">
-            Finance Tracker
+            {t('app.name')}
           </h1>
-          <p className="mt-2 text-sm leading-relaxed text-ink-3">
-            Your private, zero-cost finance dashboard — data lives in your own Google Drive.
-          </p>
+          <p className="mt-2 text-sm leading-relaxed text-ink-3">{t('login.tagline')}</p>
         </div>
 
         <Card className="p-6">
           <LoginButton />
           <div className="mt-4 flex items-center justify-center gap-2">
-            <Badge>drive.file only</Badge>
-            <Badge>in-memory token</Badge>
+            <Badge>{t('login.badgeDrive')}</Badge>
+            <Badge>{t('login.badgeMemory')}</Badge>
           </div>
-          <p className="mt-4 text-center text-xs leading-relaxed text-ink-3">
-            Sign in to provision your spreadsheet and start tracking income and expenses.
-          </p>
+          <p className="mt-4 text-center text-xs leading-relaxed text-ink-3">{t('login.note')}</p>
         </Card>
 
-        <p className="kbd mt-6 text-center text-[10px] text-ink-3">
-          Finance Tracker · 50/30/20 · v1.0
-        </p>
+        <p className="kbd mt-6 text-center text-[10px] text-ink-3">{t('login.footer')}</p>
       </div>
     </main>
   )

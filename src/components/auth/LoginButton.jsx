@@ -3,8 +3,8 @@ import { useGoogleLogin } from '@react-oauth/google'
 import { useAuth } from '../../hooks/useAuth.js'
 import { useToast } from '../ui/Toast.jsx'
 import { Button } from '../ui/Button.jsx'
-
-const SCOPES = ['email', 'profile', 'drive.file', 'spreadsheets'].join(' ')
+import { useT } from '../../i18n/LanguageProvider.jsx'
+import { SCOPES } from '../../api/googleAuth.js'
 
 function GoogleMark() {
   return (
@@ -32,6 +32,7 @@ function GoogleMark() {
 export function LoginButton() {
   const { login } = useAuth()
   const toast = useToast()
+  const t = useT()
   const [pending, setPending] = useState(false)
 
   const googleLogin = useGoogleLogin({
@@ -42,12 +43,12 @@ export function LoginButton() {
       try {
         await login(response.access_token)
       } catch (err) {
-        toast.error(err.message || 'Sign in failed')
+        toast.error(err.message || t('login.error'))
       } finally {
         setPending(false)
       }
     },
-    onError: () => toast.error('Google sign in was cancelled or failed'),
+    onError: () => toast.error(t('login.error')),
   })
 
   return (
@@ -59,7 +60,7 @@ export function LoginButton() {
       onClick={() => googleLogin()}
     >
       {!pending && <GoogleMark />}
-      Sign in with Google
+      {t('login.signIn')}
     </Button>
   )
 }

@@ -1,3 +1,10 @@
+export const SCOPES = [
+  'email',
+  'profile',
+  'https://www.googleapis.com/auth/spreadsheets',
+  'https://www.googleapis.com/auth/drive.file',
+].join(' ')
+
 export async function fetchUserInfo(accessToken) {
   const res = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
     headers: { Authorization: `Bearer ${accessToken}` },

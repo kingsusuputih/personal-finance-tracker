@@ -1,14 +1,11 @@
-import { NavLink, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth.js'
-
-const navItems = [
-  { to: '/dashboard', label: 'Dashboard' },
-  { to: '/ledger', label: 'Ledger' },
-]
+import { useT } from '../../i18n/LanguageProvider.jsx'
 
 export function Navbar() {
-  const { logout } = useAuth()
+  const { user, logout } = useAuth()
   const navigate = useNavigate()
+  const t = useT()
 
   const doLogout = async () => {
     await logout()
@@ -18,30 +15,39 @@ export function Navbar() {
   return (
     <header className="sticky top-0 z-40 border-b border-rule bg-paper/90 backdrop-blur md:hidden">
       <div className="flex h-14 items-center justify-between px-4">
-        <span className="font-display text-base font-semibold tracking-tight text-ink">
-          Finance Tracker
+        <span className="inline-flex h-6 w-6 items-center justify-center rounded-[4px] bg-accent font-display text-xs font-bold text-accent-ink">
+          F
         </span>
-        <nav className="flex items-center gap-1">
-          {navItems.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              className={({ isActive }) =>
-                `px-3 py-2 text-sm font-medium transition-colors duration-[var(--dur-fast)] ${
-                  isActive ? 'text-accent' : 'text-ink-2 hover:text-ink'
-                }`
-              }
-            >
-              {item.label}
-            </NavLink>
-          ))}
+        <div className="flex items-center gap-2">
+          {user?.picture ? (
+            <img
+              src={user.picture}
+              alt=""
+              referrerPolicy="no-referrer"
+              className="h-7 w-7 rounded-full"
+            />
+          ) : (
+            <div className="h-7 w-7 rounded-full bg-paper-3" />
+          )}
           <button
             onClick={doLogout}
-            className="px-3 py-2 text-sm font-medium text-ink-3 transition-colors hover:text-danger"
+            aria-label={t('nav.signOut')}
+            className="rounded p-2 text-ink-3 transition-colors hover:bg-paper-2 hover:text-danger"
           >
-            Sign out
+            <svg
+              viewBox="0 0 24 24"
+              className="h-4 w-4"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              aria-hidden="true"
+            >
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+              <path d="M16 17l5-5-5-5" />
+              <path d="M21 12H9" />
+            </svg>
           </button>
-        </nav>
+        </div>
       </div>
     </header>
   )

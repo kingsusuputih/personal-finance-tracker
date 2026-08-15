@@ -58,7 +58,7 @@ A React-based SPA that authenticates via Google SSO, automatically provisions a 
 ### ADR-002: PKCE OAuth Flow (No Backend)
 - **Decision:** Use OAuth 2.0 with PKCE via `@react-oauth/google`. No client secret in the codebase.
 - **Rationale:** Client secret must never be exposed in a public SPA. PKCE is the correct standard for public clients.
-- **Consequence:** Only `VITE_GOOGLE_CLIENT_ID` is required as an env variable. Access tokens are stored in React state (in-memory only), never in `localStorage`.
+- **Consequence:** Only `VITE_GOOGLE_CLIENT_ID` is required as an env variable. Access tokens are persisted to `localStorage` (`pft_token`, `pft_user`) so the session survives a page refresh. Trade-off accepted: the app is a public SPA that renders no user-generated HTML (React auto-escapes output), limiting XSS exposure. Tokens are revoked on logout.
 
 ### ADR-003: Google Drive Scope — `drive.file` Only
 - **Decision:** Request `https://www.googleapis.com/auth/drive.file` instead of full `drive` scope.
@@ -189,7 +189,7 @@ VITE_GOOGLE_CLIENT_ID=xxxxxxxxxxxx.apps.googleusercontent.com
 - [ ] On success: redirect to `/dashboard`
 - [ ] Logout clears Zustand state and revokes token
 - [ ] If user is not authenticated, any route redirects to `/login`
-- [ ] Access token is **never** written to `localStorage` or `sessionStorage`
+- [ ] Access token is persisted to `localStorage` (restored on boot), never written to server logs, and revoked on logout
 
 **Components:** `LoginPage.jsx`, `LoginButton.jsx`, `useAuth.js`, `authStore.js`, `googleAuth.js`
 
@@ -447,7 +447,7 @@ cp .env.example .env.local
 - [ ] Create `src/App.jsx` with route definitions and auth guard
   - Unauthenticated → redirect to `/login`
   - Authenticated → access `/dashboard` and `/ledger`
-- [ ] Test: login → token stored in Zustand (not localStorage) → logout clears state
+- [ ] Test: login → token stored in Zustand + `localStorage` → logout clears both
 
 ---
 
@@ -539,7 +539,7 @@ cp .env.example .env.local
 
 ### Security Rules — MUST ENFORCE
 1. **No client secret in codebase** — ever. Not in env, not hardcoded.
-2. **Access tokens in memory only** — Zustand state. Never `localStorage`, never `sessionStorage`, never cookies.
+2. **Access tokens persisted to `localStorage`** — restored on app boot so a refresh keeps the session. Revoked on logout. Trade-off: XSS risk accepted (public SPA, no user-generated HTML, React auto-escapes).
 3. **Minimum OAuth scopes** — only `drive.file` (not `drive`), only `spreadsheets` (not `drive.readonly`).
 4. **PKCE flow only** — use `useGoogleLogin` with `flow: 'auth-code'` or `flow: 'implicit'` from `@react-oauth/google`. Do not use `GoogleLogin` credential flow for Drive scopes.
 

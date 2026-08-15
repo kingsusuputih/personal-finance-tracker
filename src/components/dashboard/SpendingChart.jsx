@@ -1,6 +1,7 @@
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts'
 import { Card } from '../ui/Card.jsx'
 import { Skeleton } from '../ui/Skeleton.jsx'
+import { useT } from '../../i18n/LanguageProvider.jsx'
 import { formatIDR } from '../../utils/financeFormulas.js'
 
 const COLORS = {
@@ -11,6 +12,7 @@ const COLORS = {
 
 export function SpendingChart({ data = [], loading = false }) {
   const total = data.reduce((sum, d) => sum + d.value, 0)
+  const t = useT()
 
   if (loading) {
     return (
@@ -30,9 +32,9 @@ export function SpendingChart({ data = [], loading = false }) {
 
   return (
     <Card className="p-5">
-      <h3 className="text-base font-semibold text-ink">Spending by category</h3>
+      <h3 className="text-base font-semibold text-ink">{t('chart.title')}</h3>
       {total === 0 ? (
-        <p className="mt-4 text-sm text-ink-3">No expenses recorded this month yet.</p>
+        <p className="mt-4 text-sm text-ink-3">{t('chart.empty')}</p>
       ) : (
         <div className="mt-4 flex flex-col items-center gap-6 sm:flex-row">
           <div className="h-48 w-48 shrink-0">

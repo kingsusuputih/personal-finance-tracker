@@ -3,15 +3,18 @@ import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth.js'
 import { Modal } from '../ui/Modal.jsx'
 import { Button } from '../ui/Button.jsx'
+import { LangToggle } from '../ui/LangToggle.jsx'
+import { useT } from '../../i18n/LanguageProvider.jsx'
 
 const navItems = [
-  { to: '/dashboard', label: 'Dashboard' },
-  { to: '/ledger', label: 'Ledger' },
+  { to: '/dashboard', labelKey: 'nav.dashboard' },
+  { to: '/ledger', labelKey: 'nav.ledger' },
 ]
 
 export function Sidebar() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
+  const t = useT()
   const [confirmOpen, setConfirmOpen] = useState(false)
 
   const doLogout = async () => {
@@ -26,7 +29,7 @@ export function Sidebar() {
           F
         </span>
         <span className="font-display text-base font-semibold tracking-tight text-ink">
-          Finance Tracker
+          {t('app.name')}
         </span>
       </div>
 
@@ -46,7 +49,7 @@ export function Sidebar() {
                 {isActive && (
                   <span className="absolute left-0 top-1/2 h-4 w-0.5 -translate-y-1/2 rounded bg-accent" />
                 )}
-                {item.label}
+                {t(item.labelKey)}
               </>
             )}
           </NavLink>
@@ -54,6 +57,9 @@ export function Sidebar() {
       </nav>
 
       <div className="border-t border-rule p-3">
+        <div className="mb-2 flex justify-center">
+          <LangToggle />
+        </div>
         <div className="flex items-center gap-3 rounded-[var(--radius-btn)] px-3 py-2">
           {user?.picture ? (
             <img
@@ -71,7 +77,7 @@ export function Sidebar() {
           </div>
           <button
             onClick={() => setConfirmOpen(true)}
-            aria-label="Sign out"
+            aria-label={t('nav.signOut')}
             className="shrink-0 rounded p-1.5 text-ink-3 transition-colors hover:bg-paper-3 hover:text-danger"
           >
             <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2">
@@ -86,19 +92,19 @@ export function Sidebar() {
       <Modal
         open={confirmOpen}
         onClose={() => setConfirmOpen(false)}
-        title="Sign out?"
+        title={t('signout.title')}
         footer={
           <>
             <Button variant="ghost" onClick={() => setConfirmOpen(false)}>
-              Cancel
+              {t('common.cancel')}
             </Button>
             <Button variant="danger" onClick={doLogout}>
-              Sign out
+              {t('signout.confirm')}
             </Button>
           </>
         }
       >
-        Your access token lives in memory only and will be discarded. No stored data is touched.
+        {t('signout.body')}
       </Modal>
     </aside>
   )

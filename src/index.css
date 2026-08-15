@@ -42,7 +42,13 @@
     color: var(--color-ink-2);
     font-family: var(--font-body);
     font-weight: 400;
+    overscroll-behavior-y: contain;
     -webkit-font-smoothing: antialiased;
+  }
+
+  button:not(:disabled),
+  [role='button']:not(:disabled) {
+    cursor: pointer;
   }
 
   h1,
