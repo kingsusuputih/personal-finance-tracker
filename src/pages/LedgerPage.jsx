@@ -23,10 +23,10 @@ export default function LedgerPage() {
   return (
     <div className="flex min-h-dvh">
       <Sidebar />
-      <Navbar />
-      <BottomNav />
-      <main className="min-w-0 flex-1 lg:pl-64">
-        <div className="mx-auto max-w-5xl px-4 pb-32 pt-6 md:px-8 md:py-10">
+      <div className="flex min-h-dvh min-w-0 flex-1 flex-col lg:pl-64">
+        <Navbar />
+        <main className="flex-1">
+          <div className="mx-auto max-w-5xl px-4 pb-32 pt-6 md:px-8 md:py-10">
           <header className="mb-8">
             <p className="kbd mb-1 text-[11px] text-ink-3">{t('ledger.kicker')}</p>
             <h1 className="text-[clamp(1.75rem,4vw,2.5rem)] font-bold">{t('ledger.title')}</h1>
@@ -56,7 +56,9 @@ export default function LedgerPage() {
             </>
           )}
         </div>
-      </main>
+        </main>
+      </div>
+      <BottomNav />
     </div>
   )
 }
