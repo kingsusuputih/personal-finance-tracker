@@ -2,7 +2,7 @@ import { useCallback } from 'react'
 import { useAuthStore } from '../store/authStore.js'
 import { useFinanceStore } from '../store/financeStore.js'
 import { getOrCreateSpreadsheet } from '../api/googleDrive.js'
-import { getRows, appendRow } from '../api/googleSheets.js'
+import { getRows, appendRow, updateRow, deleteRow } from '../api/googleSheets.js'
 import { INCOME_HEADERS, EXPENSE_HEADERS } from '../constants/sheets.js'
 import { deserializeRows } from '../utils/sheetsHelpers.js'
 
@@ -61,5 +61,36 @@ export function useSpreadsheet() {
     [accessToken, loadData],
   )
 
-  return { ensureSpreadsheet, loadData, addTransaction, spreadsheetId, income, transactions, provisioning, loading }
+  const updateTransaction = useCallback(
+    async (sheetName, rowNumber, rowValues) => {
+      const id = useFinanceStore.getState().spreadsheetId
+      if (!id || !accessToken) throw new Error('Spreadsheet not ready')
+      await updateRow(accessToken, id, sheetName, rowNumber, rowValues)
+      await loadData()
+    },
+    [accessToken, loadData],
+  )
+
+  const deleteTransaction = useCallback(
+    async (sheetName, rowNumber) => {
+      const id = useFinanceStore.getState().spreadsheetId
+      if (!id || !accessToken) throw new Error('Spreadsheet not ready')
+      await deleteRow(accessToken, id, sheetName, rowNumber)
+      await loadData()
+    },
+    [accessToken, loadData],
+  )
+
+  return {
+    ensureSpreadsheet,
+    loadData,
+    addTransaction,
+    updateTransaction,
+    deleteTransaction,
+    spreadsheetId,
+    income,
+    transactions,
+    provisioning,
+    loading,
+  }
 }

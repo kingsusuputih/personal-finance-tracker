@@ -58,7 +58,7 @@ export default function DashboardPage() {
       <Sidebar />
       <Navbar />
       <BottomNav />
-      <main className="min-w-0 flex-1 md:pl-64">
+      <main className="min-w-0 flex-1 lg:pl-64">
         <div className="mx-auto max-w-5xl px-4 pb-32 pt-6 md:px-8 md:py-10">
           <header className="mb-8">
             <p className="kbd mb-1 text-[11px] text-ink-3">{calc.currentMonth}</p>

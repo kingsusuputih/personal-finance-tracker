@@ -8,14 +8,14 @@ import { SHEETS, EXPENSE_CATEGORIES } from '../../constants/sheets.js'
 import { serializeExpenseRow } from '../../utils/sheetsHelpers.js'
 import { currentDateKey } from '../../utils/financeFormulas.js'
 
-export function ExpenseForm() {
-  const { addTransaction } = useSpreadsheet()
+export function ExpenseForm({ editingRow = null, onCancelEdit }) {
+  const { addTransaction, updateTransaction } = useSpreadsheet()
   const toast = useToast()
   const t = useT()
-  const [date, setDate] = useState(currentDateKey())
-  const [category, setCategory] = useState(EXPENSE_CATEGORIES[0])
-  const [description, setDescription] = useState('')
-  const [amount, setAmount] = useState('')
+  const [date, setDate] = useState(editingRow?.date || currentDateKey())
+  const [category, setCategory] = useState(editingRow?.category || EXPENSE_CATEGORIES[0])
+  const [description, setDescription] = useState(editingRow?.description || '')
+  const [amount, setAmount] = useState(editingRow ? String(editingRow.amount) : '')
   const [error, setError] = useState('')
   const [saving, setSaving] = useState(false)
 
@@ -32,11 +32,18 @@ export function ExpenseForm() {
     }
     setError('')
     setSaving(true)
+    const rowValues = serializeExpenseRow(date, category, description, value)
     try {
-      await addTransaction(SHEETS.EXPENSES, serializeExpenseRow(date, category, description, value))
-      toast.success(t('expense.saved'))
-      setAmount('')
-      setDescription('')
+      if (editingRow) {
+        await updateTransaction(SHEETS.EXPENSES, editingRow.rowNumber, rowValues)
+        toast.success(t('expense.updated'))
+        onCancelEdit?.()
+      } else {
+        await addTransaction(SHEETS.EXPENSES, rowValues)
+        toast.success(t('expense.saved'))
+        setAmount('')
+        setDescription('')
+      }
     } catch (err) {
       toast.error(err.message || t('form.err.amount'))
     } finally {
@@ -46,7 +53,9 @@ export function ExpenseForm() {
 
   return (
     <Card className="p-5">
-      <h2 className="mb-4 text-base font-semibold text-ink">{t('expense.title')}</h2>
+      <h2 className="mb-4 text-base font-semibold text-ink">
+        {editingRow ? t('expense.edit') : t('expense.title')}
+      </h2>
       <form onSubmit={submit} className="space-y-4" noValidate>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <label className="block">
@@ -102,9 +111,16 @@ export function ExpenseForm() {
           />
         </label>
         {error && <p className="text-sm text-danger">{error}</p>}
-        <Button type="submit" loading={saving} className="w-full">
-          {t('expense.save')}
-        </Button>
+        <div className="flex gap-2">
+          {editingRow && (
+            <Button type="button" variant="ghost" onClick={onCancelEdit}>
+              {t('common.cancel')}
+            </Button>
+          )}
+          <Button type="submit" loading={saving} className="flex-1">
+            {editingRow ? t('expense.saveChanges') : t('expense.save')}
+          </Button>
+        </div>
       </form>
     </Card>
   )

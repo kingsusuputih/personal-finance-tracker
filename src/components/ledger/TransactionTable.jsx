@@ -2,14 +2,37 @@ import { useMemo, useState } from 'react'
 import { Card } from '../ui/Card.jsx'
 import { Badge } from '../ui/Badge.jsx'
 import { Skeleton } from '../ui/Skeleton.jsx'
+import { Modal } from '../ui/Modal.jsx'
+import { Button } from '../ui/Button.jsx'
 import { useT } from '../../i18n/LanguageProvider.jsx'
+import { useToast } from '../ui/Toast.jsx'
+import { useSpreadsheet } from '../../hooks/useSpreadsheet.js'
+import { SHEETS } from '../../constants/sheets.js'
 import { formatIDR } from '../../utils/financeFormulas.js'
 
 const categoryTone = { Needs: 'accent', Lifestyle: 'warning', Investment: 'success' }
 
-export function TransactionTable({ transactions = [], loading = false }) {
+function ActionButton({ label, tone, onClick, children }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={label}
+      title={label}
+      className={`rounded p-2.5 text-ink-3 transition-colors hover:bg-paper-3 ${tone}`}
+    >
+      {children}
+    </button>
+  )
+}
+
+export function TransactionTable({ transactions = [], loading = false, onEdit }) {
   const [sortDir, setSortDir] = useState('desc')
+  const [deletingRow, setDeletingRow] = useState(null)
+  const [deleting, setDeleting] = useState(false)
   const t = useT()
+  const toast = useToast()
+  const { deleteTransaction } = useSpreadsheet()
 
   const sorted = useMemo(() => {
     return [...transactions]
@@ -18,6 +41,42 @@ export function TransactionTable({ transactions = [], loading = false }) {
       )
       .slice(0, 30)
   }, [transactions, sortDir])
+
+  const confirmDelete = async () => {
+    if (!deletingRow) return
+    setDeleting(true)
+    try {
+      await deleteTransaction(SHEETS.EXPENSES, deletingRow.rowNumber)
+      toast.success(t('expense.deleted'))
+      setDeletingRow(null)
+    } catch (err) {
+      toast.error(err.message || t('delete.title'))
+    } finally {
+      setDeleting(false)
+    }
+  }
+
+  const actions = (row) => (
+    <div className="flex shrink-0 items-center gap-1">
+      <ActionButton label={t('common.edit')} tone="hover:text-accent" onClick={() => onEdit?.(row)}>
+        <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+          <path d="M17 3a2.8 2.8 0 0 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
+        </svg>
+      </ActionButton>
+      <ActionButton
+        label={t('common.delete')}
+        tone="hover:text-danger"
+        onClick={() => setDeletingRow(row)}
+      >
+        <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+          <path d="M3 6h18" />
+          <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+          <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+          <path d="M10 11v6M14 11v6" />
+        </svg>
+      </ActionButton>
+    </div>
+  )
 
   return (
     <Card className="overflow-hidden">
@@ -59,9 +118,12 @@ export function TransactionTable({ transactions = [], loading = false }) {
                     <p className="mt-1 truncate text-sm text-ink-2">{row.description}</p>
                   )}
                 </div>
-                <span className="amount shrink-0 text-sm font-medium text-ink">
-                  {formatIDR(row.amount)}
-                </span>
+                <div className="flex shrink-0 flex-col items-end gap-1.5">
+                  <span className="amount text-sm font-medium text-ink">
+                    {formatIDR(row.amount)}
+                  </span>
+                  {actions(row)}
+                </div>
               </li>
             ))}
           </ul>
@@ -74,6 +136,7 @@ export function TransactionTable({ transactions = [], loading = false }) {
                   <th className="px-5 py-2 font-medium">{t('table.category')}</th>
                   <th className="px-5 py-2 font-medium">{t('table.description')}</th>
                   <th className="px-5 py-2 text-right font-medium">{t('table.amount')}</th>
+                  <th className="px-5 py-2 text-right font-medium">{t('table.actions')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -96,6 +159,9 @@ export function TransactionTable({ transactions = [], loading = false }) {
                     <td className="amount whitespace-nowrap px-5 py-3 text-right font-medium text-ink">
                       {formatIDR(row.amount)}
                     </td>
+                    <td className="px-5 py-3">
+                      <div className="flex justify-end">{actions(row)}</div>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -103,6 +169,24 @@ export function TransactionTable({ transactions = [], loading = false }) {
           </div>
         </>
       )}
+
+      <Modal
+        open={Boolean(deletingRow)}
+        onClose={() => setDeletingRow(null)}
+        title={t('delete.title')}
+        footer={
+          <>
+            <Button variant="ghost" onClick={() => setDeletingRow(null)} disabled={deleting}>
+              {t('common.cancel')}
+            </Button>
+            <Button variant="danger" loading={deleting} onClick={confirmDelete}>
+              {t('delete.confirm')}
+            </Button>
+          </>
+        }
+      >
+        {t('delete.body')}
+      </Modal>
     </Card>
   )
 }

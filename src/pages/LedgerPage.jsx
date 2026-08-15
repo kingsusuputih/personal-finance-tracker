@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useSpreadsheet } from '../hooks/useSpreadsheet.js'
 import { IncomeForm } from '../components/ledger/IncomeForm.jsx'
 import { ExpenseForm } from '../components/ledger/ExpenseForm.jsx'
@@ -12,6 +12,7 @@ import { useT } from '../i18n/LanguageProvider.jsx'
 export default function LedgerPage() {
   const { ensureSpreadsheet, loadData, provisioning, loading, transactions } = useSpreadsheet()
   const t = useT()
+  const [editingRow, setEditingRow] = useState(null)
 
   useEffect(() => {
     ensureSpreadsheet().then((id) => {
@@ -24,7 +25,7 @@ export default function LedgerPage() {
       <Sidebar />
       <Navbar />
       <BottomNav />
-      <main className="min-w-0 flex-1 md:pl-64">
+      <main className="min-w-0 flex-1 lg:pl-64">
         <div className="mx-auto max-w-5xl px-4 pb-32 pt-6 md:px-8 md:py-10">
           <header className="mb-8">
             <p className="kbd mb-1 text-[11px] text-ink-3">{t('ledger.kicker')}</p>
@@ -41,9 +42,17 @@ export default function LedgerPage() {
             <>
               <section className="mb-8 grid gap-4 lg:grid-cols-2">
                 <IncomeForm />
-                <ExpenseForm />
+                <ExpenseForm
+                  key={editingRow ? `edit-${editingRow.rowNumber}` : 'new'}
+                  editingRow={editingRow}
+                  onCancelEdit={() => setEditingRow(null)}
+                />
               </section>
-              <TransactionTable transactions={transactions} loading={loading} />
+              <TransactionTable
+                transactions={transactions}
+                loading={loading}
+                onEdit={setEditingRow}
+              />
             </>
           )}
         </div>

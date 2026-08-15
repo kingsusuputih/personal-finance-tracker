@@ -13,7 +13,7 @@ export function Navbar() {
   }
 
   return (
-    <header className="sticky top-0 z-40 border-b border-rule bg-paper/90 backdrop-blur md:hidden">
+    <header className="sticky top-0 z-40 border-b border-rule bg-paper/90 backdrop-blur lg:hidden">
       <div className="flex h-14 items-center justify-between px-4">
         <span className="inline-flex h-6 w-6 items-center justify-center rounded-[4px] bg-accent font-display text-xs font-bold text-accent-ink">
           F

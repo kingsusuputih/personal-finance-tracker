@@ -11,13 +11,16 @@ export function deserializeRows(headers, rawRows = []) {
   const [headerRow, ...body] = rawRows
   if (!headerRow || !headerRow.length) return []
   return body
-    .filter((row) => row.length > 0 && row.some((cell) => cell !== ''))
-    .map((row) => {
-      const record = {}
-      headers.forEach((header, i) => {
-        const value = row[i] ?? ''
-        record[header] = header === 'amount' ? Number(value) || 0 : String(value)
+    .map((row, i) => {
+      const record = { rowNumber: i + 2 }
+      let hasData = false
+      headers.forEach((header, j) => {
+        const value = row[j] ?? ''
+        if (header === 'amount') record[header] = Number(value) || 0
+        else record[header] = String(value)
+        if (String(value).trim() !== '') hasData = true
       })
-      return record
+      return hasData ? record : null
     })
+    .filter(Boolean)
 }
