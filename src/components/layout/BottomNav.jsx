@@ -3,8 +3,30 @@ import { useT } from '../../i18n/LanguageProvider.jsx'
 import { LangToggle } from '../ui/LangToggle.jsx'
 
 const items = [
-  { to: '/dashboard', labelKey: 'nav.dashboard' },
-  { to: '/ledger', labelKey: 'nav.ledger' },
+  {
+    to: '/dashboard',
+    labelKey: 'nav.dashboard',
+    icon: (
+      <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+        <rect x="3" y="3" width="7" height="7" rx="1.5" />
+        <rect x="14" y="3" width="7" height="7" rx="1.5" />
+        <rect x="3" y="14" width="7" height="7" rx="1.5" />
+        <rect x="14" y="14" width="7" height="7" rx="1.5" />
+      </svg>
+    ),
+  },
+  {
+    to: '/ledger',
+    labelKey: 'nav.ledger',
+    icon: (
+      <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+        <path d="M8 6h13M8 12h13M8 18h13" />
+        <circle cx="3.5" cy="6" r="1.2" fill="currentColor" stroke="none" />
+        <circle cx="3.5" cy="12" r="1.2" fill="currentColor" stroke="none" />
+        <circle cx="3.5" cy="18" r="1.2" fill="currentColor" stroke="none" />
+      </svg>
+    ),
+  },
 ]
 
 export function BottomNav() {
@@ -22,20 +44,22 @@ export function BottomNav() {
             key={item.to}
             to={item.to}
             className={({ isActive }) =>
-              `flex h-14 min-w-0 flex-1 items-center justify-center gap-2 rounded-btn px-2 text-sm font-medium transition-colors duration-(--dur-fast) ${
-                isActive ? 'bg-accent-soft text-accent' : 'text-ink-2 hover:text-ink'
+              `flex h-16 min-w-0 flex-1 items-center justify-center gap-1.5 rounded-[var(--radius-btn)] px-2 text-[10px] font-medium transition-colors duration-[var(--dur-fast)] ${
+                isActive ? 'bg-accent-soft text-accent' : 'text-ink-3 hover:text-ink'
               }`
             }
           >
             {({ isActive }) => (
-              <>
-                {isActive && <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-accent" />}
+              <span
+                className={`flex flex-col items-center gap-0.5 ${isActive ? 'scale-105' : ''}`}
+              >
+                {item.icon}
                 <span className="truncate">{t(item.labelKey)}</span>
-              </>
+              </span>
             )}
           </NavLink>
         ))}
-        <div className="flex flex-1 items-center justify-center">
+        <div className="flex h-16 min-w-0 flex-1 items-center justify-center">
           <LangToggle />
         </div>
       </div>
