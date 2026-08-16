@@ -1,4 +1,4 @@
-import { Navigate } from 'react-router-dom'
+import { Navigate, Link } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth.js'
 import { LoginButton } from '../components/auth/LoginButton.jsx'
 import { Card } from '../components/ui/Card.jsx'
@@ -34,6 +34,16 @@ export default function LoginPage() {
         </Card>
 
         <p className="kbd mt-6 text-center text-[10px] text-ink-3">{t('login.footer')}</p>
+
+        <div className="mt-3 flex items-center justify-center gap-3 text-xs text-ink-3">
+          <Link to="/privacy" className="transition-colors hover:text-accent">
+            {t('legal.privacy')}
+          </Link>
+          <span>·</span>
+          <Link to="/terms" className="transition-colors hover:text-accent">
+            {t('legal.terms')}
+          </Link>
+        </div>
       </div>
     </main>
   )

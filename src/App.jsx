@@ -2,6 +2,8 @@ import { lazy, Suspense } from 'react'
 import { BrowserRouter, Navigate, Outlet, Route, Routes } from 'react-router-dom'
 import { useAuth } from './hooks/useAuth.js'
 import LoginPage from './pages/LoginPage.jsx'
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage.jsx'
+import TermsOfServicePage from './pages/TermsOfServicePage.jsx'
 import { Skeleton } from './components/ui/Skeleton.jsx'
 
 const DashboardPage = lazy(() => import('./pages/DashboardPage.jsx'))
@@ -59,6 +61,8 @@ export default function App() {
             }
           />
         </Route>
+        <Route path="/privacy" element={<PrivacyPolicyPage />} />
+        <Route path="/terms" element={<TermsOfServicePage />} />
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
