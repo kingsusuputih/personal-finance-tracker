@@ -104,7 +104,7 @@ export const translations = {
       'Record income and expenses; every entry is written straight to your sheet.',
     'landing.privacyTitle': 'Your data stays yours',
     'landing.privacyBody':
-      'Only the drive.file scope is requested — the app touches just the spreadsheet it created, nothing else. No servers, no analytics, no ads.',
+      'Only the drive.file scope is requested — the app touches just the spreadsheet it created, nothing else. No servers, no ads. Aggregated usage analytics by Google Analytics and Vercel.',
     'landing.ctaTitle': 'Start tracking today',
   },
   id: {
@@ -211,7 +211,7 @@ export const translations = {
       'Catat pemasukan dan pengeluaran; setiap entri langsung ditulis ke sheet Anda.',
     'landing.privacyTitle': 'Data Anda tetap milik Anda',
     'landing.privacyBody':
-      'Hanya cakupan drive.file yang diminta — aplikasi hanya menyentuh spreadsheet yang dibuatnya, tidak lebih. Tanpa server, tanpa analitik, tanpa iklan.',
+      'Hanya cakupan drive.file yang diminta — aplikasi hanya menyentuh spreadsheet yang dibuatnya, tidak lebih. Tanpa server, tanpa iklan. Analitik agregat oleh Google Analytics dan Vercel.',
     'landing.ctaTitle': 'Mulai mencatat hari ini',
   },
 }

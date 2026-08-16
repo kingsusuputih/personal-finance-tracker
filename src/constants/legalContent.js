@@ -22,7 +22,7 @@ export const privacy = {
     },
     {
       title: 'Third parties & analytics',
-      body: `The only third party involved is Google, as the provider of Sign-in, Drive, and Sheets. The app does not run analytics, advertising, or tracking scripts, and does not sell or rent your data.`,
+      body: `Beyond Google (Sign-in, Drive, and Sheets), the app uses aggregate web analytics to understand how the site is used: Google Analytics (GA4) and Vercel Web Analytics. These services collect standard, non-personally-identifying usage statistics (e.g. pages viewed, approximate location) and process that data under their own privacy policies (Google's privacy policy; Vercel's privacy policy). Your financial records are never transmitted to them — analytics operate on page-level usage only, and your data stays in your own Google Drive. The app does not run advertising.`,
     },
     {
       title: 'Your control & deletion',
@@ -56,7 +56,7 @@ export const privacy = {
     },
     {
       title: 'Pihak ketiga & analitik',
-      body: `Satu-satunya pihak ketiga yang terlibat adalah Google, sebagai penyedia Sign-in, Drive, dan Sheets. Aplikasi tidak menjalankan skrip analitik, iklan, atau pelacakan, dan tidak menjual atau menyewakan data Anda.`,
+      body: `Selain Google (Sign-in, Drive, dan Sheets), aplikasi menggunakan analitik web agregat untuk memahami bagaimana situs digunakan: Google Analytics (GA4) dan Vercel Web Analytics. Layanan ini mengumpulkan statistik penggunaan standar yang tidak mengidentifikasi pribadi (mis. halaman yang dilihat, perkiraan lokasi) dan memproses data tersebut berdasarkan kebijakan privasi mereka sendiri (kebijakan privasi Google; kebijakan privasi Vercel). Catatan keuangan Anda tidak pernah dikirim ke layanan tersebut — analitik hanya beroperasi pada level penggunaan halaman, dan data Anda tetap tersimpan di Google Drive Anda sendiri. Aplikasi tidak menjalankan iklan.`,
     },
     {
       title: 'Kendali & penghapusan data Anda',
