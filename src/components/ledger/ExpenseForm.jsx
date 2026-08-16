@@ -6,7 +6,7 @@ import { Card } from '../ui/Card.jsx'
 import { useT } from '../../i18n/LanguageProvider.jsx'
 import { SHEETS, EXPENSE_CATEGORIES } from '../../constants/sheets.js'
 import { serializeExpenseRow } from '../../utils/sheetsHelpers.js'
-import { currentDateKey } from '../../utils/financeFormulas.js'
+import { currentDateKey, formatRupiah, parseRupiah } from '../../utils/financeFormulas.js'
 
 export function ExpenseForm({ editingRow = null, onCancelEdit }) {
   const { addTransaction, updateTransaction } = useSpreadsheet()
@@ -15,13 +15,15 @@ export function ExpenseForm({ editingRow = null, onCancelEdit }) {
   const [date, setDate] = useState(editingRow?.date || currentDateKey())
   const [category, setCategory] = useState(editingRow?.category || EXPENSE_CATEGORIES[0])
   const [description, setDescription] = useState(editingRow?.description || '')
-  const [amount, setAmount] = useState(editingRow ? String(editingRow.amount) : '')
+  const [amount, setAmount] = useState(
+  editingRow ? formatRupiah(String(editingRow.amount)) : '',
+)
   const [error, setError] = useState('')
   const [saving, setSaving] = useState(false)
 
   const submit = async (e) => {
     e.preventDefault()
-    const value = Math.round(Number(amount))
+    const value = parseRupiah(amount)
     if (!value || value <= 0) {
       setError(t('form.err.amount'))
       return
@@ -99,12 +101,10 @@ export function ExpenseForm({ editingRow = null, onCancelEdit }) {
         <label className="block">
           <span className="kbd mb-1.5 block text-[10px] text-ink-3">{t('expense.amount')}</span>
           <input
-            type="number"
+            type="text"
             inputMode="numeric"
-            min="1"
-            step="1"
             value={amount}
-            onChange={(e) => setAmount(e.target.value)}
+            onChange={(e) => setAmount(formatRupiah(e.target.value))}
             placeholder={t('expense.placeholder')}
             className="field"
             required

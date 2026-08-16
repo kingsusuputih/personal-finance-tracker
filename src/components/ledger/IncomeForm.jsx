@@ -6,7 +6,7 @@ import { Card } from '../ui/Card.jsx'
 import { useT } from '../../i18n/LanguageProvider.jsx'
 import { SHEETS } from '../../constants/sheets.js'
 import { serializeIncomeRow } from '../../utils/sheetsHelpers.js'
-import { currentMonthKey } from '../../utils/financeFormulas.js'
+import { currentMonthKey, formatRupiah, parseRupiah } from '../../utils/financeFormulas.js'
 
 export function IncomeForm() {
   const { addTransaction } = useSpreadsheet()
@@ -19,7 +19,7 @@ export function IncomeForm() {
 
   const submit = async (e) => {
     e.preventDefault()
-    const value = Math.round(Number(amount))
+    const value = parseRupiah(amount)
     if (!value || value <= 0) {
       setError(t('form.err.amount'))
       return
@@ -54,12 +54,10 @@ export function IncomeForm() {
         <label className="block">
           <span className="kbd mb-1.5 block text-[10px] text-ink-3">{t('income.amount')}</span>
           <input
-            type="number"
+            type="text"
             inputMode="numeric"
-            min="1"
-            step="1"
             value={amount}
-            onChange={(e) => setAmount(e.target.value)}
+            onChange={(e) => setAmount(formatRupiah(e.target.value))}
             placeholder={t('income.placeholder')}
             className="field"
             required

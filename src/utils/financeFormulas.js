@@ -33,6 +33,16 @@ export function formatIDR(amount) {
   }).format(amount)
 }
 
+export function formatRupiah(value) {
+  const digits = String(value).replace(/\D/g, '')
+  if (!digits) return ''
+  return Number(digits).toLocaleString('id-ID')
+}
+
+export function parseRupiah(value) {
+  return Number(String(value).replace(/\D/g, ''))
+}
+
 export function currentMonthKey(date = new Date()) {
   const y = date.getFullYear()
   const m = String(date.getMonth() + 1).padStart(2, '0')
