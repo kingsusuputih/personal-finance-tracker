@@ -3,6 +3,10 @@ dist
 .env
 .env.*
 !.env.example
+.opencode/
+__pycache__/
+*.pyc
+*.pyo
 npm-debug.log*
 *.local
 .DS_Store
