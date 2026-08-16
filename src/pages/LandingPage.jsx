@@ -21,20 +21,20 @@ export default function LandingPage() {
   return (
     <main className="min-h-dvh">
       <header className="sticky top-0 z-40 border-b border-rule bg-paper/90 backdrop-blur">
-        <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4 md:px-8">
-          <div className="flex items-center gap-2.5">
+        <div className="mx-auto flex h-14 max-w-5xl items-center justify-between gap-2 px-4 md:px-8">
+          <div className="flex min-w-0 items-center gap-2">
             <span className="inline-flex h-6 w-6 items-center justify-center rounded-[4px] bg-accent font-display text-xs font-bold text-accent-ink">
               F
             </span>
-            <span className="font-display text-base font-semibold tracking-tight text-ink">
+            <span className="truncate font-display text-sm font-semibold tracking-tight text-ink sm:text-base">
               {t('app.name')}
             </span>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex shrink-0 items-center gap-2 sm:gap-3">
             <LangToggle />
             <Link
               to="/login"
-              className="rounded-[var(--radius-btn)] bg-accent px-4 py-2 text-sm font-medium text-accent-ink transition-colors hover:bg-accent-strong"
+              className="shrink-0 rounded-[var(--radius-btn)] bg-accent px-3 py-2 text-[13px] font-medium text-accent-ink transition-colors hover:bg-accent-strong sm:px-4 sm:text-sm"
             >
               {t('landing.signIn')}
             </Link>
