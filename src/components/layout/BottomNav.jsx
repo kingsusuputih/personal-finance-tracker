@@ -22,7 +22,7 @@ export function BottomNav() {
             key={item.to}
             to={item.to}
             className={({ isActive }) =>
-              `flex h-14 min-w-0 flex-1 items-center justify-center gap-2 rounded-[var(--radius-btn)] px-2 text-sm font-medium transition-colors duration-[var(--dur-fast)] ${
+              `flex h-14 min-w-0 flex-1 items-center justify-center gap-2 rounded-btn px-2 text-sm font-medium transition-colors duration-(--dur-fast) ${
                 isActive ? 'bg-accent-soft text-accent' : 'text-ink-2 hover:text-ink'
               }`
             }

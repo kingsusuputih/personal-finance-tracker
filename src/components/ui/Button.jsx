@@ -28,7 +28,7 @@ export function Button({
     <button
       {...props}
       disabled={disabled || loading}
-      className={`inline-flex items-center justify-center gap-2 rounded-[var(--radius-btn)] font-medium transition-[background-color,border-color,color,transform,opacity] duration-[var(--dur-base)] ease-[var(--ease-out)] disabled:cursor-not-allowed ${variants[variant]} ${sizes[size]} ${className}`}
+      className={`inline-flex items-center justify-center gap-2 rounded-btn font-medium transition-[background-color,border-color,color,transform,opacity] duration-(--dur-base) ease-out disabled:cursor-not-allowed ${variants[variant]} ${sizes[size]} ${className}`}
     >
       {loading && <Spinner size="sm" />}
       {children}

@@ -53,7 +53,7 @@ export function ToastProvider({ children }) {
           <button
             key={t.id}
             onClick={() => dismiss(t.id)}
-            className={`flex items-start gap-2 rounded-[var(--radius-card)] border border-rule-2 border-l-4 bg-paper px-4 py-3 text-left text-sm text-ink-2 shadow-lg transition-[transform,opacity] duration-[var(--dur-base)] ease-[var(--ease-out)] hover:-translate-y-px ${toneStyles[t.tone]}`}
+            className={`flex items-start gap-2 rounded-card border border-rule-2 border-l-4 bg-paper px-4 py-3 text-left text-sm text-ink-2 shadow-lg transition-[transform,opacity] duration-(--dur-base) ease-out hover:-translate-y-px ${toneStyles[t.tone]}`}
           >
             <span className="kbd mt-0.5 text-[10px] text-ink-3">{toneLabels[t.tone]}</span>
             <span className="flex-1">{t.message}</span>

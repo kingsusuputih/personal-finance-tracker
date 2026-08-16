@@ -45,7 +45,7 @@ export function AllocationCard({ label, percent, targetAmount, actualAmount }) {
         aria-label={t('allocation.used', { label })}
       >
         <div
-          className={`h-full rounded-full transition-[width] duration-[var(--dur-slow)] ease-[var(--ease-out)] ${
+          className={`h-full rounded-full transition-[width] duration-(--dur-slow) ease-out ${
             over ? 'bg-danger' : 'bg-success'
           }`}
           style={{ width }}

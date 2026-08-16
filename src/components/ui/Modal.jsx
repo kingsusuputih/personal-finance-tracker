@@ -28,7 +28,7 @@ export function Modal({ open, onClose, title, children, footer }) {
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        className="relative w-full max-w-sm rounded-[var(--radius-card)] border border-rule bg-paper p-6 outline-none shadow-xl"
+        className="relative w-full max-w-sm rounded-card border border-rule bg-paper p-6 outline-none shadow-xl"
       >
         <h2 className="text-lg font-semibold">{title}</h2>
         <div className="mt-2 text-sm leading-relaxed text-ink-2">{children}</div>

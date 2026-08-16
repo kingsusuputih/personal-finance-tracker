@@ -23,7 +23,7 @@ export default function LandingPage() {
       <header className="sticky top-0 z-40 border-b border-rule bg-paper/90 backdrop-blur">
         <div className="mx-auto flex h-14 max-w-5xl items-center justify-between gap-2 px-4 md:px-8">
           <div className="flex min-w-0 items-center gap-2">
-            <span className="inline-flex h-6 w-6 items-center justify-center rounded-[4px] bg-accent font-display text-xs font-bold text-accent-ink">
+            <span className="inline-flex h-6 w-6 items-center justify-center rounded-sm bg-accent font-display text-xs font-bold text-accent-ink">
               F
             </span>
             <span className="truncate font-display text-sm font-semibold tracking-tight text-ink sm:text-base">
@@ -32,9 +32,9 @@ export default function LandingPage() {
           </div>
           <div className="flex shrink-0 items-center gap-2 sm:gap-3">
             <LangToggle />
-            <Link
+<Link
               to="/login"
-              className="shrink-0 rounded-[var(--radius-btn)] bg-accent px-3 py-2 text-[13px] font-medium text-accent-ink transition-colors hover:bg-accent-strong sm:px-4 sm:text-sm"
+              className="hidden shrink-0 rounded-btn bg-accent px-3 py-2 text-[13px] font-medium text-accent-ink transition-colors hover:bg-accent-strong sm:inline-flex sm:px-4 sm:text-sm"
             >
               {t('landing.signIn')}
             </Link>
@@ -55,7 +55,7 @@ export default function LandingPage() {
           </p>
           <Link
             to="/login"
-            className="mt-8 inline-flex h-12 items-center justify-center rounded-[var(--radius-btn)] bg-accent px-8 text-base font-medium text-accent-ink transition-colors hover:bg-accent-strong"
+            className="mt-8 inline-flex h-12 items-center justify-center rounded-btn bg-accent px-8 text-base font-medium text-accent-ink transition-colors hover:bg-accent-strong"
           >
             {t('landing.signIn')}
           </Link>
@@ -112,7 +112,7 @@ export default function LandingPage() {
           <p className="mt-3 text-sm leading-relaxed text-ink-3">{t('login.note')}</p>
           <Link
             to="/login"
-            className="mt-6 inline-flex h-12 items-center justify-center rounded-[var(--radius-btn)] bg-accent px-8 text-base font-medium text-accent-ink transition-colors hover:bg-accent-strong"
+            className="mt-6 inline-flex h-12 items-center justify-center rounded-btn bg-accent px-8 text-base font-medium text-accent-ink transition-colors hover:bg-accent-strong"
           >
             {t('landing.signIn')}
           </Link>

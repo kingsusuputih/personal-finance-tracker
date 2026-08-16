@@ -15,7 +15,7 @@ export default function LoginPage() {
     <main className="flex min-h-dvh items-center justify-center p-4">
       <div className="w-full max-w-sm">
         <div className="mb-8 text-center">
-          <div className="mx-auto mb-4 inline-flex h-12 w-12 items-center justify-center rounded-[8px] bg-accent font-display text-xl font-bold text-accent-ink">
+          <div className="mx-auto mb-4 inline-flex h-12 w-12 items-center justify-center rounded-lg bg-accent font-display text-xl font-bold text-accent-ink">
             F
           </div>
           <h1 className="font-bold leading-tight text-[clamp(1.75rem,6vw,2.5rem)]">
