@@ -1,16 +1,20 @@
-import { useMemo, useState } from 'react'
-import { Card } from '../ui/Card.jsx'
-import { Badge } from '../ui/Badge.jsx'
-import { Skeleton } from '../ui/Skeleton.jsx'
-import { Modal } from '../ui/Modal.jsx'
-import { Button } from '../ui/Button.jsx'
-import { useT } from '../../i18n/LanguageProvider.jsx'
-import { useToast } from '../ui/Toast.jsx'
-import { useSpreadsheet } from '../../hooks/useSpreadsheet.js'
-import { SHEETS } from '../../constants/sheets.js'
-import { formatIDR } from '../../utils/financeFormulas.js'
+import { useMemo, useState } from "react";
+import { Card } from "../ui/Card.jsx";
+import { Badge } from "../ui/Badge.jsx";
+import { Skeleton } from "../ui/Skeleton.jsx";
+import { Modal } from "../ui/Modal.jsx";
+import { Button } from "../ui/Button.jsx";
+import { useT } from "../../i18n/LanguageProvider.jsx";
+import { useToast } from "../ui/Toast.jsx";
+import { useSpreadsheet } from "../../hooks/useSpreadsheet.js";
+import { SHEETS } from "../../constants/sheets.js";
+import { formatIDR } from "../../utils/financeFormulas.js";
 
-const categoryTone = { Needs: 'accent', Lifestyle: 'warning', Investment: 'success' }
+const categoryTone = {
+  Needs: "accent",
+  Lifestyle: "warning",
+  Investment: "success",
+};
 
 function ActionButton({ label, tone, onClick, children }) {
   return (
@@ -19,56 +23,75 @@ function ActionButton({ label, tone, onClick, children }) {
       onClick={onClick}
       aria-label={label}
       title={label}
-      className={`rounded p-2.5 text-ink-3 transition-colors hover:bg-paper-3 ${tone}`}
-    >
+      className={`rounded p-2.5 text-ink-3 transition-colors hover:bg-paper-3 ${tone}`}>
       {children}
     </button>
-  )
+  );
 }
 
-export function TransactionTable({ transactions = [], loading = false, onEdit }) {
-  const [sortDir, setSortDir] = useState('desc')
-  const [deletingRow, setDeletingRow] = useState(null)
-  const [deleting, setDeleting] = useState(false)
-  const t = useT()
-  const toast = useToast()
-  const { deleteTransaction } = useSpreadsheet()
+export function TransactionTable({
+  transactions = [],
+  loading = false,
+  onEdit,
+}) {
+  const [sortDir, setSortDir] = useState("desc");
+  const [deletingRow, setDeletingRow] = useState(null);
+  const [deleting, setDeleting] = useState(false);
+  const t = useT();
+  const toast = useToast();
+  const { deleteTransaction } = useSpreadsheet();
 
   const sorted = useMemo(() => {
     return [...transactions]
       .sort((a, b) =>
-        sortDir === 'desc' ? b.date.localeCompare(a.date) : a.date.localeCompare(b.date),
+        sortDir === "desc"
+          ? b.date.localeCompare(a.date)
+          : a.date.localeCompare(b.date),
       )
-      .slice(0, 30)
-  }, [transactions, sortDir])
+      .slice(0, 30);
+  }, [transactions, sortDir]);
 
   const confirmDelete = async () => {
-    if (!deletingRow) return
-    setDeleting(true)
+    if (!deletingRow) return;
+    setDeleting(true);
     try {
-      await deleteTransaction(SHEETS.EXPENSES, deletingRow.rowNumber)
-      toast.success(t('expense.deleted'))
-      setDeletingRow(null)
+      await deleteTransaction(SHEETS.EXPENSES, deletingRow.rowNumber);
+      toast.success(t("expense.deleted"));
+      setDeletingRow(null);
     } catch (err) {
-      toast.error(err.message || t('delete.title'))
+      toast.error(err.message || t("delete.title"));
     } finally {
-      setDeleting(false)
+      setDeleting(false);
     }
-  }
+  };
 
   const actions = (row) => (
     <div className="flex shrink-0 items-center gap-1">
-      <ActionButton label={t('common.edit')} tone="hover:text-accent" onClick={() => onEdit?.(row)}>
-        <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+      <ActionButton
+        label={t("common.edit")}
+        tone="hover:text-accent"
+        onClick={() => onEdit?.(row)}>
+        <svg
+          viewBox="0 0 24 24"
+          className="h-4 w-4"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          aria-hidden="true">
           <path d="M17 3a2.8 2.8 0 0 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
         </svg>
       </ActionButton>
       <ActionButton
-        label={t('common.delete')}
+        label={t("common.delete")}
         tone="hover:text-danger"
-        onClick={() => setDeletingRow(row)}
-      >
-        <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+        onClick={() => setDeletingRow(row)}>
+        <svg
+          viewBox="0 0 24 24"
+          className="h-4 w-4"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          aria-hidden="true">
           <path d="M3 6h18" />
           <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
           <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
@@ -76,17 +99,16 @@ export function TransactionTable({ transactions = [], loading = false, onEdit })
         </svg>
       </ActionButton>
     </div>
-  )
+  );
 
   return (
     <Card className="overflow-hidden">
       <div className="flex items-center justify-between border-b border-rule px-5 py-4">
-        <h2 className="text-base font-semibold text-ink">{t('table.title')}</h2>
+        <h2 className="text-base font-semibold text-ink">{t("table.title")}</h2>
         <button
-          onClick={() => setSortDir((d) => (d === 'desc' ? 'asc' : 'desc'))}
-          className="kbd text-[10px] text-ink-3 transition-colors hover:text-accent"
-        >
-          {sortDir === 'desc' ? t('table.newest') : t('table.oldest')}
+          onClick={() => setSortDir((d) => (d === "desc" ? "asc" : "desc"))}
+          className="kbd text-[10px] text-ink-3 transition-colors hover:text-accent">
+          {sortDir === "desc" ? t("table.newest") : t("table.oldest")}
         </button>
       </div>
 
@@ -98,8 +120,10 @@ export function TransactionTable({ transactions = [], loading = false, onEdit })
         </div>
       ) : sorted.length === 0 ? (
         <div className="p-10 text-center">
-          <p className="text-sm font-medium text-ink">{t('table.empty.title')}</p>
-          <p className="mt-1 text-sm text-ink-3">{t('table.empty.body')}</p>
+          <p className="text-sm font-medium text-ink">
+            {t("table.empty.title")}
+          </p>
+          <p className="mt-1 text-sm text-ink-3">{t("table.empty.body")}</p>
         </div>
       ) : (
         <>
@@ -107,15 +131,20 @@ export function TransactionTable({ transactions = [], loading = false, onEdit })
             {sorted.map((row, i) => (
               <li
                 key={`${row.created_at}-${i}`}
-                className="flex items-center justify-between gap-3 px-5 py-3"
-              >
+                className="flex items-center justify-between gap-3 px-5 py-3">
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
-                    <Badge tone={categoryTone[row.category] || 'neutral'}>{row.category}</Badge>
-                    <span className="kbd text-[10px] text-ink-3">{row.date}</span>
+                    <Badge tone={categoryTone[row.category] || "neutral"}>
+                      {row.category}
+                    </Badge>
+                    <span className="kbd text-[10px] text-ink-3">
+                      {row.date}
+                    </span>
                   </div>
                   {row.description && (
-                    <p className="mt-1 truncate text-sm text-ink-2">{row.description}</p>
+                    <p className="mt-1 truncate text-sm text-ink-2">
+                      {row.description}
+                    </p>
                   )}
                 </div>
                 <div className="flex shrink-0 flex-col items-end gap-1.5">
@@ -132,24 +161,31 @@ export function TransactionTable({ transactions = [], loading = false, onEdit })
             <table className="w-full text-sm">
               <thead>
                 <tr className="kbd border-b border-rule text-left text-[10px] text-ink-3">
-                  <th className="px-5 py-2 font-medium">{t('table.date')}</th>
-                  <th className="px-5 py-2 font-medium">{t('table.category')}</th>
-                  <th className="px-5 py-2 font-medium">{t('table.description')}</th>
-                  <th className="px-5 py-2 text-right font-medium">{t('table.amount')}</th>
-                  <th className="px-5 py-2 text-right font-medium">{t('table.actions')}</th>
+                  <th className="px-5 py-2 font-medium">{t("table.date")}</th>
+                  <th className="px-5 py-2 font-medium">
+                    {t("table.category")}
+                  </th>
+                  <th className="px-5 py-2 font-medium">
+                    {t("table.description")}
+                  </th>
+                  <th className="px-5 py-2 text-right font-medium">
+                    {t("table.amount")}
+                  </th>
+                  <th className="px-5 py-2 text-right font-medium">
+                    {t("table.actions")}
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {sorted.map((row, i) => (
                   <tr
                     key={`${row.created_at}-${i}`}
-                    className="border-b border-rule last:border-0 transition-colors hover:bg-paper-2/60"
-                  >
+                    className="border-b border-rule last:border-0 transition-colors hover:bg-paper-2/60">
                     <td className="kbd whitespace-nowrap px-5 py-3 text-xs text-ink-3">
                       {row.date}
                     </td>
                     <td className="px-5 py-3">
-                      <Badge tone={categoryTone[row.category] || 'neutral'}>
+                      <Badge tone={categoryTone[row.category] || "neutral"}>
                         {row.category}
                       </Badge>
                     </td>
@@ -173,20 +209,22 @@ export function TransactionTable({ transactions = [], loading = false, onEdit })
       <Modal
         open={Boolean(deletingRow)}
         onClose={() => setDeletingRow(null)}
-        title={t('delete.title')}
+        title={t("delete.title")}
         footer={
           <>
-            <Button variant="ghost" onClick={() => setDeletingRow(null)} disabled={deleting}>
-              {t('common.cancel')}
+            <Button
+              variant="ghost"
+              onClick={() => setDeletingRow(null)}
+              disabled={deleting}>
+              {t("common.cancel")}
             </Button>
             <Button variant="danger" loading={deleting} onClick={confirmDelete}>
-              {t('delete.confirm')}
+              {t("delete.confirm")}
             </Button>
           </>
-        }
-      >
-        {t('delete.body')}
+        }>
+        {t("delete.body")}
       </Modal>
     </Card>
-  )
+  );
 }

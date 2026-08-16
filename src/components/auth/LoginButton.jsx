@@ -1,10 +1,10 @@
-import { useState } from 'react'
-import { useGoogleLogin } from '@react-oauth/google'
-import { useAuth } from '../../hooks/useAuth.js'
-import { useToast } from '../ui/Toast.jsx'
-import { Button } from '../ui/Button.jsx'
-import { useT } from '../../i18n/LanguageProvider.jsx'
-import { SCOPES } from '../../api/googleAuth.js'
+import { useState } from "react";
+import { useGoogleLogin } from "@react-oauth/google";
+import { useAuth } from "../../hooks/useAuth.js";
+import { useToast } from "../ui/Toast.jsx";
+import { Button } from "../ui/Button.jsx";
+import { useT } from "../../i18n/LanguageProvider.jsx";
+import { SCOPES } from "../../api/googleAuth.js";
 
 function GoogleMark() {
   return (
@@ -26,30 +26,30 @@ function GoogleMark() {
         d="M12 4.77c1.76 0 3.34.6 4.58 1.79l3.44-3.44C17.95 1.19 15.23 0 12 0A12 12 0 0 0 1.29 6.63l3.98 3.09C6.22 6.88 8.87 4.77 12 4.77z"
       />
     </svg>
-  )
+  );
 }
 
 export function LoginButton() {
-  const { login } = useAuth()
-  const toast = useToast()
-  const t = useT()
-  const [pending, setPending] = useState(false)
+  const { login } = useAuth();
+  const toast = useToast();
+  const t = useT();
+  const [pending, setPending] = useState(false);
 
   const googleLogin = useGoogleLogin({
-    flow: 'implicit',
+    flow: "implicit",
     scope: SCOPES,
     onSuccess: async (response) => {
-      setPending(true)
+      setPending(true);
       try {
-        await login(response.access_token)
+        await login(response.access_token);
       } catch (err) {
-        toast.error(err.message || t('login.error'))
+        toast.error(err.message || t("login.error"));
       } finally {
-        setPending(false)
+        setPending(false);
       }
     },
-    onError: () => toast.error(t('login.error')),
-  })
+    onError: () => toast.error(t("login.error")),
+  });
 
   return (
     <Button
@@ -57,10 +57,9 @@ export function LoginButton() {
       size="lg"
       className="w-full"
       loading={pending}
-      onClick={() => googleLogin()}
-    >
+      onClick={() => googleLogin()}>
       {!pending && <GoogleMark />}
-      {t('login.signIn')}
+      {t("login.signIn")}
     </Button>
-  )
+  );
 }

@@ -1,4 +1,4 @@
-import { create } from 'zustand'
+import { create } from "zustand";
 
 const initialState = {
   spreadsheetId: null,
@@ -6,7 +6,7 @@ const initialState = {
   transactions: [],
   provisioning: false,
   loading: false,
-}
+};
 
 export const useFinanceStore = create((set) => ({
   ...initialState,
@@ -16,4 +16,4 @@ export const useFinanceStore = create((set) => ({
   setProvisioning: (provisioning) => set({ provisioning }),
   setLoading: (loading) => set({ loading }),
   reset: () => set(initialState),
-}))
+}));

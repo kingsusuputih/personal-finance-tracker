@@ -1,49 +1,56 @@
-import { createContext, useCallback, useContext, useMemo, useRef, useState } from 'react'
-import { useT } from '../../i18n/LanguageProvider.jsx'
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import { useT } from "../../i18n/LanguageProvider.jsx";
 
-const ToastContext = createContext(null)
-let nextId = 0
+const ToastContext = createContext(null);
+let nextId = 0;
 
 const toneStyles = {
-  success: 'border-l-success',
-  error: 'border-l-danger',
-  info: 'border-l-accent',
-}
+  success: "border-l-success",
+  error: "border-l-danger",
+  info: "border-l-accent",
+};
 
 export function ToastProvider({ children }) {
-  const [toasts, setToasts] = useState([])
-  const timers = useRef({})
-  const t = useT()
+  const [toasts, setToasts] = useState([]);
+  const timers = useRef({});
+  const t = useT();
 
   const toneLabels = {
-    success: t('toast.saved'),
-    error: t('toast.error'),
-    info: t('toast.note'),
-  }
+    success: t("toast.saved"),
+    error: t("toast.error"),
+    info: t("toast.note"),
+  };
 
   const dismiss = useCallback((id) => {
-    setToasts((prev) => prev.filter((t) => t.id !== id))
-    clearTimeout(timers.current[id])
-    delete timers.current[id]
-  }, [])
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+    clearTimeout(timers.current[id]);
+    delete timers.current[id];
+  }, []);
 
   const push = useCallback(
     (message, tone) => {
-      const id = ++nextId
-      setToasts((prev) => [...prev, { id, message, tone }])
-      timers.current[id] = setTimeout(() => dismiss(id), 4000)
+      const id = ++nextId;
+      setToasts((prev) => [...prev, { id, message, tone }]);
+      timers.current[id] = setTimeout(() => dismiss(id), 4000);
     },
     [dismiss],
-  )
+  );
 
   const toast = useMemo(
     () => ({
-      success: (m) => push(m, 'success'),
-      error: (m) => push(m, 'error'),
-      info: (m) => push(m, 'info'),
+      success: (m) => push(m, "success"),
+      error: (m) => push(m, "error"),
+      info: (m) => push(m, "info"),
     }),
     [push],
-  )
+  );
 
   return (
     <ToastContext.Provider value={toast}>
@@ -53,19 +60,20 @@ export function ToastProvider({ children }) {
           <button
             key={t.id}
             onClick={() => dismiss(t.id)}
-            className={`flex items-start gap-2 rounded-card border border-rule-2 border-l-4 bg-paper px-4 py-3 text-left text-sm text-ink-2 shadow-lg transition-[transform,opacity] duration-(--dur-base) ease-out hover:-translate-y-px ${toneStyles[t.tone]}`}
-          >
-            <span className="kbd mt-0.5 text-[10px] text-ink-3">{toneLabels[t.tone]}</span>
+            className={`flex items-start gap-2 rounded-card border border-rule-2 border-l-4 bg-paper px-4 py-3 text-left text-sm text-ink-2 shadow-lg transition-[transform,opacity] duration-(--dur-base) ease-out hover:-translate-y-px ${toneStyles[t.tone]}`}>
+            <span className="kbd mt-0.5 text-[10px] text-ink-3">
+              {toneLabels[t.tone]}
+            </span>
             <span className="flex-1">{t.message}</span>
           </button>
         ))}
       </div>
     </ToastContext.Provider>
-  )
+  );
 }
 
 export function useToast() {
-  const ctx = useContext(ToastContext)
-  if (!ctx) throw new Error('useToast must be used within ToastProvider')
-  return ctx
+  const ctx = useContext(ToastContext);
+  if (!ctx) throw new Error("useToast must be used within ToastProvider");
+  return ctx;
 }

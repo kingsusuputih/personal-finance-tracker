@@ -1,14 +1,20 @@
-import { lazy, Suspense } from 'react'
-import { BrowserRouter, Navigate, Outlet, Route, Routes } from 'react-router-dom'
-import { useAuth } from './hooks/useAuth.js'
-import LoginPage from './pages/LoginPage.jsx'
-import LandingPage from './pages/LandingPage.jsx'
-import PrivacyPolicyPage from './pages/PrivacyPolicyPage.jsx'
-import TermsOfServicePage from './pages/TermsOfServicePage.jsx'
-import { Skeleton } from './components/ui/Skeleton.jsx'
+import { lazy, Suspense } from "react";
+import {
+  BrowserRouter,
+  Navigate,
+  Outlet,
+  Route,
+  Routes,
+} from "react-router-dom";
+import { useAuth } from "./hooks/useAuth.js";
+import LoginPage from "./pages/LoginPage.jsx";
+import LandingPage from "./pages/LandingPage.jsx";
+import PrivacyPolicyPage from "./pages/PrivacyPolicyPage.jsx";
+import TermsOfServicePage from "./pages/TermsOfServicePage.jsx";
+import { Skeleton } from "./components/ui/Skeleton.jsx";
 
-const DashboardPage = lazy(() => import('./pages/DashboardPage.jsx'))
-const LedgerPage = lazy(() => import('./pages/LedgerPage.jsx'))
+const DashboardPage = lazy(() => import("./pages/DashboardPage.jsx"));
+const LedgerPage = lazy(() => import("./pages/LedgerPage.jsx"));
 
 function PageFallback() {
   return (
@@ -22,19 +28,19 @@ function PageFallback() {
         <Skeleton className="h-24 w-full" />
       </div>
     </div>
-  )
+  );
 }
 
 function RequireAuth() {
-  const { isAuthed } = useAuth()
-  if (!isAuthed) return <Navigate to="/login" replace />
-  return <Outlet />
+  const { isAuthed } = useAuth();
+  if (!isAuthed) return <Navigate to="/login" replace />;
+  return <Outlet />;
 }
 
 function GuestOnly() {
-  const { isAuthed } = useAuth()
-  if (isAuthed) return <Navigate to="/dashboard" replace />
-  return <Outlet />
+  const { isAuthed } = useAuth();
+  if (isAuthed) return <Navigate to="/dashboard" replace />;
+  return <Outlet />;
 }
 
 export default function App() {
@@ -68,5 +74,5 @@ export default function App() {
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
     </BrowserRouter>
-  )
+  );
 }

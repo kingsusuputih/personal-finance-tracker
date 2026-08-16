@@ -1,21 +1,23 @@
 export const SCOPES = [
-  'email',
-  'profile',
-  'https://www.googleapis.com/auth/spreadsheets',
-  'https://www.googleapis.com/auth/drive.file',
-].join(' ')
+  "email",
+  "profile",
+  "https://www.googleapis.com/auth/spreadsheets",
+  "https://www.googleapis.com/auth/drive.file",
+].join(" ");
 
 export async function fetchUserInfo(accessToken) {
-  const res = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+  const res = await fetch("https://www.googleapis.com/oauth2/v2/userinfo", {
     headers: { Authorization: `Bearer ${accessToken}` },
-  })
-  if (!res.ok) throw new Error('Failed to load profile')
-  return res.json()
+  });
+  if (!res.ok) throw new Error("Failed to load profile");
+  return res.json();
 }
 
 export async function revokeAccessToken(accessToken) {
   try {
-    await fetch(`https://oauth2.googleapis.com/revoke?token=${accessToken}`, { method: 'POST' })
+    await fetch(`https://oauth2.googleapis.com/revoke?token=${accessToken}`, {
+      method: "POST",
+    });
   } catch {
     // revocation is best-effort; clearing local state is what matters
   }

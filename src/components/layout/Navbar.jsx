@@ -1,16 +1,16 @@
-import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../../hooks/useAuth.js'
-import { useT } from '../../i18n/LanguageProvider.jsx'
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../hooks/useAuth.js";
+import { useT } from "../../i18n/LanguageProvider.jsx";
 
 export function Navbar() {
-  const { user, logout } = useAuth()
-  const navigate = useNavigate()
-  const t = useT()
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+  const t = useT();
 
   const doLogout = async () => {
-    await logout()
-    navigate('/login')
-  }
+    await logout();
+    navigate("/login");
+  };
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-rule bg-paper/90 backdrop-blur lg:hidden">
@@ -31,17 +31,15 @@ export function Navbar() {
           )}
           <button
             onClick={doLogout}
-            aria-label={t('nav.signOut')}
-            className="rounded p-2 text-ink-3 transition-colors hover:bg-paper-2 hover:text-danger"
-          >
+            aria-label={t("nav.signOut")}
+            className="rounded p-2 text-ink-3 transition-colors hover:bg-paper-2 hover:text-danger">
             <svg
               viewBox="0 0 24 24"
               className="h-4 w-4"
               fill="none"
               stroke="currentColor"
               strokeWidth="2"
-              aria-hidden="true"
-            >
+              aria-hidden="true">
               <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
               <path d="M16 17l5-5-5-5" />
               <path d="M21 12H9" />
@@ -50,5 +48,5 @@ export function Navbar() {
         </div>
       </div>
     </header>
-  )
+  );
 }

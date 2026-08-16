@@ -1,13 +1,13 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import { GoogleOAuthProvider } from '@react-oauth/google'
-import { Analytics } from '@vercel/analytics/react'
-import App from './App.jsx'
-import { ToastProvider } from './components/ui/Toast.jsx'
-import { LanguageProvider } from './i18n/LanguageProvider.jsx'
-import './index.css'
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+import { Analytics } from "@vercel/analytics/react";
+import App from "./App.jsx";
+import { ToastProvider } from "./components/ui/Toast.jsx";
+import { LanguageProvider } from "./i18n/LanguageProvider.jsx";
+import "./index.css";
 
-const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID
+const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
 function SetupMissing() {
   return (
@@ -18,15 +18,15 @@ function SetupMissing() {
         </div>
         <h1 className="text-2xl font-bold">Configuration missing</h1>
         <p className="mt-2 text-sm leading-relaxed text-ink-3">
-          Set the <code className="amount text-xs">VITE_GOOGLE_CLIENT_ID</code> environment
-          variable and rebuild before signing in.
+          Set the <code className="amount text-xs">VITE_GOOGLE_CLIENT_ID</code>{" "}
+          environment variable and rebuild before signing in.
         </p>
       </div>
     </main>
-  )
+  );
 }
 
-ReactDOM.createRoot(document.getElementById('root')).render(
+ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     {clientId ? (
       <GoogleOAuthProvider clientId={clientId}>
@@ -41,4 +41,4 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       <SetupMissing />
     )}
   </React.StrictMode>,
-)
+);
