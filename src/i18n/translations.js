@@ -81,6 +81,31 @@ export const translations = {
     'ledger.title': 'Record & review',
     'ledger.subtitle':
       'Enter your monthly income and daily expenses. Every entry is written straight to your Google Sheet.',
+    'landing.signIn': 'Sign in with Google',
+    'landing.featuresTitle': 'Everything you need to stay on track',
+    'landing.featAllocTitle': '50 / 30 / 20 allocation',
+    'landing.featAllocBody':
+      'Needs 50%, investments 30%, lifestyle 20% — measured against your real spending.',
+    'landing.featFundsTitle': 'Fund targets',
+    'landing.featFundsBody':
+      'Emergency fund (6×) and retirement fund (300×) your monthly expenses, calculated automatically.',
+    'landing.featChartTitle': 'Spending charts',
+    'landing.featChartBody':
+      'A donut chart breaks the current month’s spending down by category.',
+    'landing.howTitle': 'How it works',
+    'landing.howStep1Title': 'Sign in with Google',
+    'landing.howStep1Body':
+      'Secure PKCE authentication. No password, no account to create.',
+    'landing.howStep2Title': 'We provision your spreadsheet',
+    'landing.howStep2Body':
+      'A “Finance_Tracker_Data” spreadsheet is created automatically in your own Google Drive.',
+    'landing.howStep3Title': 'Track & review',
+    'landing.howStep3Body':
+      'Record income and expenses; every entry is written straight to your sheet.',
+    'landing.privacyTitle': 'Your data stays yours',
+    'landing.privacyBody':
+      'Only the drive.file scope is requested — the app touches just the spreadsheet it created, nothing else. No servers, no analytics, no ads.',
+    'landing.ctaTitle': 'Start tracking today',
   },
   id: {
     'app.name': 'Finance Tracker',
@@ -163,5 +188,30 @@ export const translations = {
     'ledger.title': 'Catat & tinjau',
     'ledger.subtitle':
       'Masukkan pemasukan bulanan dan pengeluaran harian. Setiap entri langsung ditulis ke Google Sheet Anda.',
+    'landing.signIn': 'Masuk dengan Google',
+    'landing.featuresTitle': 'Semua yang Anda butuhkan agar tetap on-track',
+    'landing.featAllocTitle': 'Alokasi 50 / 30 / 20',
+    'landing.featAllocBody':
+      'Kebutuhan 50%, investasi 30%, gaya hidup 20% — diukur dari pengeluaran riil Anda.',
+    'landing.featFundsTitle': 'Target dana',
+    'landing.featFundsBody':
+      'Dana darurat (6×) dan dana pensiun (300×) pengeluaran bulanan, dihitung otomatis.',
+    'landing.featChartTitle': 'Grafik pengeluaran',
+    'landing.featChartBody':
+      'Grafik donat memecah pengeluaran bulan berjalan per kategori.',
+    'landing.howTitle': 'Cara kerja',
+    'landing.howStep1Title': 'Masuk dengan Google',
+    'landing.howStep1Body':
+      'Autentikasi aman dengan PKCE. Tanpa kata sandi, tanpa perlu daftar akun.',
+    'landing.howStep2Title': 'Kami siapkan spreadsheet Anda',
+    'landing.howStep2Body':
+      'Spreadsheet “Finance_Tracker_Data” dibuat otomatis di Google Drive Anda sendiri.',
+    'landing.howStep3Title': 'Catat & tinjau',
+    'landing.howStep3Body':
+      'Catat pemasukan dan pengeluaran; setiap entri langsung ditulis ke sheet Anda.',
+    'landing.privacyTitle': 'Data Anda tetap milik Anda',
+    'landing.privacyBody':
+      'Hanya cakupan drive.file yang diminta — aplikasi hanya menyentuh spreadsheet yang dibuatnya, tidak lebih. Tanpa server, tanpa analitik, tanpa iklan.',
+    'landing.ctaTitle': 'Mulai mencatat hari ini',
   },
 }
