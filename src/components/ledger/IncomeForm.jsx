@@ -26,7 +26,7 @@ export function IncomeForm() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    setMonth((prev) => (prev ? prev : currentCycle));
+    setMonth(currentCycle);
   }, [currentCycle]);
 
   const submit = async (e) => {

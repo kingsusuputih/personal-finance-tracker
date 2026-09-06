@@ -9,8 +9,9 @@ import { Navbar } from "../components/layout/Navbar.jsx";
 import { BottomNav } from "../components/layout/BottomNav.jsx";
 import { Card } from "../components/ui/Card.jsx";
 import { Skeleton } from "../components/ui/Skeleton.jsx";
-import { useT } from "../i18n/LanguageProvider.jsx";
+import { useI18n } from "../i18n/LanguageProvider.jsx";
 import { formatIDR } from "../utils/financeFormulas.js";
+import { formatDisplayDate } from "../utils/dateTime.js";
 
 function EyeIcon() {
   return (
@@ -52,7 +53,7 @@ export default function DashboardPage() {
   const { ensureSpreadsheet, loadData, provisioning, loading } =
     useSpreadsheet();
   const calc = useFinanceCalc();
-  const t = useT();
+  const { lang, t } = useI18n();
   const [showIncome, setShowIncome] = useState(false);
   const [showExpenses, setShowExpenses] = useState(false);
 
@@ -100,9 +101,20 @@ export default function DashboardPage() {
         <main className="flex-1">
           <div className="mx-auto max-w-5xl px-4 pb-32 pt-6 md:px-8 md:py-10">
             <header className="mb-8">
-              <p className="kbd mb-1 text-[11px] text-ink-3">
-                {calc.currentMonth}
-              </p>
+              <div className="kbd mb-1 flex flex-wrap items-center gap-1.5 text-[11px] text-ink-3">
+                <span className="font-semibold text-ink-2">{calc.currentMonth}</span>
+                {calc.cycle?.startDate && calc.cycle?.endDate && (
+                  <>
+                    <span>·</span>
+                    <span>
+                      {t("dash.activePeriod", {
+                        start: formatDisplayDate(calc.cycle.startDate, lang),
+                        end: formatDisplayDate(calc.cycle.endDate, lang),
+                      })}
+                    </span>
+                  </>
+                )}
+              </div>
               <h1 className="text-[clamp(1.75rem,4vw,2.5rem)] font-bold">
                 {t("dash.title")}
               </h1>

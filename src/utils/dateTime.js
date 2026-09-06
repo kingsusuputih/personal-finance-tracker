@@ -76,9 +76,9 @@ export function getCycleInfo(date = new Date(), timeZone = "Asia/Jakarta", cutof
   }
 
   if (day < cutoff) {
-    const cycleKey = `${year}-${String(month).padStart(2, "0")}`;
     const prevYear = month === 1 ? year - 1 : year;
     const prevMonth = month === 1 ? 12 : month - 1;
+    const cycleKey = `${prevYear}-${String(prevMonth).padStart(2, "0")}`;
     const startDate = `${prevYear}-${String(prevMonth).padStart(2, "0")}-${String(cutoff).padStart(2, "0")}`;
     const endDate = `${year}-${String(month).padStart(2, "0")}-${String(cutoff - 1).padStart(2, "0")}`;
     return { cycleKey, startDate, endDate, cutoffDay: cutoff };
@@ -86,7 +86,7 @@ export function getCycleInfo(date = new Date(), timeZone = "Asia/Jakarta", cutof
 
   const nextYear = month === 12 ? year + 1 : year;
   const nextMonth = month === 12 ? 1 : month + 1;
-  const cycleKey = `${nextYear}-${String(nextMonth).padStart(2, "0")}`;
+  const cycleKey = `${year}-${String(month).padStart(2, "0")}`;
   const startDate = `${year}-${String(month).padStart(2, "0")}-${String(cutoff).padStart(2, "0")}`;
   const endDate = `${nextYear}-${String(nextMonth).padStart(2, "0")}-${String(cutoff - 1).padStart(2, "0")}`;
   return { cycleKey, startDate, endDate, cutoffDay: cutoff };
@@ -106,12 +106,25 @@ export function getCycleKeyForDate(dateStr, cutoffDay = 25) {
   }
 
   if (day < cutoff) {
-    return `${year}-${String(month).padStart(2, "0")}`;
+    const prevYear = month === 1 ? year - 1 : year;
+    const prevMonth = month === 1 ? 12 : month - 1;
+    return `${prevYear}-${String(prevMonth).padStart(2, "0")}`;
   }
 
-  const nextYear = month === 12 ? year + 1 : year;
-  const nextMonth = month === 12 ? 1 : month + 1;
-  return `${nextYear}-${String(nextMonth).padStart(2, "0")}`;
+  return `${year}-${String(month).padStart(2, "0")}`;
+}
+
+export function formatDisplayDate(dateStr, lang = "id") {
+  if (!dateStr || typeof dateStr !== "string") return "";
+  const [y, m, d] = dateStr.split("-").map(Number);
+  if (!y || !m || !d) return dateStr;
+  const utcDate = new Date(Date.UTC(y, m - 1, d));
+  return new Intl.DateTimeFormat(lang === "id" ? "id-ID" : "en-US", {
+    timeZone: "UTC",
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  }).format(utcDate);
 }
 
 export function formatTransactionTime(isoString, timeZone = "Asia/Jakarta", lang = "id") {

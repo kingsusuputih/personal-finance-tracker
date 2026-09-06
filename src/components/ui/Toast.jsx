@@ -55,16 +55,18 @@ export function ToastProvider({ children }) {
   return (
     <ToastContext.Provider value={toast}>
       {children}
-      <div className="fixed bottom-4 right-4 z-50 flex w-full max-w-sm flex-col gap-2">
+      <div className="pointer-events-none fixed bottom-[calc(4.75rem+env(safe-area-inset-bottom,0px))] left-[max(1rem,env(safe-area-inset-left,0px))] right-[max(1rem,env(safe-area-inset-right,0px))] z-50 mx-auto flex w-auto max-w-sm flex-col gap-2 lg:bottom-[max(1rem,env(safe-area-inset-bottom,0px))] lg:left-auto lg:right-4 lg:mx-0 lg:w-full">
         {toasts.map((t) => (
           <button
             key={t.id}
             onClick={() => dismiss(t.id)}
-            className={`flex items-start gap-2 rounded-card border border-rule-2 border-l-4 bg-paper px-4 py-3 text-left text-sm text-ink-2 shadow-lg transition-[transform,opacity] duration-(--dur-base) ease-out hover:-translate-y-px ${toneStyles[t.tone]}`}>
-            <span className="kbd mt-0.5 text-[10px] text-ink-3">
+            className={`pointer-events-auto flex items-start gap-2 rounded-card border border-rule-2 border-l-4 bg-paper px-4 py-3 text-left text-sm text-ink-2 shadow-lg transition-[transform,opacity] duration-(--dur-base) ease-out hover:-translate-y-px ${toneStyles[t.tone]}`}>
+            <span className="kbd mt-0.5 shrink-0 text-[10px] text-ink-3">
               {toneLabels[t.tone]}
             </span>
-            <span className="flex-1">{t.message}</span>
+            <span className="min-w-0 flex-1 [overflow-wrap:anywhere]">
+              {t.message}
+            </span>
           </button>
         ))}
       </div>
