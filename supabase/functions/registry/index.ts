@@ -110,38 +110,15 @@ async function verifyGoogleToken(token: string): Promise<GoogleAuthResult | null
       if (!data.sub) return null;
       return { sub: String(data.sub), name: String(data.name || "") };
     } else {
-      const [tokenInfoRes, userInfoRes] = await Promise.all([
-        fetch(
-          `https://oauth2.googleapis.com/tokeninfo?access_token=${encodeURIComponent(token)}`,
-          { signal: AbortSignal.timeout(6000) },
-        ),
-        fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
-          headers: { Authorization: `Bearer ${token}` },
-          signal: AbortSignal.timeout(6000),
-        }),
-      ]);
+      const userInfoRes = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: AbortSignal.timeout(6000),
+      });
 
-      if (!tokenInfoRes.ok) return null;
-      const tokenInfo = await tokenInfoRes.json();
-      if (
-        GOOGLE_CLIENT_ID &&
-        tokenInfo.aud !== GOOGLE_CLIENT_ID &&
-        tokenInfo.azp !== GOOGLE_CLIENT_ID
-      ) {
-        return null;
-      }
-
-      let sub = String(tokenInfo.sub || "");
-      let name = "";
-
-      if (userInfoRes.ok) {
-        const userInfo = await userInfoRes.json();
-        if (userInfo.sub) sub = String(userInfo.sub);
-        if (userInfo.name) name = String(userInfo.name);
-      }
-
-      if (!sub) return null;
-      return { sub, name };
+      if (!userInfoRes.ok) return null;
+      const userInfo = await userInfoRes.json();
+      if (!userInfo.sub) return null;
+      return { sub: String(userInfo.sub), name: String(userInfo.name || "") };
     }
   } catch {
     return null;

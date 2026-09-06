@@ -7,7 +7,7 @@ export const translations = {
     "login.badgeMemory": "token in browser storage",
     "login.note":
       "Sign in to provision your spreadsheet and start tracking income and expenses.",
-    "login.footer": "Finance Tracker · 50/30/20 · v1.1",
+    "login.footer": "Finance Tracker · 50/30/20 · v1.2",
     "legal.privacy": "Privacy Policy",
     "legal.terms": "Terms of Service",
     "legal.changelog": "Changelog",
@@ -158,7 +158,7 @@ export const translations = {
     "login.badgeMemory": "token di browser lokal",
     "login.note":
       "Masuk untuk membuat spreadsheet dan mulai mencatat pemasukan serta pengeluaran.",
-    "login.footer": "Finance Tracker · 50/30/20 · v1.1",
+    "login.footer": "Finance Tracker · 50/30/20 · v1.2",
     "legal.privacy": "Kebijakan Privasi",
     "legal.terms": "Ketentuan Layanan",
     "legal.changelog": "Catatan Rilis",
