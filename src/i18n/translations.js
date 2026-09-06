@@ -4,21 +4,23 @@ export const translations = {
     "login.tagline":
       "Your private, zero-cost finance dashboard — data lives in your own Google Drive.",
     "login.badgeDrive": "drive.file only",
-    "login.badgeMemory": "in-memory token",
+    "login.badgeMemory": "token in browser storage",
     "login.note":
       "Sign in to provision your spreadsheet and start tracking income and expenses.",
-    "login.footer": "Finance Tracker · 50/30/20 · v1.0",
+    "login.footer": "Finance Tracker · 50/30/20 · v1.1",
     "legal.privacy": "Privacy Policy",
     "legal.terms": "Terms of Service",
+    "legal.changelog": "Changelog",
     "legal.back": "Back to sign in",
     "login.signIn": "Sign in with Google",
     "login.error": "Google sign in was cancelled or failed",
     "nav.dashboard": "Dashboard",
     "nav.ledger": "Ledger",
+    "nav.settings": "Settings",
     "nav.signOut": "Sign out",
     "signout.title": "Sign out?",
     "signout.body":
-      "Your access token lives in memory only and will be discarded. No stored data is touched.",
+      "Your access token and profile stored in this browser will be cleared. Your Google Sheet data is not touched.",
     "signout.confirm": "Sign out",
     "common.cancel": "Cancel",
     "common.edit": "Edit",
@@ -96,11 +98,11 @@ export const translations = {
       "Emergency fund (6×) and retirement fund (300×) your monthly expenses, calculated automatically.",
     "landing.featChartTitle": "Spending charts",
     "landing.featChartBody":
-      "A donut chart breaks the current month’s spending down by category.",
+      "A donut chart breaks spending down by category for your active tracking period.",
     "landing.howTitle": "How it works",
     "landing.howStep1Title": "Sign in with Google",
     "landing.howStep1Body":
-      "Secure PKCE authentication. No password, no account to create.",
+      "Secure Google OAuth. No password or separate account needed.",
     "landing.howStep2Title": "We provision your spreadsheet",
     "landing.howStep2Body":
       "A “Finance_Tracker_Data” spreadsheet is created automatically in your own Google Drive.",
@@ -109,29 +111,47 @@ export const translations = {
       "Record income and expenses; every entry is written straight to your sheet.",
     "landing.privacyTitle": "Your data stays yours",
     "landing.privacyBody":
-      "Only the drive.file scope is requested — the app touches just the spreadsheet it created, nothing else. No servers, no ads. Aggregated usage analytics by Google Analytics and Vercel.",
+      "Your financial records and settings stay in your own Google Drive. No app-operated server stores your financial data. Aggregated usage analytics by Google Analytics and Vercel.",
     "landing.ctaTitle": "Start tracking today",
+    "changelog.title": "Changelog",
+    "changelog.subtitle": "Released updates and enhancements",
+    "settings.title": "Settings",
+    "settings.subtitle": "Customize your time zone and monthly tracking cutoff.",
+    "settings.timezoneTitle": "Time Zone",
+    "settings.timezoneDesc":
+      "Used for transaction timestamps and tracking period boundaries.",
+    "settings.modeAuto": "Automatic — browser time zone ({zone})",
+    "settings.modeManual": "Manual selection",
+    "settings.cutoffTitle": "Monthly Cutoff Day",
+    "settings.cutoffDesc":
+      "Transactions and income are grouped into periods starting on this date (e.g. 25 tracks from the 25th of the previous month to the 24th of this month).",
+    "settings.cutoffLabel": "Cutoff day",
+    "settings.defaultTag": "Default",
+    "settings.save": "Save Settings",
+    "settings.errCutoff": "Cutoff day must be an integer between 1 and 28",
   },
   id: {
     "app.name": "Finance Tracker",
     "login.tagline":
       "Dashboard keuangan pribadi Anda, gratis — data tersimpan di Google Drive Anda sendiri.",
     "login.badgeDrive": "hanya drive.file",
-    "login.badgeMemory": "token in-memory",
+    "login.badgeMemory": "token di browser lokal",
     "login.note":
       "Masuk untuk membuat spreadsheet dan mulai mencatat pemasukan serta pengeluaran.",
-    "login.footer": "Finance Tracker · 50/30/20 · v1.0",
+    "login.footer": "Finance Tracker · 50/30/20 · v1.1",
     "legal.privacy": "Kebijakan Privasi",
     "legal.terms": "Ketentuan Layanan",
+    "legal.changelog": "Catatan Rilis",
     "legal.back": "Kembali ke masuk",
     "login.signIn": "Masuk dengan Google",
     "login.error": "Masuk dengan Google dibatalkan atau gagal",
     "nav.dashboard": "Dasbor",
     "nav.ledger": "Buku Besar",
+    "nav.settings": "Pengaturan",
     "nav.signOut": "Keluar",
     "signout.title": "Keluar?",
     "signout.body":
-      "Token akses Anda hanya tersimpan di memori dan akan dibuang. Data tersimpan tidak disentuh.",
+      "Token akses dan profil yang tersimpan di browser ini akan dihapus. Data di Google Sheet Anda tidak disentuh.",
     "signout.confirm": "Keluar",
     "common.cancel": "Batal",
     "common.edit": "Ubah",
@@ -208,11 +228,11 @@ export const translations = {
       "Dana darurat (6×) dan dana pensiun (300×) pengeluaran bulanan, dihitung otomatis.",
     "landing.featChartTitle": "Grafik pengeluaran",
     "landing.featChartBody":
-      "Grafik donat memecah pengeluaran bulan berjalan per kategori.",
+      "Grafik donat memecah pengeluaran periode berjalan per kategori.",
     "landing.howTitle": "Cara kerja",
     "landing.howStep1Title": "Masuk dengan Google",
     "landing.howStep1Body":
-      "Autentikasi aman dengan PKCE. Tanpa kata sandi, tanpa perlu daftar akun.",
+      "Autentikasi aman dengan Google OAuth. Tanpa kata sandi, tanpa perlu daftar akun terpisah.",
     "landing.howStep2Title": "Kami siapkan spreadsheet Anda",
     "landing.howStep2Body":
       "Spreadsheet “Finance_Tracker_Data” dibuat otomatis di Google Drive Anda sendiri.",
@@ -221,7 +241,24 @@ export const translations = {
       "Catat pemasukan dan pengeluaran; setiap entri langsung ditulis ke sheet Anda.",
     "landing.privacyTitle": "Data Anda tetap milik Anda",
     "landing.privacyBody":
-      "Hanya cakupan drive.file yang diminta — aplikasi hanya menyentuh spreadsheet yang dibuatnya, tidak lebih. Tanpa server, tanpa iklan. Analitik agregat oleh Google Analytics dan Vercel.",
+      "Catatan keuangan dan pengaturan tersimpan di Google Drive Anda sendiri. Tidak ada server backend aplikasi yang menyimpan data Anda. Analitik agregat oleh Google Analytics dan Vercel.",
     "landing.ctaTitle": "Mulai mencatat hari ini",
+    "changelog.title": "Catatan Rilis",
+    "changelog.subtitle": "Riwayat pembaruan dan peningkatan yang telah dirilis",
+    "settings.title": "Pengaturan",
+    "settings.subtitle":
+      "Sesuaikan zona waktu dan tanggal batas siklus pencatatan Anda.",
+    "settings.timezoneTitle": "Zona Waktu",
+    "settings.timezoneDesc":
+      "Digunakan untuk stempel waktu transaksi dan batas siklus periode pencatatan.",
+    "settings.modeAuto": "Otomatis — zona waktu browser ({zone})",
+    "settings.modeManual": "Pilih manual",
+    "settings.cutoffTitle": "Tanggal Batas Siklus Bulanan",
+    "settings.cutoffDesc":
+      "Pemasukan dan pengeluaran dicatat berdasarkan siklus tanggal ini (mis. tanggal 25 berarti periode 25 bulan lalu s/d 24 bulan ini).",
+    "settings.cutoffLabel": "Tanggal batas",
+    "settings.defaultTag": "Bawaan",
+    "settings.save": "Simpan Pengaturan",
+    "settings.errCutoff": "Tanggal batas harus berupa angka antara 1 dan 28",
   },
 };

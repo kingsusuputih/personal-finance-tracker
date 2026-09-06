@@ -11,10 +11,12 @@ import LoginPage from "./pages/LoginPage.jsx";
 import LandingPage from "./pages/LandingPage.jsx";
 import PrivacyPolicyPage from "./pages/PrivacyPolicyPage.jsx";
 import TermsOfServicePage from "./pages/TermsOfServicePage.jsx";
+import ChangelogPage from "./pages/ChangelogPage.jsx";
 import { Skeleton } from "./components/ui/Skeleton.jsx";
 
 const DashboardPage = lazy(() => import("./pages/DashboardPage.jsx"));
 const LedgerPage = lazy(() => import("./pages/LedgerPage.jsx"));
+const SettingsPage = lazy(() => import("./pages/SettingsPage.jsx"));
 
 function PageFallback() {
   return (
@@ -67,9 +69,18 @@ export default function App() {
               </Suspense>
             }
           />
+          <Route
+            path="/settings"
+            element={
+              <Suspense fallback={<PageFallback />}>
+                <SettingsPage />
+              </Suspense>
+            }
+          />
         </Route>
         <Route path="/privacy" element={<PrivacyPolicyPage />} />
         <Route path="/terms" element={<TermsOfServicePage />} />
+        <Route path="/changelog" element={<ChangelogPage />} />
         <Route path="/" element={<LandingPage />} />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>

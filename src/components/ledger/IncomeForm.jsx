@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSpreadsheet } from "../../hooks/useSpreadsheet.js";
 import { useToast } from "../ui/Toast.jsx";
 import { Button } from "../ui/Button.jsx";
@@ -6,20 +6,28 @@ import { Card } from "../ui/Card.jsx";
 import { useT } from "../../i18n/LanguageProvider.jsx";
 import { SHEETS } from "../../constants/sheets.js";
 import { serializeIncomeRow } from "../../utils/sheetsHelpers.js";
+import { formatRupiah, parseRupiah } from "../../utils/financeFormulas.js";
 import {
-  currentMonthKey,
-  formatRupiah,
-  parseRupiah,
-} from "../../utils/financeFormulas.js";
+  getEffectiveTimezone,
+  getEffectiveCutoff,
+  getCycleInfo,
+} from "../../utils/dateTime.js";
 
 export function IncomeForm() {
-  const { addTransaction } = useSpreadsheet();
+  const { addTransaction, settings } = useSpreadsheet();
   const toast = useToast();
   const t = useT();
-  const [month, setMonth] = useState(currentMonthKey());
+  const timeZone = getEffectiveTimezone(settings);
+  const cutoffDay = getEffectiveCutoff(settings);
+  const currentCycle = getCycleInfo(new Date(), timeZone, cutoffDay).cycleKey;
+  const [month, setMonth] = useState(currentCycle);
   const [amount, setAmount] = useState("");
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    setMonth((prev) => (prev ? prev : currentCycle));
+  }, [currentCycle]);
 
   const submit = async (e) => {
     e.preventDefault();

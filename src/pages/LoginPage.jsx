@@ -52,6 +52,10 @@ export default function LoginPage() {
           <Link to="/terms" className="transition-colors hover:text-accent">
             {t("legal.terms")}
           </Link>
+          <span>·</span>
+          <Link to="/changelog" className="transition-colors hover:text-accent">
+            {t("legal.changelog")}
+          </Link>
         </div>
       </div>
     </main>

@@ -39,6 +39,19 @@ export function LegalDocument({ titleKey, sections }) {
         </div>
 
         <footer className="mt-12 border-t border-rule pt-6 text-center">
+          <div className="mb-2 flex items-center justify-center gap-3 text-xs text-ink-3">
+            <Link to="/privacy" className="transition-colors hover:text-accent">
+              {t("legal.privacy")}
+            </Link>
+            <span>·</span>
+            <Link to="/terms" className="transition-colors hover:text-accent">
+              {t("legal.terms")}
+            </Link>
+            <span>·</span>
+            <Link to="/changelog" className="transition-colors hover:text-accent">
+              {t("legal.changelog")}
+            </Link>
+          </div>
           <p className="kbd text-[10px] text-ink-3">{CONTACT_EMAIL}</p>
         </footer>
       </div>

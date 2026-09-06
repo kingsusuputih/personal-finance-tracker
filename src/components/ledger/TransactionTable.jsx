@@ -4,11 +4,16 @@ import { Badge } from "../ui/Badge.jsx";
 import { Skeleton } from "../ui/Skeleton.jsx";
 import { Modal } from "../ui/Modal.jsx";
 import { Button } from "../ui/Button.jsx";
-import { useT } from "../../i18n/LanguageProvider.jsx";
+import { useI18n } from "../../i18n/LanguageProvider.jsx";
 import { useToast } from "../ui/Toast.jsx";
 import { useSpreadsheet } from "../../hooks/useSpreadsheet.js";
 import { SHEETS } from "../../constants/sheets.js";
 import { formatIDR } from "../../utils/financeFormulas.js";
+import {
+  getEffectiveTimezone,
+  transactionSortTimestamp,
+  formatTransactionTime,
+} from "../../utils/dateTime.js";
 
 const categoryTone = {
   Needs: "accent",
@@ -37,17 +42,23 @@ export function TransactionTable({
   const [sortDir, setSortDir] = useState("desc");
   const [deletingRow, setDeletingRow] = useState(null);
   const [deleting, setDeleting] = useState(false);
-  const t = useT();
+  const { lang, t } = useI18n();
   const toast = useToast();
-  const { deleteTransaction } = useSpreadsheet();
+  const { deleteTransaction, settings } = useSpreadsheet();
+  const timeZone = getEffectiveTimezone(settings);
 
   const sorted = useMemo(() => {
     return [...transactions]
-      .sort((a, b) =>
-        sortDir === "desc"
-          ? b.date.localeCompare(a.date)
-          : a.date.localeCompare(b.date),
-      )
+      .sort((a, b) => {
+        const diff =
+          sortDir === "desc"
+            ? transactionSortTimestamp(b) - transactionSortTimestamp(a)
+            : transactionSortTimestamp(a) - transactionSortTimestamp(b);
+        if (diff !== 0) return diff;
+        const rowA = Number(a.rowNumber) || 0;
+        const rowB = Number(b.rowNumber) || 0;
+        return sortDir === "desc" ? rowB - rowA : rowA - rowB;
+      })
       .slice(0, 30);
   }, [transactions, sortDir]);
 
@@ -128,9 +139,9 @@ export function TransactionTable({
       ) : (
         <>
           <ul className="divide-y divide-rule sm:hidden">
-            {sorted.map((row, i) => (
+            {sorted.map((row) => (
               <li
-                key={`${row.created_at}-${i}`}
+                key={row.rowNumber}
                 className="flex items-center justify-between gap-3 px-5 py-3">
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
@@ -139,6 +150,11 @@ export function TransactionTable({
                     </Badge>
                     <span className="kbd text-[10px] text-ink-3">
                       {row.date}
+                      {row.created_at && (
+                        <span className="ml-1 text-ink-3/80">
+                          · {formatTransactionTime(row.created_at, timeZone, lang)}
+                        </span>
+                      )}
                     </span>
                   </div>
                   {row.description && (
@@ -177,12 +193,17 @@ export function TransactionTable({
                 </tr>
               </thead>
               <tbody>
-                {sorted.map((row, i) => (
+                {sorted.map((row) => (
                   <tr
-                    key={`${row.created_at}-${i}`}
+                    key={row.rowNumber}
                     className="border-b border-rule last:border-0 transition-colors hover:bg-paper-2/60">
                     <td className="kbd whitespace-nowrap px-5 py-3 text-xs text-ink-3">
-                      {row.date}
+                      <div>{row.date}</div>
+                      {row.created_at && (
+                        <div className="text-[10px] text-ink-3/80">
+                          {formatTransactionTime(row.created_at, timeZone, lang)}
+                        </div>
+                      )}
                     </td>
                     <td className="px-5 py-3">
                       <Badge tone={categoryTone[row.category] || "neutral"}>

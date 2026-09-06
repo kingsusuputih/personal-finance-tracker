@@ -6,17 +6,19 @@ import { Card } from "../ui/Card.jsx";
 import { useT } from "../../i18n/LanguageProvider.jsx";
 import { SHEETS, EXPENSE_CATEGORIES } from "../../constants/sheets.js";
 import { serializeExpenseRow } from "../../utils/sheetsHelpers.js";
+import { formatRupiah, parseRupiah } from "../../utils/financeFormulas.js";
 import {
-  currentDateKey,
-  formatRupiah,
-  parseRupiah,
-} from "../../utils/financeFormulas.js";
+  getEffectiveTimezone,
+  currentZonedDateKey,
+} from "../../utils/dateTime.js";
 
 export function ExpenseForm({ editingRow = null, onCancelEdit }) {
-  const { addTransaction, updateTransaction } = useSpreadsheet();
+  const { addTransaction, updateTransaction, settings } = useSpreadsheet();
   const toast = useToast();
   const t = useT();
-  const [date, setDate] = useState(editingRow?.date || currentDateKey());
+  const timeZone = getEffectiveTimezone(settings);
+  const defaultDate = currentZonedDateKey(new Date(), timeZone);
+  const [date, setDate] = useState(editingRow?.date || defaultDate);
   const [category, setCategory] = useState(
     editingRow?.category || EXPENSE_CATEGORIES[0],
   );
@@ -40,7 +42,13 @@ export function ExpenseForm({ editingRow = null, onCancelEdit }) {
     }
     setError("");
     setSaving(true);
-    const rowValues = serializeExpenseRow(date, category, description, value);
+    const rowValues = serializeExpenseRow(
+      date,
+      category,
+      description,
+      value,
+      editingRow?.created_at,
+    );
     try {
       if (editingRow) {
         await updateTransaction(

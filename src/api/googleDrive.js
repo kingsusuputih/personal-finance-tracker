@@ -1,10 +1,14 @@
 import { authedRequest } from "./http.js";
+import { ensureSettingsSheet } from "./googleSheets.js";
 import {
   SPREADSHEET_NAME,
   SHEETS,
   INCOME_HEADERS,
   EXPENSE_HEADERS,
+  SETTINGS_HEADERS,
+  DEFAULT_SETTINGS,
 } from "../constants/sheets.js";
+import { serializeSettingsRow } from "../utils/sheetsHelpers.js";
 
 export async function findSpreadsheet(accessToken) {
   const q = encodeURIComponent(`name='${SPREADSHEET_NAME}' and trashed=false`);
@@ -32,6 +36,11 @@ async function writeHeaders(accessToken, spreadsheetId) {
         data: [
           { range: `'${SHEETS.INCOME}'!A1:C1`, values: [INCOME_HEADERS] },
           { range: `'${SHEETS.EXPENSES}'!A1:E1`, values: [EXPENSE_HEADERS] },
+          { range: `'${SHEETS.SETTINGS}'!A1:C1`, values: [SETTINGS_HEADERS] },
+          {
+            range: `'${SHEETS.SETTINGS}'!A2:C2`,
+            values: [serializeSettingsRow(DEFAULT_SETTINGS)],
+          },
         ],
       }),
     },
@@ -51,6 +60,7 @@ export async function createSpreadsheet(accessToken) {
         sheets: [
           { properties: { title: SHEETS.INCOME, index: 0 } },
           { properties: { title: SHEETS.EXPENSES, index: 1 } },
+          { properties: { title: SHEETS.SETTINGS, index: 2 } },
         ],
       }),
     },
@@ -63,6 +73,9 @@ export async function createSpreadsheet(accessToken) {
 
 export async function getOrCreateSpreadsheet(accessToken) {
   const existing = await findSpreadsheet(accessToken);
-  if (existing) return existing;
+  if (existing) {
+    await ensureSettingsSheet(accessToken, existing);
+    return existing;
+  }
   return createSpreadsheet(accessToken);
 }

@@ -1,6 +1,55 @@
 import { authedRequest } from "./http.js";
+import {
+  SHEETS,
+  SETTINGS_HEADERS,
+  DEFAULT_SETTINGS,
+} from "../constants/sheets.js";
+import { serializeSettingsRow } from "../utils/sheetsHelpers.js";
 
 const sheetIdCache = {};
+
+export async function ensureSettingsSheet(accessToken, spreadsheetId) {
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}?fields=sheets.properties(sheetId,title)`;
+  const res = await authedRequest(accessToken, url);
+  if (!res.ok) throw new Error("Failed to load spreadsheet metadata");
+  const data = await res.json();
+  const existing = (data.sheets || []).find(
+    (s) => s.properties.title === SHEETS.SETTINGS,
+  );
+  if (!existing) {
+    const addRes = await authedRequest(
+      accessToken,
+      `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}:batchUpdate`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          requests: [{ addSheet: { properties: { title: SHEETS.SETTINGS } } }],
+        }),
+      },
+    );
+    if (!addRes.ok) throw new Error("Failed to create Settings sheet");
+    const writeRes = await authedRequest(
+      accessToken,
+      `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values:batchUpdate`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          valueInputOption: "RAW",
+          data: [
+            { range: `'${SHEETS.SETTINGS}'!A1:C1`, values: [SETTINGS_HEADERS] },
+            {
+              range: `'${SHEETS.SETTINGS}'!A2:C2`,
+              values: [serializeSettingsRow(DEFAULT_SETTINGS)],
+            },
+          ],
+        }),
+      },
+    );
+    if (!writeRes.ok) throw new Error("Failed to initialize Settings sheet");
+  }
+}
 
 async function resolveSheetId(accessToken, spreadsheetId, sheetName) {
   const cacheKey = `${spreadsheetId}:${sheetName}`;

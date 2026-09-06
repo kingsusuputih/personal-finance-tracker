@@ -9,6 +9,7 @@ import { useT } from "../../i18n/LanguageProvider.jsx";
 const navItems = [
   { to: "/dashboard", labelKey: "nav.dashboard" },
   { to: "/ledger", labelKey: "nav.ledger" },
+  { to: "/settings", labelKey: "nav.settings" },
 ];
 
 export function Sidebar() {
