@@ -148,18 +148,27 @@ export default function LandingPage() {
             <Link to="/changelog" className="transition-colors hover:text-accent">
               {t("legal.changelog")}
             </Link>
-            <span>·</span>
-            <a
-              href={DONATE_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="transition-colors hover:text-accent">
-              {t("legal.donate")}
-            </a>
           </div>
         </div>
       </footer>
       <SocialProof onCountLoaded={setUserCount} />
+      <a
+        href={DONATE_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={t("nav.donate")}
+        className="fixed bottom-6 right-6 z-50 inline-flex h-11 items-center gap-2 rounded-full bg-accent px-4 text-xs font-medium text-accent-ink shadow-lg transition-all duration-(--dur-base) hover:bg-accent-strong hover:shadow-xl active:translate-y-px sm:h-12 sm:px-5 sm:text-sm">
+        <svg
+          viewBox="0 0 24 24"
+          className="h-4 w-4"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          aria-hidden="true">
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+        </svg>
+        {t("nav.donate")}
+      </a>
     </main>
   );
 }
