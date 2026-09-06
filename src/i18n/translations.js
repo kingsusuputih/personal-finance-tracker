@@ -130,6 +130,25 @@ export const translations = {
     "settings.defaultTag": "Default",
     "settings.save": "Save Settings",
     "settings.errCutoff": "Cutoff day must be an integer between 1 and 28",
+    "landing.userCount": "{count} users tracking their finances",
+    "landing.joinedToast": "{name} has joined",
+    "landing.toastTag": "Community",
+    "consent.title": "Show on Landing Page?",
+    "consent.desc":
+      "Help others trust Finance Tracker by optionally displaying your masked name (e.g. H*** A***) in community updates.",
+    "consent.preview": "Preview: {name}",
+    "consent.agree": "Show my masked name",
+    "consent.notNow": "Not now",
+    "consent.save": "Save Preference",
+    "settings.communityTitle": "Community & Social Proof",
+    "settings.communityDesc":
+      "Optionally display your masked name on the landing page to encourage new users.",
+    "settings.showName": "Show my masked name on landing page ({name})",
+    "settings.deleteRegistry": "Delete my registry record",
+    "settings.deleteRegistryConfirm": "Delete record",
+    "settings.deleteRegistryDesc":
+      "This removes your account from the user count and community display. Your Google Sheet data will not be touched.",
+    "settings.deleteRegistrySuccess": "Registry record deleted",
   },
   id: {
     "app.name": "Finance Tracker",
@@ -262,5 +281,24 @@ export const translations = {
     "settings.defaultTag": "Bawaan",
     "settings.save": "Simpan Pengaturan",
     "settings.errCutoff": "Tanggal batas harus berupa angka antara 1 dan 28",
+    "landing.userCount": "{count} pengguna telah mencatat keuangan",
+    "landing.joinedToast": "{name} telah bergabung",
+    "landing.toastTag": "Komunitas",
+    "consent.title": "Tampilkan di Landing Page?",
+    "consent.desc":
+      "Bantu pengguna lain mempercayai Finance Tracker dengan menampilkan nama tersamarkan Anda (cth: H*** A***) di update komunitas.",
+    "consent.preview": "Pratinjau: {name}",
+    "consent.agree": "Tampilkan nama tersamarkan saya",
+    "consent.notNow": "Jangan sekarang",
+    "consent.save": "Simpan Pilihan",
+    "settings.communityTitle": "Komunitas & Bukti Sosial",
+    "settings.communityDesc":
+      "Tampilkan nama tersamarkan Anda secara opsional di landing page untuk memotivasi pengguna baru.",
+    "settings.showName": "Tampilkan nama tersamarkan saya di landing page ({name})",
+    "settings.deleteRegistry": "Hapus data pendaftaran saya",
+    "settings.deleteRegistryConfirm": "Hapus data",
+    "settings.deleteRegistryDesc":
+      "Ini menghapus akun Anda dari hitungan pengguna dan tampilan komunitas. Data di Google Sheet Anda tidak akan disentuh.",
+    "settings.deleteRegistrySuccess": "Data pendaftaran berhasil dihapus",
   },
 };

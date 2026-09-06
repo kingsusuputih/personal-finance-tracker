@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useT } from "../i18n/LanguageProvider.jsx";
 import { LangToggle } from "../components/ui/LangToggle.jsx";
 import { Card } from "../components/ui/Card.jsx";
+import { SocialProof, UserCountBadge } from "../components/landing/SocialProof.jsx";
 
 const featureKeys = [
   { title: "landing.featAllocTitle", body: "landing.featAllocBody" },
@@ -17,6 +19,7 @@ const steps = [
 
 export default function LandingPage() {
   const t = useT();
+  const [userCount, setUserCount] = useState(null);
 
   return (
     <main className="min-h-dvh">
@@ -57,6 +60,9 @@ export default function LandingPage() {
             className="mt-8 inline-flex h-12 items-center justify-center rounded-btn bg-accent px-8 text-base font-medium text-accent-ink transition-colors hover:bg-accent-strong">
             {t("landing.signIn")}
           </Link>
+          <div>
+            <UserCountBadge count={userCount} />
+          </div>
         </div>
       </section>
 
@@ -144,6 +150,7 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
+      <SocialProof onCountLoaded={setUserCount} />
     </main>
   );
 }

@@ -4,10 +4,17 @@ import { useT } from "../i18n/LanguageProvider.jsx";
 import { useToast } from "../components/ui/Toast.jsx";
 import { Card } from "../components/ui/Card.jsx";
 import { Button } from "../components/ui/Button.jsx";
+import { Modal } from "../components/ui/Modal.jsx";
 import { Sidebar } from "../components/layout/Sidebar.jsx";
 import { Navbar } from "../components/layout/Navbar.jsx";
 import { BottomNav } from "../components/layout/BottomNav.jsx";
 import { Skeleton } from "../components/ui/Skeleton.jsx";
+import { useAuthStore } from "../store/authStore.js";
+import {
+  updatePublicationPreference,
+  deleteRegistryUser,
+  registerUser,
+} from "../api/registry.js";
 import {
   detectBrowserTimezone,
   getSupportedTimezones,
@@ -17,6 +24,7 @@ import {
 export default function SettingsPage() {
   const { ensureSpreadsheet, loadData, provisioning, loading, settings, saveSettings } =
     useSpreadsheet();
+  const accessToken = useAuthStore((s) => s.accessToken);
   const t = useT();
   const toast = useToast();
 
@@ -28,11 +36,28 @@ export default function SettingsPage() {
   const [cutoff, setCutoff] = useState(String(getEffectiveCutoff(settings)));
   const [saving, setSaving] = useState(false);
 
+  const [publishName, setPublishName] = useState(false);
+  const [maskedName, setMaskedName] = useState("");
+  const [savingCommunity, setSavingCommunity] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [deletingRegistry, setDeletingRegistry] = useState(false);
+
   useEffect(() => {
     ensureSpreadsheet().then((id) => {
       if (id) loadData();
     });
   }, [ensureSpreadsheet, loadData]);
+
+  useEffect(() => {
+    if (accessToken) {
+      registerUser(accessToken).then((res) => {
+        if (res) {
+          setPublishName(Boolean(res.publishName));
+          if (res.maskedName) setMaskedName(res.maskedName);
+        }
+      });
+    }
+  }, [accessToken]);
 
   useEffect(() => {
     if (settings) {
@@ -61,6 +86,35 @@ export default function SettingsPage() {
       toast.error(err.message || t("toast.error"));
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleToggleCommunity = async (nextVal) => {
+    if (!accessToken) return;
+    setSavingCommunity(true);
+    try {
+      const res = await updatePublicationPreference(accessToken, nextVal, "2026-09-06");
+      setPublishName(Boolean(res.publishName));
+      toast.success(t("toast.saved"));
+    } catch (err) {
+      toast.error(err.message || t("toast.error"));
+    } finally {
+      setSavingCommunity(false);
+    }
+  };
+
+  const handleDeleteRegistry = async () => {
+    if (!accessToken) return;
+    setDeletingRegistry(true);
+    try {
+      await deleteRegistryUser(accessToken);
+      setPublishName(false);
+      setDeleteModalOpen(false);
+      toast.success(t("settings.deleteRegistrySuccess"));
+    } catch (err) {
+      toast.error(err.message || t("toast.error"));
+    } finally {
+      setDeletingRegistry(false);
     }
   };
 
@@ -174,12 +228,73 @@ export default function SettingsPage() {
                 <Button type="submit" loading={saving} className="w-full">
                   {t("settings.save")}
                 </Button>
+
+                <Card className="p-5">
+                  <h2 className="text-base font-semibold text-ink">
+                    {t("settings.communityTitle")}
+                  </h2>
+                  <p className="mt-1 text-xs text-ink-3">
+                    {t("settings.communityDesc")}
+                  </p>
+
+                  <div className="mt-4 space-y-4">
+                    <label className="flex items-start gap-3">
+                      <input
+                        type="checkbox"
+                        checked={publishName}
+                        disabled={savingCommunity}
+                        onChange={(e) => handleToggleCommunity(e.target.checked)}
+                        className="mt-0.5 h-4 w-4 rounded border-rule-2 accent-accent"
+                      />
+                      <div className="text-sm">
+                        <span className="text-ink">
+                          {t("settings.showName", { name: maskedName || "H*** A***" })}
+                        </span>
+                      </div>
+                    </label>
+
+                    <div className="border-t border-rule pt-4">
+                      <Button
+                        type="button"
+                        variant="danger"
+                        size="sm"
+                        onClick={() => setDeleteModalOpen(true)}>
+                        {t("settings.deleteRegistry")}
+                      </Button>
+                    </div>
+                  </div>
+                </Card>
               </form>
             )}
           </div>
         </main>
       </div>
       <BottomNav />
+
+      <Modal
+        open={deleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        title={t("settings.deleteRegistry")}
+        footer={
+          <>
+            <Button
+              variant="ghost"
+              onClick={() => setDeleteModalOpen(false)}
+              disabled={deletingRegistry}>
+              {t("common.cancel")}
+            </Button>
+            <Button
+              variant="danger"
+              onClick={handleDeleteRegistry}
+              loading={deletingRegistry}>
+              {t("settings.deleteRegistryConfirm")}
+            </Button>
+          </>
+        }>
+        <p className="text-sm leading-relaxed text-ink-2">
+          {t("settings.deleteRegistryDesc")}
+        </p>
+      </Modal>
     </div>
   );
 }

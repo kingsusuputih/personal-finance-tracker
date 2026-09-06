@@ -12,6 +12,9 @@ import { Skeleton } from "../components/ui/Skeleton.jsx";
 import { useI18n } from "../i18n/LanguageProvider.jsx";
 import { formatIDR } from "../utils/financeFormulas.js";
 import { formatDisplayDate } from "../utils/dateTime.js";
+import { PublicationConsent } from "../components/auth/PublicationConsent.jsx";
+import { registerUser } from "../api/registry.js";
+import { useAuthStore } from "../store/authStore.js";
 
 function EyeIcon() {
   return (
@@ -52,16 +55,34 @@ function EyeOffIcon() {
 export default function DashboardPage() {
   const { ensureSpreadsheet, loadData, provisioning, loading } =
     useSpreadsheet();
+  const accessToken = useAuthStore((s) => s.accessToken);
   const calc = useFinanceCalc();
   const { lang, t } = useI18n();
   const [showIncome, setShowIncome] = useState(false);
   const [showExpenses, setShowExpenses] = useState(false);
+  const [consentOpen, setConsentOpen] = useState(false);
+  const [maskedName, setMaskedName] = useState("");
 
   useEffect(() => {
     ensureSpreadsheet().then((id) => {
       if (id) loadData();
     });
   }, [ensureSpreadsheet, loadData]);
+
+  useEffect(() => {
+    if (accessToken && !localStorage.getItem("pft_consent_prompted")) {
+      registerUser(accessToken).then((res) => {
+        if (res) {
+          setMaskedName(res.maskedName || "");
+          if (!res.publishName) {
+            setConsentOpen(true);
+          } else {
+            localStorage.setItem("pft_consent_prompted", "true");
+          }
+        }
+      });
+    }
+  }, [accessToken]);
 
   const allocationCards = [
     {
@@ -234,6 +255,18 @@ export default function DashboardPage() {
         </main>
       </div>
       <BottomNav />
+      <PublicationConsent
+        open={consentOpen}
+        maskedName={maskedName}
+        onClose={() => {
+          localStorage.setItem("pft_consent_prompted", "true");
+          setConsentOpen(false);
+        }}
+        onSaved={() => {
+          localStorage.setItem("pft_consent_prompted", "true");
+          setConsentOpen(false);
+        }}
+      />
     </div>
   );
 }

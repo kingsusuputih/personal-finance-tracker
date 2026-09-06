@@ -4,18 +4,22 @@
 
 # Finance Tracker
 
-Dashboard keuangan pribadi, gratis — data tersimpan di Google Drive Anda sendiri.
+Dashboard keuangan pribadi, gratis — data keuangan tersimpan di Google Drive Anda sendiri.
 
-Finance Tracker adalah aplikasi web serverless (SPA) untuk mencatat pemasukan dan pengeluaran serta menghitung target keuangan, tanpa backend dan tanpa biaya. Setiap pengguna masuk dengan akun Google miliknya; aplikasi membuat spreadsheet `Finance_Tracker_Data` otomatis di Google Drive pengguna dan menulis semua data langsung ke spreadsheet tersebut. Tidak ada server pihak ketiga yang menyimpan data Anda.
+Finance Tracker adalah aplikasi web untuk mencatat pemasukan dan pengeluaran serta menghitung target keuangan. Setiap pengguna masuk dengan akun Google miliknya; aplikasi membuat spreadsheet `Finance_Tracker_Data` otomatis di Google Drive pengguna dan menulis semua data keuangan langsung ke spreadsheet tersebut. Registry pengguna pseudonim di Supabase (wilayah Singapura) digunakan semata-mata untuk mencatat jumlah pengguna unik dan menampilkan bukti sosial komunitas tersamarkan (`H*** A***`) secara opsional.
 
 ## Fitur
 
-- Masuk dengan Google (OAuth 2.0 PKCE — tanpa client secret)
+- Masuk dengan Google OAuth 2.0
 - Spreadsheet otomatis dibuat di Google Drive Anda (`drive.file` scope, hanya file yang dibuat aplikasi)
 - Mencatat pemasukan bulanan dan pengeluaran harian per kategori
+- Siklus tanggal gajian kustom (1–28, default 25) dan deteksi/pilihan zona waktu IANA
+- Fitur privasi untuk menyembunyikan nominal pemasukan dan pengeluaran di dasbor
 - Alokasi 50 / 30 / 20 (Kebutuhan 50%, Investasi 30%, Gaya Hidup 20%)
 - Target dana: Dana Darurat 6× dan Dana Pensiun 300× pengeluaran bulanan
 - Grafik pengeluaran per kategori (Apache ECharts)
+- Penghitungan jumlah pengguna aktif dan notifikasi pendaftar baru tersamarkan di landing page
+- Halaman Catatan Rilis (Changelog) publik dan Pengaturan terintegrasi
 - Dukungan dua bahasa: Indonesia & English
 - Analitik agregat: Vercel Web Analytics & Google Analytics (GA4)
 
@@ -29,19 +33,21 @@ Finance Tracker adalah aplikasi web serverless (SPA) untuk mencatat pemasukan da
 | Routing | React Router DOM 6 |
 | State Management | Zustand |
 | Grafik | Apache ECharts 6 |
-| Autentikasi | @react-oauth/google (PKCE) |
-| Database | Google Sheets API v4 (di Drive pengguna) |
+| Autentikasi | @react-oauth/google |
+| Database Keuangan | Google Sheets API v4 (di Drive pengguna) |
+| Registry Komunitas | Supabase Postgres & Edge Functions (ap-southeast-1) |
 | Analytics | @vercel/analytics · Google Analytics |
 | Deployment | Vercel |
 
 ## Cara Kerja & Privasi
 
-1. Pengguna masuk dengan akun Google via PKCE.
+1. Pengguna masuk dengan akun Google.
 2. Aplikasi mencari/membuat spreadsheet `Finance_Tracker_Data` di Google Drive pengguna.
-3. Pemasukan & pengeluaran ditulis langsung ke spreadsheet tersebut.
-4. Semua perhitungan (50/30/20, target dana) dilakukan di sisi klien.
+3. Pemasukan, pengeluaran, dan pengaturan siklus ditulis langsung ke spreadsheet tersebut.
+4. Semua perhitungan (50/30/20, target dana, siklus gajian) dilakukan di sisi klien.
+5. Akun unik dicatat secara anonim (HMAC) di registry Supabase untuk menampilkan total pengguna di landing page. Pengguna dapat memilih untuk menampilkan nama tersamarkan atau menghapus datanya kapan saja di Pengaturan.
 
-Aplikasi hanya meminta scope minimal `drive.file` — tidak dapat mengakses file lain di Drive, email, atau data Google lain. Token OAuth disimpan sementara dan dicabut saat keluar. Tanpa backend, tanpa iklan.
+Data keuangan tidak pernah keluar dari Google Drive Anda. Token OAuth disimpan di penyimpanan browser lokal dan dicabut saat keluar. Tanpa iklan.
 
 ## Persiapan GCP
 
@@ -73,13 +79,14 @@ Jalankan server pengembangan:
 npm run dev
 ```
 
-Buka `http://localhost:5173`.
+Buka `http://localhost:5174`.
 
 ## Build & Preview
 
 ```bash
 npm run build
 npm run preview
+npm run check
 ```
 
 ## Deploy ke Vercel
@@ -87,18 +94,20 @@ npm run preview
 1. Import repo ini ke [Vercel](https://vercel.com/).
 2. Tambahkan env variable `VITE_GOOGLE_CLIENT_ID`.
 3. Tambahkan production URL pada Authorized JS Origins & Redirect URIs di GCP.
-4. Deploy. (SPA rewrite sudah dikonfigurasi di `vercel.json`.)
+4. Deploy. (SPA rewrite dan proxy registry sudah dikonfigurasi di `vercel.json`.)
 
 ## Rute
 
 | Rute | Keterangan |
 |---|---|
-| `/` | Landing page |
+| `/` | Landing page dengan statistik komunitas |
 | `/login` | Masuk dengan Google |
 | `/dashboard` | Dasbor alokasi & target dana |
 | `/ledger` | Pencatatan pemasukan & pengeluaran |
+| `/settings` | Pengaturan zona waktu & tanggal gajian |
 | `/privacy` | Kebijakan Privasi |
 | `/terms` | Ketentuan Layanan |
+| `/changelog` | Catatan Rilis |
 
 ## Struktur Folder
 

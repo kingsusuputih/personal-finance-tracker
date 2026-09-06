@@ -69,6 +69,11 @@ A React-based SPA that authenticates via Google SSO, automatically provisions a 
 - **Decision:** Use Zustand for global state (auth, finance data).
 - **Rationale:** Lightweight, no boilerplate, works well for this scale.
 
+### ADR-005: Pseudonymous User Registry via Supabase (Social Proof & User Count)
+- **Decision:** Use Supabase Edge Functions + private Postgres table in `ap-southeast-1` to maintain an anonymous count of unique Google accounts using an irreversible cryptographic hash: `identity_hash = HMAC-SHA256(REGISTRY_PEPPER, google_sub)`.
+- **Rationale:** The app's financial data is 100% decentralized in user Google Sheets, meaning no central count existed. Storing only a cryptographic hash protects user privacy while allowing an authentic, deduplicated community count and optional masked name (`H*** A***`) social proof.
+- **Consequence:** Zero financial data touches Supabase. RLS strictly denies anon/authenticated access; only the Edge Function interacts with the database. Users can opt out or delete their registry record in Settings.
+
 ---
 
 ## 4. Tech Stack
@@ -79,7 +84,9 @@ A React-based SPA that authenticates via Google SSO, automatically provisions a 
 | Build Tool | Vite | ^5.x |
 | Styling | Tailwind CSS | ^4.x |
 | Auth | @react-oauth/google | latest |
-| Google API Client | googleapis (browser) via gapi | v3 |
+| Financial Database | Google Sheets API | v4 |
+| Storage | User's Google Drive | — |
+| Community Registry | Supabase Postgres & Edge Functions | ap-southeast-1 |
 | State Management | Zustand | ^4.x |
 | Charts | Apache ECharts | ^6.x (modular import) |
 | Routing | React Router DOM | ^6.x |

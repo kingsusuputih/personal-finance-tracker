@@ -6,11 +6,15 @@ export const privacy = {
   en: [
     {
       title: "Overview",
-      body: `Finance Tracker is a client-side web app with no backend server and no accounts on our infrastructure. The data you enter is written directly to a spreadsheet stored in your own Google Drive. This page explains what information the app handles and how.`,
+      body: `Finance Tracker is a personal finance app where your income and expense records are written directly to a spreadsheet stored in your own Google Drive. A minimal pseudonymous user registry is maintained on Supabase (Singapore region) solely to count unique users and optionally display masked names with your consent. This page explains what information the app handles and how.`,
     },
     {
       title: "What we handle",
-      body: `When you sign in with Google, the app receives your Google account's basic profile (name, email address, and profile picture) to identify you and display who is signed in. Your income, expenses, and personal settings (time zone mode, IANA time zone, and monthly cutoff day) are stored in your own Google Drive spreadsheet (Finance_Tracker_Data). Transactions receive an ISO 8601 UTC creation timestamp; editing a transaction preserves its original creation timestamp.`,
+      body: `When you sign in with Google, the app receives your Google account's basic profile (name, email address, and profile picture) to identify you and display who is signed in. Your financial entries (income, expenses, and personal tracking settings) are stored solely in your own Google Drive spreadsheet (Finance_Tracker_Data). Transactions receive an ISO 8601 UTC creation timestamp; editing a transaction preserves its original timestamp.`,
+    },
+    {
+      title: "User registry & community proof",
+      body: `To track the total number of users who use Finance Tracker, a one-way cryptographic hash of your Google account identifier (HMAC-SHA-256) is recorded in a private database hosted on Supabase (Singapore region). We never store your email, password, or financial records in this database. If you explicitly opt in, a masked version of your name (e.g. H*** A***) may be displayed on the landing page community updates. You can change this preference or delete your registry record at any time in Settings.`,
     },
     {
       title: "Google permissions",
@@ -18,7 +22,7 @@ export const privacy = {
     },
     {
       title: "Authentication tokens & local storage",
-      body: `Your Google OAuth access token and basic profile are kept in your browser's local storage so your session survives page reloads. The token is transmitted directly to Google APIs and is never sent to or stored by any app-operated server. When you sign out, the local token and profile are cleared, and revocation is requested from Google.`,
+      body: `Your Google OAuth access token and basic profile are kept in your browser's local storage so your session survives page reloads. The token is transmitted directly to Google APIs and is never stored on any app-operated server. When you sign out, the local token and profile are cleared, and revocation is requested from Google.`,
     },
     {
       title: "Tracking periods & time zones",
@@ -26,11 +30,11 @@ export const privacy = {
     },
     {
       title: "Third parties & analytics",
-      body: `Beyond Google (Sign-in, Drive, and Sheets APIs), the app uses aggregate web analytics: Google Analytics (GA4) and Vercel Web Analytics. These services collect standard usage and device statistics under their respective privacy policies. Your financial records are stored only in your Google Sheet and are not sent to analytics services. The app does not run advertising.`,
+      body: `Third-party services used by the app include Google (Sign-in, Drive, and Sheets APIs), Supabase (Singapore region, for unique user registry and public community count), and web analytics (Vercel Web Analytics and Google Analytics). These services operate under their respective privacy policies. Your financial records are stored only in your Google Sheet and are never transmitted to analytics or registry services. The app does not run advertising.`,
     },
     {
       title: "Your control & deletion",
-      body: `Because your data lives in your own Google Drive, you remain in full control. Delete the "Finance_Tracker_Data" spreadsheet from your Drive to erase all financial records and settings. Signing out clears local browser storage, and removing app access in your Google Account security settings prevents future sign-ins until reauthorized.`,
+      body: `Because your financial data lives in your own Google Drive, you remain in full control. Delete the "Finance_Tracker_Data" spreadsheet from your Drive to erase all financial records and settings. You can delete your pseudonymous registry record in the app Settings. Signing out clears local browser storage, and removing app access in your Google Account security settings prevents future sign-ins until reauthorized.`,
     },
     {
       title: "Contact",
@@ -44,11 +48,15 @@ export const privacy = {
   id: [
     {
       title: "Ringkasan",
-      body: `Finance Tracker adalah aplikasi web sisi-klien tanpa server backend dan tanpa akun di infrastruktur kami. Data yang Anda masukkan ditulis langsung ke spreadsheet yang tersimpan di Google Drive Anda sendiri. Halaman ini menjelaskan informasi apa saja yang ditangani aplikasi dan bagaimana caranya.`,
+      body: `Finance Tracker adalah aplikasi keuangan pribadi di mana catatan pemasukan dan pengeluaran Anda ditulis langsung ke spreadsheet yang tersimpan di Google Drive Anda sendiri. Registry pengguna pseudonim minimal dikelola di Supabase (wilayah Singapura) semata-mata untuk menghitung pengguna unik dan secara opsional menampilkan nama tersamarkan atas persetujuan Anda. Halaman ini menjelaskan informasi apa saja yang ditangani aplikasi dan bagaimana caranya.`,
     },
     {
       title: "Data yang kami tangani",
-      body: `Saat Anda masuk dengan Google, aplikasi menerima profil dasar akun Google Anda (nama, alamat email, dan foto profil) untuk mengidentifikasi dan menampilkan siapa yang sedang masuk. Catatan pemasukan, pengeluaran, dan pengaturan pribadi Anda (mode zona waktu, zona waktu IANA, dan tanggal batas siklus bulanan) tersimpan di spreadsheet Google Drive Anda sendiri (Finance_Tracker_Data). Transaksi memiliki stempel waktu pembuatan ISO 8601 UTC; mengubah transaksi tetap mempertahankan stempel waktu aslinya.`,
+      body: `Saat Anda masuk dengan Google, aplikasi menerima profil dasar akun Google Anda (nama, alamat email, dan foto profil) untuk mengidentifikasi dan menampilkan siapa yang sedang masuk. Catatan keuangan Anda (pemasukan, pengeluaran, dan pengaturan siklus) tersimpan hanya di spreadsheet Google Drive Anda sendiri (Finance_Tracker_Data). Transaksi memiliki stempel waktu pembuatan ISO 8601 UTC; mengubah transaksi tetap mempertahankan stempel waktu aslinya.`,
+    },
+    {
+      title: "Registry pengguna & bukti sosial komunitas",
+      body: `Untuk mencatat jumlah pengguna yang menggunakan Finance Tracker, hash kriptografi satu arah dari ID akun Google Anda (HMAC-SHA-256) dicatat di database privat yang di-hosting di Supabase (wilayah Singapura). Kami tidak pernah menyimpan email, kata sandi, atau data keuangan Anda di database ini. Jika Anda secara eksplisit setuju, nama Anda dalam format tersamarkan (mis. H*** A***) dapat ditampilkan pada pembaruan komunitas di landing page. Anda dapat mengubah pilihan ini atau menghapus data registry Anda kapan saja di Pengaturan.`,
     },
     {
       title: "Izin Google",
@@ -56,7 +64,7 @@ export const privacy = {
     },
     {
       title: "Token autentikasi & penyimpanan lokal",
-      body: `Token akses OAuth Google dan profil dasar Anda disimpan di penyimpanan lokal browser agar sesi Anda tetap aktif saat memuat ulang halaman. Token dikirim langsung ke API Google dan tidak pernah dikirim ke atau disimpan oleh server yang dioperasikan aplikasi. Saat Anda keluar, token dan profil lokal dihapus, serta pencabutan token dimintakan ke Google.`,
+      body: `Token akses OAuth Google dan profil dasar Anda disimpan di penyimpanan lokal browser agar sesi Anda tetap aktif saat memuat ulang halaman. Token dikirim langsung ke API Google dan tidak pernah disimpan di server yang dioperasikan aplikasi. Saat Anda keluar, token dan profil lokal dihapus, serta pencabutan token dimintakan ke Google.`,
     },
     {
       title: "Periode pencatatan & zona waktu",
@@ -64,11 +72,11 @@ export const privacy = {
     },
     {
       title: "Pihak ketiga & analitik",
-      body: `Selain Google (API Sign-in, Drive, dan Sheets), aplikasi menggunakan analitik web agregat: Google Analytics (GA4) dan Vercel Web Analytics. Layanan ini mengumpulkan statistik penggunaan dan perangkat standar sesuai kebijakan privasi masing-masing. Catatan keuangan Anda hanya tersimpan di Google Sheet Anda dan tidak dikirim ke layanan analitik. Aplikasi tidak menjalankan iklan.`,
+      body: `Pihak ketiga yang digunakan meliputi Google (API Sign-in, Drive, dan Sheets), Supabase (wilayah Singapura, untuk registry pengguna dan hitungan komunitas), serta analitik web (Vercel Web Analytics dan Google Analytics). Layanan ini beroperasi sesuai kebijakan privasi masing-masing. Catatan keuangan Anda hanya tersimpan di Google Sheet Anda dan tidak dikirim ke layanan registry maupun analitik. Aplikasi tidak menjalankan iklan.`,
     },
     {
       title: "Kendali & penghapusan data Anda",
-      body: `Karena data Anda tersimpan di Google Drive Anda sendiri, Anda memegang kendali penuh. Hapus spreadsheet "Finance_Tracker_Data" dari Drive Anda untuk menghapus seluruh catatan keuangan dan pengaturan. Keluar akan membersihkan penyimpanan lokal browser, dan menghapus akses aplikasi di pengaturan keamanan Akun Google Anda akan memblokir akses masuk sampai Anda mengotorisasinya kembali.`,
+      body: `Karena data keuangan Anda tersimpan di Google Drive Anda sendiri, Anda memegang kendali penuh. Hapus spreadsheet "Finance_Tracker_Data" dari Drive Anda untuk menghapus seluruh catatan keuangan dan pengaturan. Anda dapat menghapus data registry Anda di menu Pengaturan. Keluar akan membersihkan penyimpanan lokal browser, dan menghapus akses aplikasi di pengaturan keamanan Akun Google Anda akan memblokir akses masuk sampai Anda mengotorisasinya kembali.`,
     },
     {
       title: "Kontak",
@@ -89,7 +97,7 @@ export const terms = {
     },
     {
       title: "The service",
-      body: `Finance Tracker is a free, serverless personal finance dashboard. It authenticates you with Google, creates and manages a spreadsheet in your Google Drive, and reads and writes your income, expense records, and tracking preferences directly to that spreadsheet. Calculations and tracking cycles follow your configured time zone and cutoff settings. The app is provided "as is" without any paid tier or hosted backend.`,
+      body: `Finance Tracker is a personal finance tool. It authenticates you with Google, creates and manages a spreadsheet in your Google Drive, and reads and writes your income, expense records, and tracking preferences directly to that spreadsheet. A pseudonymous registry records unique users on Supabase (Singapore region) to provide community metrics, and optional masked names may appear in community social proof. The app is provided "as is" without financial advisory representations.`,
     },
     {
       title: "Your responsibilities",
@@ -123,7 +131,7 @@ export const terms = {
     },
     {
       title: "Layanan",
-      body: `Finance Tracker adalah dashboard keuangan pribadi gratis tanpa server. Aplikasi mengautentikasi Anda dengan Google, membuat dan mengelola spreadsheet di Google Drive Anda, serta membaca dan menulis catatan pemasukan, pengeluaran, dan preferensi pencatatan langsung ke spreadsheet tersebut. Perhitungan dan siklus pencatatan mengikuti pengaturan zona waktu dan tanggal batas Anda. Aplikasi disediakan "apa adanya" tanpa tier berbayar atau backend yang di-hosting.`,
+      body: `Finance Tracker adalah alat pencatatan keuangan pribadi. Aplikasi mengautentikasi Anda dengan Google, membuat dan mengelola spreadsheet di Google Drive Anda, serta membaca dan menulis catatan pemasukan, pengeluaran, dan preferensi pencatatan langsung ke spreadsheet tersebut. Registry pseudonim mencatat pengguna unik di Supabase (wilayah Singapura) untuk menyajikan metrik komunitas, dan nama tersamarkan dapat ditampilkan pada bukti sosial komunitas atas persetujuan Anda. Aplikasi disediakan "apa adanya" tanpa representasi nasihat keuangan.`,
     },
     {
       title: "Tanggung jawab Anda",

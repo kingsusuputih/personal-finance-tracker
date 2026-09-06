@@ -114,4 +114,23 @@ assert.deepEqual(defaultParsed, {
   cutoff_day: 25,
 });
 
+function maskTestName(name) {
+  if (!name || typeof name !== "string") return "Anonymous";
+  const clean = name.normalize("NFKC").trim();
+  if (!clean) return "Anonymous";
+  const words = clean.split(/\s+/).filter(Boolean).slice(0, 2);
+  if (!words.length) return "Anonymous";
+  return words
+    .map((w) => {
+      const firstChar = Array.from(w)[0]?.toUpperCase() || "";
+      return `${firstChar}***`;
+    })
+    .join(" ");
+}
+
+assert.equal(maskTestName("Harsa Aditya"), "H*** A***");
+assert.equal(maskTestName("John Doe Smith"), "J*** D***");
+assert.equal(maskTestName("Budi"), "B***");
+assert.equal(maskTestName(""), "Anonymous");
+
 console.log("self-check passed");

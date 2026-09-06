@@ -1,0 +1,2 @@
+[functions.registry]
+verify_jwt = false
