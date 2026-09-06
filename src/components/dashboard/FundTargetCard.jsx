@@ -3,7 +3,12 @@ import { Badge } from "../ui/Badge.jsx";
 import { useT } from "../../i18n/LanguageProvider.jsx";
 import { formatIDR } from "../../utils/financeFormulas.js";
 
-export function FundTargetCard({ label, multiplier, targetAmount }) {
+export function FundTargetCard({
+  label,
+  multiplier,
+  targetAmount,
+  showAmount = true,
+}) {
   const t = useT();
   return (
     <Card className="p-5">
@@ -15,7 +20,7 @@ export function FundTargetCard({ label, multiplier, targetAmount }) {
         </Badge>
       </div>
       <p className="amount mt-3 text-2xl font-semibold text-ink md:text-3xl">
-        {formatIDR(targetAmount)}
+        {showAmount ? formatIDR(targetAmount) : "••••••••"}
       </p>
     </Card>
   );

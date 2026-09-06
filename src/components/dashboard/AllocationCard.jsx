@@ -3,7 +3,14 @@ import { Badge } from "../ui/Badge.jsx";
 import { useT } from "../../i18n/LanguageProvider.jsx";
 import { formatIDR } from "../../utils/financeFormulas.js";
 
-export function AllocationCard({ label, percent, targetAmount, actualAmount }) {
+export function AllocationCard({
+  label,
+  percent,
+  targetAmount,
+  actualAmount,
+  showTarget = true,
+  showSpent = true,
+}) {
   const t = useT();
   const over = actualAmount > targetAmount;
   const ratio = targetAmount > 0 ? Math.min(actualAmount / targetAmount, 1) : 0;
@@ -25,7 +32,7 @@ export function AllocationCard({ label, percent, targetAmount, actualAmount }) {
         <div>
           <p className="kbd text-[10px] text-ink-3">{t("allocation.target")}</p>
           <p className="amount mt-1 text-lg font-semibold text-ink">
-            {formatIDR(targetAmount)}
+            {showTarget ? formatIDR(targetAmount) : "••••••••"}
           </p>
         </div>
         <div className="text-right">
@@ -34,7 +41,7 @@ export function AllocationCard({ label, percent, targetAmount, actualAmount }) {
             className={`amount mt-1 text-lg font-semibold ${
               over ? "text-danger" : "text-success"
             }`}>
-            {formatIDR(actualAmount)}
+            {showSpent ? formatIDR(actualAmount) : "••••••••"}
           </p>
         </div>
       </div>

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSpreadsheet } from "../hooks/useSpreadsheet.js";
 import { useFinanceCalc } from "../hooks/useFinanceCalc.js";
 import { AllocationCard } from "../components/dashboard/AllocationCard.jsx";
@@ -12,11 +12,49 @@ import { Skeleton } from "../components/ui/Skeleton.jsx";
 import { useT } from "../i18n/LanguageProvider.jsx";
 import { formatIDR } from "../utils/financeFormulas.js";
 
+function EyeIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className="h-4 w-4"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true">
+      <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+      <circle cx="12" cy="12" r="3" />
+    </svg>
+  );
+}
+
+function EyeOffIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className="h-4 w-4"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true">
+      <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24" />
+      <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68" />
+      <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61" />
+      <line x1="2" x2="22" y1="2" y2="22" />
+    </svg>
+  );
+}
+
 export default function DashboardPage() {
   const { ensureSpreadsheet, loadData, provisioning, loading } =
     useSpreadsheet();
   const calc = useFinanceCalc();
   const t = useT();
+  const [showIncome, setShowIncome] = useState(false);
+  const [showExpenses, setShowExpenses] = useState(false);
 
   useEffect(() => {
     ensureSpreadsheet().then((id) => {
@@ -79,11 +117,26 @@ export default function DashboardPage() {
               <>
                 <section className="mb-8 grid gap-4 sm:grid-cols-2">
                   <Card className="p-5">
-                    <p className="kbd text-[10px] text-ink-3">
-                      {t("dash.monthlyIncome")}
-                    </p>
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="kbd text-[10px] text-ink-3">
+                        {t("dash.monthlyIncome")}
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => setShowIncome((v) => !v)}
+                        aria-label={t(
+                          showIncome ? "dash.hideIncome" : "dash.showIncome",
+                        )}
+                        title={t(
+                          showIncome ? "dash.hideIncome" : "dash.showIncome",
+                        )}
+                        aria-pressed={showIncome}
+                        className="rounded p-1 text-ink-3 transition-colors hover:bg-paper-3 hover:text-ink">
+                        {showIncome ? <EyeOffIcon /> : <EyeIcon />}
+                      </button>
+                    </div>
                     <p className="amount mt-2 text-2xl font-semibold text-ink">
-                      {formatIDR(calc.monthlyIncome)}
+                      {showIncome ? formatIDR(calc.monthlyIncome) : "••••••••"}
                     </p>
                     {calc.monthlyIncome === 0 && (
                       <p className="mt-1 text-xs text-ink-3">
@@ -92,11 +145,32 @@ export default function DashboardPage() {
                     )}
                   </Card>
                   <Card className="p-5">
-                    <p className="kbd text-[10px] text-ink-3">
-                      {t("dash.monthlyExpenses")}
-                    </p>
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="kbd text-[10px] text-ink-3">
+                        {t("dash.monthlyExpenses")}
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => setShowExpenses((v) => !v)}
+                        aria-label={t(
+                          showExpenses
+                            ? "dash.hideExpenses"
+                            : "dash.showExpenses",
+                        )}
+                        title={t(
+                          showExpenses
+                            ? "dash.hideExpenses"
+                            : "dash.showExpenses",
+                        )}
+                        aria-pressed={showExpenses}
+                        className="rounded p-1 text-ink-3 transition-colors hover:bg-paper-3 hover:text-ink">
+                        {showExpenses ? <EyeOffIcon /> : <EyeIcon />}
+                      </button>
+                    </div>
                     <p className="amount mt-2 text-2xl font-semibold text-ink">
-                      {formatIDR(calc.totalMonthlyExpenses)}
+                      {showExpenses
+                        ? formatIDR(calc.totalMonthlyExpenses)
+                        : "••••••••"}
                     </p>
                   </Card>
                 </section>
@@ -107,7 +181,12 @@ export default function DashboardPage() {
                   </h2>
                   <div className="grid gap-4 md:grid-cols-3">
                     {allocationCards.map((c) => (
-                      <AllocationCard key={c.key} {...c} />
+                      <AllocationCard
+                        key={c.key}
+                        {...c}
+                        showTarget={showIncome}
+                        showSpent={showExpenses}
+                      />
                     ))}
                   </div>
                 </section>
@@ -121,16 +200,22 @@ export default function DashboardPage() {
                       label={t("dash.emergency")}
                       multiplier={6}
                       targetAmount={calc.fundTargets.emergencyFund}
+                      showAmount={showExpenses}
                     />
                     <FundTargetCard
                       label={t("dash.retirement")}
                       multiplier={300}
                       targetAmount={calc.fundTargets.retirementFund}
+                      showAmount={showExpenses}
                     />
                   </div>
                 </section>
 
-                <SpendingChart data={chartData} loading={loading} />
+                <SpendingChart
+                  data={chartData}
+                  loading={loading}
+                  showAmount={showExpenses}
+                />
               </>
             )}
           </div>

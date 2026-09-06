@@ -21,7 +21,7 @@ function chartColors() {
   };
 }
 
-export function SpendingChart({ data = [], loading = false }) {
+export function SpendingChart({ data = [], loading = false, showAmount = true }) {
   const containerRef = useRef(null);
   const t = useT();
   const total = data.reduce((sum, d) => sum + d.value, 0);
@@ -34,7 +34,9 @@ export function SpendingChart({ data = [], loading = false }) {
       tooltip: {
         trigger: "item",
         formatter: (p) =>
-          `${p.name}<br/><strong>${formatIDR(p.value)}</strong>`,
+          showAmount
+            ? `${p.name}<br/><strong>${formatIDR(p.value)}</strong>`
+            : `${p.name}<br/><strong>••••••••</strong>`,
       },
       series: [
         {
@@ -59,7 +61,7 @@ export function SpendingChart({ data = [], loading = false }) {
       ro.disconnect();
       chart.dispose();
     };
-  }, [loading, total, data]);
+  }, [loading, total, data, showAmount]);
 
   if (loading) {
     return (
@@ -98,7 +100,7 @@ export function SpendingChart({ data = [], loading = false }) {
                   {d.name}
                 </span>
                 <span className="amount font-medium text-ink">
-                  {formatIDR(d.value)}
+                  {showAmount ? formatIDR(d.value) : "••••••••"}
                 </span>
               </li>
             ))}
