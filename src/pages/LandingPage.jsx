@@ -4,6 +4,7 @@ import { useT } from "../i18n/LanguageProvider.jsx";
 import { LangToggle } from "../components/ui/LangToggle.jsx";
 import { Card } from "../components/ui/Card.jsx";
 import { SocialProof, UserCountBadge } from "../components/landing/SocialProof.jsx";
+import { DONATE_URL } from "../constants/donate.js";
 
 const featureKeys = [
   { title: "landing.featAllocTitle", body: "landing.featAllocBody" },
@@ -147,6 +148,14 @@ export default function LandingPage() {
             <Link to="/changelog" className="transition-colors hover:text-accent">
               {t("legal.changelog")}
             </Link>
+            <span>·</span>
+            <a
+              href={DONATE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="transition-colors hover:text-accent">
+              {t("legal.donate")}
+            </a>
           </div>
         </div>
       </footer>
