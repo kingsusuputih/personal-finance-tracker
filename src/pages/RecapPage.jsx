@@ -6,6 +6,7 @@ import { useFinanceCalc } from "../hooks/useFinanceCalc.js";
 import { groupExpenses } from "../utils/expenseGrouping.js";
 import { formatIDR } from "../utils/financeFormulas.js";
 import { getCycleKeyForDate, getEffectiveCutoff, getEffectiveTimezone, getCycleInfo, formatDisplayDate } from "../utils/dateTime.js";
+import { listAvailableCycles } from "../utils/cycleInventory.js";
 import { Card } from "../components/ui/Card.jsx";
 import { Badge } from "../components/ui/Badge.jsx";
 import { Skeleton } from "../components/ui/Skeleton.jsx";
@@ -29,6 +30,7 @@ export default function RecapPage() {
   const income = useFinanceStore((s) => s.income);
   const additionalIncome = useFinanceStore((s) => s.additionalIncome || []);
   const transactions = useFinanceStore((s) => s.transactions);
+  const budgets = useFinanceStore((s) => s.budgets || []);
 
   useEffect(() => {
     ensureSpreadsheet().then((id) => {
@@ -45,25 +47,15 @@ export default function RecapPage() {
   const selectedCycle = cycleParam || currentCycle;
 
   const availableCycles = useMemo(() => {
-    const set = new Set();
-    set.add(currentCycle);
-    income.forEach((i) => {
-      if (i.month) set.add(i.month);
+    return listAvailableCycles({
+      income,
+      additionalIncome,
+      transactions,
+      budgets,
+      currentCycle,
+      cutoffDay,
     });
-    additionalIncome.forEach((a) => {
-      if (a.date) {
-        const k = getCycleKeyForDate(a.date, cutoffDay);
-        if (k) set.add(k);
-      }
-    });
-    transactions.forEach((tx) => {
-      if (tx.date) {
-        const k = getCycleKeyForDate(tx.date, cutoffDay);
-        if (k) set.add(k);
-      }
-    });
-    return Array.from(set).sort().reverse();
-  }, [income, additionalIncome, transactions, currentCycle, cutoffDay]);
+  }, [income, additionalIncome, transactions, budgets, currentCycle, cutoffDay]);
 
   const { recap, cycle } = useFinanceCalc(selectedCycle);
 

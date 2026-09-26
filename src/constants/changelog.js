@@ -1,5 +1,79 @@
 export const changelogEntries = [
   {
+    version: "v1.4.0",
+    date: "2026-09-27",
+    en: {
+      title: "Custom Budgets, Device Push Notifications & Multi-period AI Analysis",
+      sections: [
+        {
+          type: "added",
+          label: "Added",
+          items: [
+            "Manual custom budgets per expense group and category for each payday cycle with real-time progress indicators.",
+            "Web Push notifications for custom budget alert thresholds (80%, 100%, and >100%) with 3-hour recurring reminders and quiet hours (22:00–07:00).",
+            "Progressive Web App (PWA) manifest and background service worker support for home screen installation and alerts.",
+            "Multi-period context support in AI Assistant (/chat), enabling analysis and comparisons across historical cycles via a dedicated cycle selector.",
+            "Rich markdown bold text rendering in AI chat responses.",
+          ],
+        },
+        {
+          type: "changed",
+          label: "Changed",
+          items: [
+            "Google Sheets schema expanded with a dedicated 5th sheet ('Budgets') for cycle budget caps.",
+            "AI Assistant backend updated to Google Gemini 3.5 Flash-Lite with configurable GEMINI_MODEL support.",
+            "Updated Privacy Policy and Terms of Service with budget push notification disclosures.",
+          ],
+        },
+      ],
+      items: [
+        "Manual custom budgets per expense group and category for each payday cycle with real-time progress indicators.",
+        "Web Push notifications for custom budget alert thresholds (80%, 100%, and >100%) with 3-hour recurring reminders and quiet hours (22:00–07:00).",
+        "Progressive Web App (PWA) manifest and background service worker support for home screen installation and alerts.",
+        "Multi-period context support in AI Assistant (/chat), enabling analysis and comparisons across historical cycles via a dedicated cycle selector.",
+        "Rich markdown bold text rendering in AI chat responses.",
+        "Google Sheets schema expanded with a dedicated 5th sheet ('Budgets') for cycle budget caps.",
+        "AI Assistant backend updated to Google Gemini 3.5 Flash-Lite with configurable GEMINI_MODEL support.",
+        "Updated Privacy Policy and Terms of Service with budget push notification disclosures.",
+      ],
+    },
+    id: {
+      title: "Budget Custom, Notifikasi Push di HP & Analisis Multi-periode AI",
+      sections: [
+        {
+          type: "added",
+          label: "Fitur Baru (Added)",
+          items: [
+            "Pencatatan budget custom manual per kelompok pengeluaran dan kategori untuk setiap siklus gajian dengan indikator progres pemakaian langsung.",
+            "Notifikasi Web Push di HP untuk ambang batas budget (80%, 100%, dan >100%) dengan pengingat tiap 3 jam di luar jam tenang (22.00–07.00).",
+            "Dukungan Progressive Web App (PWA) lengkap dengan manifest dan service worker untuk instalasi di Home Screen dan notifikasi latar belakang.",
+            "Dukungan konteks multi-periode pada Asisten AI (/chat), memungkinkan analisa dan perbandingan antarperiode historis melalui pemilih periode.",
+            "Rendering format teks tebal (bold markdown) pada respons chat AI.",
+          ],
+        },
+        {
+          type: "changed",
+          label: "Perubahan (Changed)",
+          items: [
+            "Skema Google Sheets diperluas dengan tab ke-5 ('Budgets') untuk menyimpan batas budget per siklus.",
+            "Backend Asisten AI diperbarui ke model Google Gemini 3.5 Flash-Lite dengan dukungan konfigurasi GEMINI_MODEL.",
+            "Pembaruan Kebijakan Privasi dan Ketentuan Layanan dengan penjelasan notifikasi push budget.",
+          ],
+        },
+      ],
+      items: [
+        "Pencatatan budget custom manual per kelompok pengeluaran dan kategori untuk setiap siklus gajian dengan indikator progres pemakaian langsung.",
+        "Notifikasi Web Push di HP untuk ambang batas budget (80%, 100%, dan >100%) dengan pengingat tiap 3 jam di luar jam tenang (22.00–07.00).",
+        "Dukungan Progressive Web App (PWA) lengkap dengan manifest dan service worker untuk instalasi di Home Screen dan notifikasi latar belakang.",
+        "Dukungan konteks multi-periode pada Asisten AI (/chat), memungkinkan analisa dan perbandingan antarperiode historis melalui pemilih periode.",
+        "Rendering format teks tebal (bold markdown) pada respons chat AI.",
+        "Skema Google Sheets diperluas dengan tab ke-5 ('Budgets') untuk menyimpan batas budget per siklus.",
+        "Backend Asisten AI diperbarui ke model Google Gemini 3.5 Flash-Lite dengan dukungan konfigurasi GEMINI_MODEL.",
+        "Pembaruan Kebijakan Privasi dan Ketentuan Layanan dengan penjelasan notifikasi push budget.",
+      ],
+    },
+  },
+  {
     version: "v1.3.0",
     date: "2026-09-26",
     en: {

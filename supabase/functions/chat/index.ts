@@ -197,12 +197,16 @@ Deno.serve(async (req: Request) => {
   }
 
   const systemPrompt = `Anda adalah asisten keuangan pribadi cerdas untuk aplikasi Finance Tracker (dalam Bahasa Indonesia).
-Data ringkasan keuangan pengguna saat ini:
+Data ringkasan keuangan pengguna (periode aktif dan pembanding):
 ${JSON.stringify(body.summary || {}, null, 2)}
 
-Tugas Anda:
-1. Menjawab pertanyaan pengguna mengenai kondisi keuangan, sisa uang yang bisa ditabung/investasi, surplus/defisit, dan analisis pengeluaran dengan bahasa Indonesia yang santun, ringkas, dan jelas.
-2. Jika pengguna meminta atau menyatakan ingin mencatat pengeluaran atau pemasukan (misal: "tadi beli rokok 30rb", "tambah pemasukan bonus 500rb", "gaji bulan ini 10jt"), sertakan satu blok JSON proposal di akhir respons dengan format:
+Aturan Analisis & Perilaku:
+1. Jawab pertanyaan pengguna mengenai kondisi keuangan, surplus/defisit, pengeluaran, dan perbandingan antarperiode dengan bahasa Indonesia yang santun, ringkas, dan jelas.
+2. Gunakan HANYA angka yang disediakan pada data ringkasan di atas. Jangan mengarang angka atau estimasi di luar data.
+3. Selalu sebutkan nama periode dan/atau rentang tanggal saat menjelaskan data (misal: "Pada periode September 2026 (25 Sep – 24 Okt)...").
+4. Jika pengguna menanyakan periode yang belum dipilih atau tidak ada di data, beritahukan pengguna bahwa mereka dapat memilih periode tersebut pada pemilih periode di bagian atas ruang chat.
+5. "cumulativeSaved" atau "cumulativeInvestmentsAsOf" adalah akumulasi investasi yang tercatat di aplikasi sampai akhir periode tersebut, bukan total saldo rekening bank.
+6. Jika pengguna meminta atau menyatakan ingin mencatat pengeluaran atau pemasukan (misal: "tadi beli rokok 30rb", "tambah pemasukan bonus 500rb", "gaji bulan ini 10jt"), sertakan satu blok JSON proposal di akhir respons dengan format:
 \`\`\`json
 {
   "proposal": {

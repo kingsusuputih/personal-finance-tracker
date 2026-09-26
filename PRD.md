@@ -1,7 +1,7 @@
 # PRD: Personal Finance Tracker
-**Version:** 1.3.0
-**Status:** Implemented (Recap, Additional Income, Smart Grouping, AI Chat)
-**Last Updated:** 2026-09-26
+**Version:** 1.4.0
+**Status:** Implemented (Recap, Additional Income, Smart Grouping, AI Chat, Custom Budgets, Web Push, PWA)
+**Last Updated:** 2026-09-27
 **Prepared for:** AI Agent CLI Execution
 
 ---
@@ -325,22 +325,53 @@ VITE_GOOGLE_CLIENT_ID=xxxxxxxxxxxx.apps.googleusercontent.com
 **User Story:** As a user, I want an intelligent chatbot inside the member area to analyze my financial numbers and draft new transactions with explicit confirmation.
 
 **Acceptance Criteria:**
-- [ ] Dedicated `/chat` route with mobile & desktop navigation links
-- [ ] Explicit consent dialog previewing financial metrics before sending data to AI
-- [ ] Client calls Supabase Edge Function (`/api/chat`) with Google OAuth bearer token
-- [ ] Server validates token audience and expiry before calling Gemini 1.5 Flash
-- [ ] Displays transaction proposals as editable cards; user must explicitly click "Confirm & save" to write to Google Sheets
-- [ ] Rate limit & quota guard (429 handling) with countdown timer when retry headers are present; no paid fallback
-- [ ] Ephemeral in-memory chat session; no chat transcripts or credentials saved to server
+- [x] Dedicated `/chat` route with mobile & desktop navigation links
+- [x] Explicit consent dialog previewing financial metrics before sending data to AI
+- [x] Client calls Supabase Edge Function (`/api/chat`) with Google OAuth bearer token
+- [x] Server validates token audience and expiry before calling Google Gemini API (gemini-3.5-flash-lite / configurable GEMINI_MODEL)
+- [x] Displays transaction proposals as editable cards; user must explicitly click "Confirm & save" to write to Google Sheets
+- [x] Rate limit & quota guard (429 handling) with countdown timer when retry headers are present; no paid fallback
+- [x] Ephemeral in-memory chat session; no chat transcripts or credentials saved to server
+- [x] Multi-period historical analysis & comparison via period selector dropdowns
+- [x] Rich markdown bold text rendering (`**bold**`) in assistant message bubbles
 
-**Components:** `ChatPage.jsx`, `api/chat.js`
+**Components:** `ChatPage.jsx`, `api/chat.js`, `utils/chatContext.js`, `utils/chatFormatting.js`
 **Backend:** `supabase/functions/chat/index.ts`
+
+---
+
+### Feature 9: Custom Budgets per Cycle
+
+**User Story:** As a user, I want to create manual spending limits for specific expense groups within a category for the current cycle without changing the 50/30/20 allocation.
+
+**Acceptance Criteria:**
+- [x] Add/edit/delete custom budget entries stored in a dedicated `Budgets` sheet
+- [x] Automatic spending attribution based on existing keyword-based and custom expense groups
+- [x] Strict category and date range matching for active cycle bounds
+- [x] Progress visualization in Recap (`/recap`) and summary cards in Dashboard (`/dashboard`)
+- [x] Zero impact on baseline 50/30/20 allocation calculations
+
+**Components:** `components/budget/BudgetSection.jsx`, `hooks/useBudgetProgress.js`, `utils/budgetCalculations.js`
+
+---
+
+### Feature 10: Web Push Notifications & PWA
+
+**User Story:** As a user, I want device push notifications when budget thresholds (80%, 100%, >100%) are reached, with 3-hour recurring reminders and quiet hours.
+
+**Acceptance Criteria:**
+- [x] Web App Manifest (`manifest.webmanifest`) and service worker (`sw.js`) for standalone install
+- [x] Settings page device push subscription toggle with VAPID web-push registration
+- [x] Quiet hours enforced (22:00–07:00) based on user's timezone
+- [x] Edge function dispatch endpoint (`/notify/dispatch`) for cron invocation
+
+**Components:** `public/manifest.webmanifest`, `public/sw.js`, `hooks/usePushNotifications.js`, `hooks/useBudgetAlertSync.js`, `supabase/functions/notify/index.ts`
 
 ---
 
 ## 8. Data Schema (Google Sheets)
 
-The spreadsheet `Finance_Tracker_Data` contains **4 sheets (tabs)**:
+The spreadsheet `Finance_Tracker_Data` contains **5 sheets (tabs)**:
 
 ### Sheet 1: `Income`
 
@@ -380,9 +411,22 @@ The spreadsheet `Finance_Tracker_Data` contains **4 sheets (tabs)**:
 | B | `timezone` | String | IANA timezone string |
 | C | `cutoff_day` | Number | Cutoff day integer (1–28) |
 
+### Sheet 5: `Budgets`
+
+| Column | Header | Type | Notes |
+|---|---|---|---|
+| A | `id` | String | Unique ID / UUID |
+| B | `cycle_key` | String | Format: `YYYY-MM` |
+| C | `cutoff_day` | Number | Cutoff day snapshot integer (1–28) |
+| D | `name` | String | Custom budget display name |
+| E | `category` | String | Enum: `Needs`, `Lifestyle`, `Investment` |
+| F | `group_key` | String | Stable expense group key (e.g. `bensin-bbm`, `custom:kopi`) |
+| G | `amount` | Number | Limit in IDR |
+| H | `created_at` | String | ISO 8601 timestamp |
+
 ### Initialization & Migration Logic
 When connecting to a spreadsheet:
-1. Ensure all 4 sheets (`Income`, `AdditionalIncome`, `Expenses`, `Settings`) exist via idempotent `ensureSchemaSheets`.
+1. Ensure all 5 sheets (`Income`, `AdditionalIncome`, `Expenses`, `Settings`, `Budgets`) exist via idempotent `ensureSchemaSheets`.
 2. Existing 5-column `Expenses` rows remain compatible; new columns `group_override` and `id` are appended gracefully.
 
 ---
@@ -657,4 +701,4 @@ cp .env.example .env.local
 
 ---
 
-*End of PRD — Finance Tracker v1.3.0*
+*End of PRD — Finance Tracker v1.4.0*

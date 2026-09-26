@@ -392,6 +392,53 @@ assert(Array.isArray(terms.en) && terms.en.length > 5);
 assert(Array.isArray(terms.id) && terms.id.length === terms.en.length);
 
 import { parseBoldSegments } from "../src/utils/chatFormatting.js";
+import { listAvailableCycles } from "../src/utils/cycleInventory.js";
+import { buildChatContext } from "../src/utils/chatContext.js";
+
+// Test listAvailableCycles
+const cycles = listAvailableCycles({
+  income: [{ month: "2026-07" }, { month: "2026-08" }],
+  additionalIncome: [{ date: "2026-06-15" }],
+  transactions: [{ date: "2026-05-10" }],
+  budgets: [{ cycle_key: "2026-09" }],
+  currentCycle: "2026-08",
+  cutoffDay: 25,
+});
+assert(cycles.includes("2026-09"));
+assert(cycles.includes("2026-08"));
+assert(cycles.includes("2026-07"));
+assert(cycles.includes("2026-05"));
+// Sorted descending
+assert.equal(cycles[0], "2026-09");
+
+// Test buildChatContext
+const chatCtx = buildChatContext({
+  activeCycleKey: "2026-08",
+  compareCycleKey: "2026-07",
+  income: [
+    { month: "2026-07", amount: 4000000 },
+    { month: "2026-08", amount: 5000000 },
+  ],
+  transactions: [
+    { date: "2026-07-26", category: "Needs", amount: 1000000 },
+    { date: "2026-08-26", category: "Needs", amount: 1500000 },
+  ],
+  settings: { cutoff_day: 25, timezone_mode: "auto" },
+  availableCycles: ["2026-08", "2026-07"],
+});
+
+assert.equal(chatCtx.active.cycleKey, "2026-08");
+assert.equal(chatCtx.active.totalIncome, 5000000);
+assert.equal(chatCtx.active.needsExpenses, 1500000);
+assert.equal(chatCtx.compare.cycleKey, "2026-07");
+assert.equal(chatCtx.compare.totalIncome, 4000000);
+assert.equal(chatCtx.compare.needsExpenses, 1000000);
+assert.equal(chatCtx.comparison.incomeDiff, 1000000);
+assert.equal(chatCtx.comparison.incomeDiffPercent, 25.0);
+assert.equal(chatCtx.comparison.consumptionDiff, 500000);
+assert.equal(chatCtx.comparison.consumptionDiffPercent, 50.0);
+
+assert.deepEqual(parseBoldSegments(""), []);
 
 assert.deepEqual(parseBoldSegments(""), []);
 assert.deepEqual(parseBoldSegments(null), []);

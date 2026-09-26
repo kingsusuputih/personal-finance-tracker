@@ -24,10 +24,12 @@ await import("../supabase/functions/chat/index.ts");
 
 assert.equal(typeof capturedHandler, "function", "Handler was not captured by Deno.serve");
 
-function mockGoogleAuthSuccess() {
+let subCounter = 1;
+function mockGoogleAuthSuccess(sub) {
+  const currentSub = sub || `sub-${subCounter++}`;
   return async (url) => {
     if (url.includes("oauth2.googleapis.com/tokeninfo") || url.includes("googleapis.com/oauth2/v3/userinfo")) {
-      return new Response(JSON.stringify({ aud: "test-client-id", sub: "sub-12345", name: "Tester" }), {
+      return new Response(JSON.stringify({ aud: "test-client-id", sub: currentSub, name: "Tester" }), {
         status: 200,
         headers: { "Content-Type": "application/json" },
       });
@@ -77,7 +79,7 @@ test("calls gemini with default model gemini-3.5-flash-lite and x-goog-api-key h
 
   globalThis.fetch = async (url, opts) => {
     if (url.includes("oauth2.googleapis.com/tokeninfo") || url.includes("googleapis.com/oauth2/v3/userinfo")) {
-      return new Response(JSON.stringify({ aud: "test-client-id", sub: "sub-12345", name: "Tester" }), {
+      return new Response(JSON.stringify({ aud: "test-client-id", sub: `sub-${subCounter++}`, name: "Tester" }), {
         status: 200,
         headers: { "Content-Type": "application/json" },
       });
@@ -137,7 +139,7 @@ test("respects GEMINI_MODEL environment variable", async () => {
 
   globalThis.fetch = async (url) => {
     if (url.includes("oauth2.googleapis.com/tokeninfo") || url.includes("googleapis.com/oauth2/v3/userinfo")) {
-      return new Response(JSON.stringify({ aud: "test-client-id", sub: "sub-12345", name: "Tester" }), {
+      return new Response(JSON.stringify({ aud: "test-client-id", sub: `sub-${subCounter++}`, name: "Tester" }), {
         status: 200,
         headers: { "Content-Type": "application/json" },
       });
@@ -178,7 +180,7 @@ test("handles 404 cleanly without blind fallback loops", async () => {
 
   globalThis.fetch = async (url) => {
     if (url.includes("oauth2.googleapis.com/tokeninfo") || url.includes("googleapis.com/oauth2/v3/userinfo")) {
-      return new Response(JSON.stringify({ aud: "test-client-id", sub: "sub-12345", name: "Tester" }), {
+      return new Response(JSON.stringify({ aud: "test-client-id", sub: `sub-${subCounter++}`, name: "Tester" }), {
         status: 200,
         headers: { "Content-Type": "application/json" },
       });
@@ -217,7 +219,7 @@ test("extracts proposal block accurately from model response", async () => {
 
   globalThis.fetch = async (url) => {
     if (url.includes("oauth2.googleapis.com/tokeninfo") || url.includes("googleapis.com/oauth2/v3/userinfo")) {
-      return new Response(JSON.stringify({ aud: "test-client-id", sub: "sub-12345", name: "Tester" }), {
+      return new Response(JSON.stringify({ aud: "test-client-id", sub: `sub-${subCounter++}`, name: "Tester" }), {
         status: 200,
         headers: { "Content-Type": "application/json" },
       });
@@ -265,6 +267,57 @@ test("extracts proposal block accurately from model response", async () => {
       description: "Bensin Pertalite",
       date: "2026-09-27",
     });
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test("passes multi-period context correctly in system instruction", async () => {
+  const originalFetch = globalThis.fetch;
+  let sentBody = null;
+
+  globalThis.fetch = async (url, opts) => {
+    if (url.includes("oauth2.googleapis.com/tokeninfo") || url.includes("googleapis.com/oauth2/v3/userinfo")) {
+      return new Response(JSON.stringify({ aud: "test-client-id", sub: `sub-${subCounter++}`, name: "Tester" }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+    if (url.includes("generativelanguage.googleapis.com")) {
+      sentBody = JSON.parse(opts.body);
+      return new Response(
+        JSON.stringify({
+          candidates: [{ content: { parts: [{ text: "Berdasarkan perbandingan kedua bulan..." }] } }],
+        }),
+        { status: 200, headers: { "Content-Type": "application/json" } },
+      );
+    }
+    throw new Error(`Unexpected fetch: ${url}`);
+  };
+
+  try {
+    const summary = {
+      active: { cycleKey: "2026-08", totalIncome: 5000000 },
+      compare: { cycleKey: "2026-07", totalIncome: 4000000 },
+      comparison: { incomeDiff: 1000000 },
+    };
+    const req = new Request("http://localhost/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer fake-token",
+      },
+      body: JSON.stringify({
+        message: "Bandingkan pengeluaran 2026-08 dengan 2026-07",
+        summary,
+      }),
+    });
+    const res = await capturedHandler(req);
+    assert.equal(res.status, 200);
+    const instruction = sentBody.systemInstruction.parts[0].text;
+    assert(instruction.includes("2026-08"));
+    assert(instruction.includes("2026-07"));
+    assert(instruction.includes("1000000"));
   } finally {
     globalThis.fetch = originalFetch;
   }

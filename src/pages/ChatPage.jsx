@@ -1,5 +1,6 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useAuthStore } from "../store/authStore.js";
+import { useFinanceStore } from "../store/financeStore.js";
 import { useSpreadsheet } from "../hooks/useSpreadsheet.js";
 import { useFinanceCalc } from "../hooks/useFinanceCalc.js";
 import { sendChatMessage } from "../api/chat.js";
@@ -11,6 +12,15 @@ import {
 } from "../utils/sheetsHelpers.js";
 import { formatIDR, formatRupiah, parseRupiah } from "../utils/financeFormulas.js";
 import { parseBoldSegments } from "../utils/chatFormatting.js";
+import { listAvailableCycles } from "../utils/cycleInventory.js";
+import { buildChatContext } from "../utils/chatContext.js";
+import {
+  getEffectiveCutoff,
+  getEffectiveTimezone,
+  getCycleInfo,
+  getCycleBounds,
+  formatDisplayDate,
+} from "../utils/dateTime.js";
 import { Sidebar } from "../components/layout/Sidebar.jsx";
 import { Navbar } from "../components/layout/Navbar.jsx";
 import { BottomNav } from "../components/layout/BottomNav.jsx";
@@ -18,7 +28,7 @@ import { Card } from "../components/ui/Card.jsx";
 import { Button } from "../components/ui/Button.jsx";
 import { Badge } from "../components/ui/Badge.jsx";
 import { useToast } from "../components/ui/Toast.jsx";
-import { useT } from "../i18n/LanguageProvider.jsx";
+import { useT, useI18n } from "../i18n/LanguageProvider.jsx";
 
 function ProposalCard({ proposal, onSaved }) {
   const t = useT();
@@ -182,10 +192,40 @@ function ProposalCard({ proposal, onSaved }) {
 
 export default function ChatPage() {
   const t = useT();
+  const { lang } = useI18n();
   const toast = useToast();
   const accessToken = useAuthStore((s) => s.accessToken);
   const { ensureSpreadsheet, loadData } = useSpreadsheet();
-  const { recap } = useFinanceCalc();
+
+  const income = useFinanceStore((s) => s.income || []);
+  const additionalIncome = useFinanceStore((s) => s.additionalIncome || []);
+  const transactions = useFinanceStore((s) => s.transactions || []);
+  const budgets = useFinanceStore((s) => s.budgets || []);
+  const settings = useFinanceStore((s) => s.settings);
+
+  const timeZone = getEffectiveTimezone(settings);
+  const cutoffDay = getEffectiveCutoff(settings);
+  const currentCycleInfo = getCycleInfo(new Date(), timeZone, cutoffDay);
+  const currentCycle = currentCycleInfo.cycleKey;
+
+  const [selectedCycle, setSelectedCycle] = useState("");
+  const [compareCycle, setCompareCycle] = useState("");
+
+  const activeCycle = selectedCycle || currentCycle;
+  const activeBounds = getCycleBounds(activeCycle, cutoffDay) || currentCycleInfo;
+
+  const availableCycles = useMemo(() => {
+    return listAvailableCycles({
+      income,
+      additionalIncome,
+      transactions,
+      budgets,
+      currentCycle,
+      cutoffDay,
+    });
+  }, [income, additionalIncome, transactions, budgets, currentCycle, cutoffDay]);
+
+  const { recap } = useFinanceCalc(activeCycle);
 
   const [consentGranted, setConsentGranted] = useState(() => {
     return localStorage.getItem("finance_ai_consent") === "true";
@@ -194,7 +234,7 @@ export default function ChatPage() {
   const [messages, setMessages] = useState([
     {
       role: "assistant",
-      text: "Halo! Saya asisten pintar Finance Tracker. Anda dapat menanyakan analisis keuangan (misal: 'Berapa total pengeluaran dan surplus saya?', 'Berapa uang yang sudah saya tabung?') atau mencatat pengeluaran secara cepat (misal: 'Tadi beli rokok 25rb lifestyle').",
+      text: t("chat.defaultGreeting"),
     },
   ]);
   const [input, setInput] = useState("");
@@ -202,6 +242,31 @@ export default function ChatPage() {
   const [cooldownSeconds, setCooldownSeconds] = useState(0);
 
   const messagesEndRef = useRef(null);
+
+  const handleActiveCycleChange = (nextCycle) => {
+    if (nextCycle === activeCycle) return;
+    setSelectedCycle(nextCycle);
+    if (compareCycle === nextCycle) {
+      setCompareCycle("");
+    }
+    setMessages([
+      {
+        role: "assistant",
+        text: t("chat.defaultGreeting"),
+      },
+    ]);
+  };
+
+  const handleCompareCycleChange = (nextCompare) => {
+    if (nextCompare === compareCycle) return;
+    setCompareCycle(nextCompare);
+    setMessages([
+      {
+        role: "assistant",
+        text: t("chat.defaultGreeting"),
+      },
+    ]);
+  };
 
   useEffect(() => {
     ensureSpreadsheet().then((id) => {
@@ -236,19 +301,15 @@ export default function ChatPage() {
     setLoading(true);
 
     try {
-      const summary = {
-        totalIncome: recap.totalIncome,
-        mainIncome: recap.mainIncome,
-        additionalIncome: recap.totalAdditionalIncome,
-        consumptionExpenses: recap.consumptionExpenses,
-        needsExpenses: recap.needsExpenses,
-        lifestyleExpenses: recap.lifestyleExpenses,
-        investmentExpenses: recap.investmentExpenses,
-        surplusBeforeInvestment: recap.surplusBeforeInvestment,
-        remainingAfterInvestment: recap.remainingAfterInvestment,
-        cumulativeSaved: recap.cumulativeInvestments,
-        cycleKey: recap.cycleKey,
-      };
+      const summary = buildChatContext({
+        activeCycleKey: activeCycle,
+        compareCycleKey: compareCycle || null,
+        income,
+        additionalIncome,
+        transactions,
+        settings,
+        availableCycles,
+      });
 
       const res = await sendChatMessage({
         accessToken,
@@ -334,6 +395,49 @@ export default function ChatPage() {
               </Card>
             ) : (
               <div className="flex flex-1 flex-col overflow-hidden rounded-lg border border-rule bg-paper">
+                <div className="border-b border-rule bg-paper-2/40 px-3 py-2 text-xs flex flex-wrap items-center justify-between gap-2">
+                  <div className="flex flex-wrap items-center gap-3">
+                    <label className="flex items-center gap-1.5">
+                      <span className="text-ink-3 font-medium">{t("chat.selectPeriod")}:</span>
+                      <select
+                        value={activeCycle}
+                        onChange={(e) => handleActiveCycleChange(e.target.value)}
+                        className="field py-1 px-2 text-xs h-7">
+                        {availableCycles.map((c) => (
+                          <option key={c} value={c}>
+                            {c} {c === currentCycle ? `(${t("chat.activeBadge")})` : ""}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+
+                    <label className="flex items-center gap-1.5">
+                      <span className="text-ink-3 font-medium">{t("chat.comparePeriod")}:</span>
+                      <select
+                        value={compareCycle}
+                        onChange={(e) => handleCompareCycleChange(e.target.value)}
+                        className="field py-1 px-2 text-xs h-7">
+                        <option value="">{t("chat.noCompare")}</option>
+                        {availableCycles
+                          .filter((c) => c !== activeCycle)
+                          .map((c) => (
+                            <option key={c} value={c}>
+                              {c} {c === currentCycle ? `(${t("chat.activeBadge")})` : ""}
+                            </option>
+                          ))}
+                      </select>
+                    </label>
+                  </div>
+
+                  <div className="text-[11px] text-ink-3 font-medium">
+                    {activeBounds && (
+                      <span>
+                        {formatDisplayDate(activeBounds.startDate, lang)} – {formatDisplayDate(activeBounds.endDate, lang)}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
                 {cooldownSeconds > 0 && (
                   <div className="border-b border-warning/30 bg-warning/10 px-4 py-2 text-xs font-medium text-warning flex items-center justify-between">
                     <span>{t("chat.quotaExceeded")}</span>
@@ -391,16 +495,26 @@ export default function ChatPage() {
                     <button
                       type="button"
                       disabled={loading || cooldownSeconds > 0}
-                      onClick={() => handleSend("Berapa sisa uang yang bisa saya tabung atau investasikan bulan ini?")}
+                      onClick={() =>
+                        handleSend(
+                          compareCycle
+                            ? `Bandingkan kondisi keuangan periode ${activeCycle} dengan periode ${compareCycle}.`
+                            : `Bagaimana analisa kondisi keuangan saya pada periode ${activeCycle}?`,
+                        )
+                      }
                       className="rounded border border-rule bg-paper px-2 py-0.5 text-ink-2 hover:bg-paper-3 disabled:opacity-50">
-                      Sisa dana bisa ditabung?
+                      {compareCycle
+                        ? `Bandingkan ${activeCycle} vs ${compareCycle}`
+                        : `Analisa periode ${activeCycle}`}
                     </button>
                     <button
                       type="button"
                       disabled={loading || cooldownSeconds > 0}
-                      onClick={() => handleSend("Berapa akumulasi uang yang sudah saya tabung?")}
+                      onClick={() =>
+                        handleSend(`Berapa sisa uang yang bisa saya tabung pada periode ${activeCycle}?`)
+                      }
                       className="rounded border border-rule bg-paper px-2 py-0.5 text-ink-2 hover:bg-paper-3 disabled:opacity-50">
-                      Total uang sudah ditabung?
+                      Sisa tabungan {activeCycle}?
                     </button>
                     <button
                       type="button"

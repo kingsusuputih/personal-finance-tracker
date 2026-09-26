@@ -15,7 +15,10 @@ Finance Tracker adalah aplikasi web untuk mencatat pemasukan dan pengeluaran ser
 - Mencatat pemasukan bulanan utama dan pemasukan tambahan (bonus, side job, ngojek) secara terpisah
 - Rekap bulanan historis (`/recap`) per siklus gajian: surplus/defisit, sisa uang yang bisa ditabung, dan akumulasi investasi
 - Pengelompokan pengeluaran otomatis per kategori berdasarkan kata kunci deskripsi beserta override manual per transaksi
-- Asisten Keuangan AI pintar (`/chat`) bertenaga Google Gemini (tier gratis) untuk analisis keuangan dan usulan draf transaksi
+- Pencatatan budget custom per kelompok pengeluaran dan kategori untuk setiap siklus gajian
+- Notifikasi Web Push di HP saat belanja mendekati (80%) atau melebihi batas budget
+- Progressive Web App (PWA) yang dapat diinstall ke layar utama (Home Screen)
+- Asisten Keuangan AI pintar (`/chat`) bertenaga Google Gemini dengan dukungan multi-periode dan perbandingan antarperiode
 - Siklus tanggal gajian kustom (1–28, default 25) dan deteksi/pilihan zona waktu IANA
 - Fitur privasi untuk menyembunyikan nominal pemasukan dan pengeluaran di dasbor
 - Alokasi 50 / 30 / 20 (Kebutuhan 50%, Investasi 30%, Gaya Hidup 20%)
@@ -46,7 +49,7 @@ Finance Tracker adalah aplikasi web untuk mencatat pemasukan dan pengeluaran ser
 ## Cara Kerja & Privasi
 
 1. Pengguna masuk dengan akun Google.
-2. Aplikasi mencari/membuat spreadsheet `Finance_Tracker_Data` di Google Drive pengguna (terdiri dari 4 lembar: `Income`, `AdditionalIncome`, `Expenses`, dan `Settings`).
+2. Aplikasi mencari/membuat spreadsheet `Finance_Tracker_Data` di Google Drive pengguna (terdiri dari 5 lembar: `Income`, `AdditionalIncome`, `Expenses`, `Settings`, dan `Budgets`).
 3. Pemasukan, pengeluaran, dan pengaturan siklus ditulis langsung ke spreadsheet tersebut.
 4. Semua perhitungan (50/30/20, target dana, siklus gajian, rekap historis, pengelompokan) dilakukan di sisi klien.
 5. Akun unik dicatat secara anonim (HMAC) di registry Supabase untuk menampilkan total pengguna di landing page. Pengguna dapat memilih untuk menampilkan nama tersamarkan atau menghapus datanya kapan saja di Pengaturan.
@@ -99,7 +102,17 @@ npm run check
 1. Import repo ini ke [Vercel](https://vercel.com/).
 2. Tambahkan env variable `VITE_GOOGLE_CLIENT_ID`.
 3. Tambahkan production URL pada Authorized JS Origins & Redirect URIs di GCP.
-4. Deploy. (SPA rewrite dan proxy registry sudah dikonfigurasi di `vercel.json`.)
+4. Deploy. (SPA rewrite dan proxy registry/chat/notify sudah dikonfigurasi di `vercel.json`.)
+
+### Konfigurasi Rahasia Supabase Edge Functions
+Setel di **Supabase Dashboard → Edge Functions → Secrets**:
+- `GOOGLE_CLIENT_ID`: Google OAuth Client ID yang sama dengan frontend.
+- `GEMINI_API_KEY`: API Key dari Google AI Studio.
+- `GEMINI_MODEL`: Model Gemini yang digunakan (default: `gemini-3.5-flash-lite`).
+- `VAPID_PUBLIC_KEY`: Kunci publik Web Push VAPID.
+- `VAPID_PRIVATE_KEY`: Kunci privat Web Push VAPID.
+- `VAPID_SUBJECT`: Alamat kontak mailto (misal `mailto:admin@example.com`).
+- `CRON_SECRET`: Token rahasia internal untuk pemanggilan endpoint `/dispatch`.
 
 ## Rute
 
