@@ -69,16 +69,16 @@ export function SocialProof({ onCountLoaded }) {
     <aside
       aria-live="polite"
       role="status"
-      className="pointer-events-auto fixed bottom-4 left-4 z-40 max-w-[calc(100vw-2rem)] sm:max-w-xs animate-in fade-in slide-in-from-bottom-3 duration-300">
-      <div className="flex items-center gap-3 rounded-card border border-rule-2 bg-paper px-3.5 py-2.5 text-left shadow-lg">
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent-soft font-display text-xs font-bold text-accent">
+      className="pointer-events-auto fixed bottom-5 left-5 z-40 max-w-[calc(100vw-2.5rem)] sm:max-w-xs animate-in fade-in slide-in-from-bottom-3 duration-300">
+      <div className="flex items-center gap-3 rounded-2xl border border-[#EAE6F8] bg-white/95 backdrop-blur-md px-4 py-3 text-left shadow-[0_12px_32px_-8px_rgba(84,52,237,0.18)]">
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-[#F0EDFF] text-xs font-bold text-[#5434ED]">
           ✓
         </div>
         <div className="min-w-0 flex-1">
-          <p className="kbd text-[9px] uppercase tracking-wider text-accent">
+          <p className="text-[9px] font-bold uppercase tracking-wider text-[#5434ED]">
             {t("landing.toastTag")}
           </p>
-          <p className="truncate text-xs font-medium text-ink">
+          <p className="truncate text-xs font-semibold text-[#14131B]">
             {t("landing.joinedToast", { name: activeToast })}
           </p>
         </div>
@@ -86,7 +86,7 @@ export function SocialProof({ onCountLoaded }) {
           type="button"
           onClick={() => setActiveToast(null)}
           aria-label={t("common.cancel")}
-          className="shrink-0 rounded p-1 text-ink-3 transition-colors hover:text-ink">
+          className="shrink-0 rounded p-1 text-[#8F8B9F] transition-colors hover:text-[#14131B] hover:bg-black/5">
           ✕
         </button>
       </div>
@@ -95,13 +95,15 @@ export function SocialProof({ onCountLoaded }) {
 }
 
 export function UserCountBadge({ count }) {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   if (typeof count !== "number" || count <= 0) return null;
 
+  const formattedCount = new Intl.NumberFormat(lang === "id" ? "id-ID" : "en-US").format(count);
+
   return (
-    <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-rule bg-paper-2 px-3 py-1 text-xs text-ink-2">
-      <span className="h-2 w-2 rounded-full bg-success animate-pulse" />
-      <span>{t("landing.userCount", { count: count.toLocaleString() })}</span>
+    <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-[#EAE6F8] bg-white px-3.5 py-1 text-xs text-[#5D5A6F] shadow-sm">
+      <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+      <span>{t("landing.userCount", { count: formattedCount })}</span>
     </div>
   );
 }
