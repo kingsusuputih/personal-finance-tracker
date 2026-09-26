@@ -6,6 +6,11 @@ export default defineConfig({
   server: {
     port: 5174,
     proxy: {
+      '/api/chat': {
+        target: 'https://jwircppgmbyasmmaemho.supabase.co/functions/v1/chat',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/chat/, ''),
+      },
       '/api/registry': {
         target: 'https://jwircppgmbyasmmaemho.supabase.co/functions/v1/registry',
         changeOrigin: true,

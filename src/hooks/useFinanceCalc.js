@@ -3,60 +3,61 @@ import { useFinanceStore } from "../store/financeStore.js";
 import {
   calculateAllocations,
   calculateFundTargets,
+  calculateCycleRecap,
 } from "../utils/financeFormulas.js";
 import {
   getEffectiveTimezone,
   getEffectiveCutoff,
   getCycleInfo,
+  getCycleBounds,
 } from "../utils/dateTime.js";
 
-export function useFinanceCalc() {
+export function useFinanceCalc(selectedCycleKey = null) {
   const income = useFinanceStore((s) => s.income);
+  const additionalIncome = useFinanceStore((s) => s.additionalIncome || []);
   const transactions = useFinanceStore((s) => s.transactions);
   const settings = useFinanceStore((s) => s.settings);
 
   return useMemo(() => {
     const timeZone = getEffectiveTimezone(settings);
     const cutoffDay = getEffectiveCutoff(settings);
-    const cycle = getCycleInfo(new Date(), timeZone, cutoffDay);
+    const currentCycle = getCycleInfo(new Date(), timeZone, cutoffDay);
+    const cycle = selectedCycleKey ? (getCycleBounds(selectedCycleKey, cutoffDay) || currentCycle) : currentCycle;
     const currentMonth = cycle.cycleKey;
 
-    const monthIncomes = income.filter((r) => r.month === currentMonth);
-    const monthlyIncome = monthIncomes.length
-      ? monthIncomes[monthIncomes.length - 1].amount
-      : 0;
+    const recap = calculateCycleRecap({
+      cycleKey: currentMonth,
+      cycleStartDate: cycle.startDate,
+      cycleEndDate: cycle.endDate,
+      income,
+      additionalIncome,
+      transactions,
+    });
 
-    const cycleTransactions = transactions.filter(
-      (t) => t.date >= cycle.startDate && t.date <= cycle.endDate,
-    );
-    const totalMonthlyExpenses = cycleTransactions.reduce(
-      (sum, t) => sum + (t.amount || 0),
-      0,
-    );
+    const monthlyIncome = recap.totalIncome;
+    const totalMonthlyExpenses = recap.totalMonthlyExpenses;
     const allocations = calculateAllocations(monthlyIncome);
-    const fundTargets = calculateFundTargets(totalMonthlyExpenses);
+    const fundTargets = calculateFundTargets(recap.consumptionExpenses);
     const actualSpending = {
-      needs: cycleTransactions
-        .filter((t) => t.category === "Needs")
-        .reduce((sum, t) => sum + (t.amount || 0), 0),
-      investments: cycleTransactions
-        .filter((t) => t.category === "Investment")
-        .reduce((sum, t) => sum + (t.amount || 0), 0),
-      lifestyle: cycleTransactions
-        .filter((t) => t.category === "Lifestyle")
-        .reduce((sum, t) => sum + (t.amount || 0), 0),
+      needs: recap.needsExpenses,
+      investments: recap.investmentExpenses,
+      lifestyle: recap.lifestyleExpenses,
     };
 
     return {
       currentMonth,
       cycle,
       monthlyIncome,
+      mainIncome: recap.mainIncome,
+      additionalIncome: recap.totalAdditionalIncome,
+      hasMainIncome: recap.hasMainIncome,
       totalMonthlyExpenses,
       allocations,
       fundTargets,
       actualSpending,
       timeZone,
       cutoffDay,
+      recap,
     };
-  }, [income, transactions, settings]);
+  }, [income, additionalIncome, transactions, settings, selectedCycleKey]);
 }

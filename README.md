@@ -12,7 +12,10 @@ Finance Tracker adalah aplikasi web untuk mencatat pemasukan dan pengeluaran ser
 
 - Masuk dengan Google OAuth 2.0
 - Spreadsheet otomatis dibuat di Google Drive Anda (`drive.file` scope, hanya file yang dibuat aplikasi)
-- Mencatat pemasukan bulanan dan pengeluaran harian per kategori
+- Mencatat pemasukan bulanan utama dan pemasukan tambahan (bonus, side job, ngojek) secara terpisah
+- Rekap bulanan historis (`/recap`) per siklus gajian: surplus/defisit, sisa uang yang bisa ditabung, dan akumulasi investasi
+- Pengelompokan pengeluaran otomatis per kategori berdasarkan kata kunci deskripsi beserta override manual per transaksi
+- Asisten Keuangan AI pintar (`/chat`) bertenaga Google Gemini (tier gratis) untuk analisis keuangan dan usulan draf transaksi
 - Siklus tanggal gajian kustom (1–28, default 25) dan deteksi/pilihan zona waktu IANA
 - Fitur privasi untuk menyembunyikan nominal pemasukan dan pengeluaran di dasbor
 - Alokasi 50 / 30 / 20 (Kebutuhan 50%, Investasi 30%, Gaya Hidup 20%)
@@ -35,27 +38,29 @@ Finance Tracker adalah aplikasi web untuk mencatat pemasukan dan pengeluaran ser
 | Grafik | Apache ECharts 6 |
 | Autentikasi | @react-oauth/google |
 | Database Keuangan | Google Sheets API v4 (di Drive pengguna) |
-| Registry Komunitas | Supabase Postgres & Edge Functions (ap-southeast-1) |
+| Registry & AI Proxy | Supabase Postgres & Edge Functions (ap-southeast-1) |
+| Model AI | Google Gemini 1.5 Flash (tier gratis via Edge Function) |
 | Analytics | @vercel/analytics · Google Analytics |
 | Deployment | Vercel |
 
 ## Cara Kerja & Privasi
 
 1. Pengguna masuk dengan akun Google.
-2. Aplikasi mencari/membuat spreadsheet `Finance_Tracker_Data` di Google Drive pengguna.
+2. Aplikasi mencari/membuat spreadsheet `Finance_Tracker_Data` di Google Drive pengguna (terdiri dari 4 lembar: `Income`, `AdditionalIncome`, `Expenses`, dan `Settings`).
 3. Pemasukan, pengeluaran, dan pengaturan siklus ditulis langsung ke spreadsheet tersebut.
-4. Semua perhitungan (50/30/20, target dana, siklus gajian) dilakukan di sisi klien.
+4. Semua perhitungan (50/30/20, target dana, siklus gajian, rekap historis, pengelompokan) dilakukan di sisi klien.
 5. Akun unik dicatat secara anonim (HMAC) di registry Supabase untuk menampilkan total pengguna di landing page. Pengguna dapat memilih untuk menampilkan nama tersamarkan atau menghapus datanya kapan saja di Pengaturan.
+6. Saat menggunakan Asisten AI opsional (`/chat`), ringkasan kalkulasi keuangan dikirim melalui proksi aman Supabase Edge Function ke Google Gemini API (tier gratis) dengan persetujuan pengguna. Percakapan bersifat in-memory dan tidak pernah disimpan di database server aplikasi.
 
-Data keuangan tidak pernah keluar dari Google Drive Anda. Token OAuth disimpan di penyimpanan browser lokal dan dicabut saat keluar. Tanpa iklan.
+Data keuangan utama tersimpan di Google Drive Anda sendiri. Token OAuth disimpan di penyimpanan browser lokal dan dicabut saat keluar. Tanpa iklan.
 
 ## Persiapan GCP
 
 1. Buat project di [Google Cloud Console](https://console.cloud.google.com/) dan aktifkan **Google Sheets API** & **Google Drive API**.
 2. Konfigurasi OAuth consent screen (External), scopes: `email`, `profile`, `spreadsheets`, `drive.file`.
 3. Buat kredensial **OAuth 2.0 Web Application**.
-   - Authorized JS Origins: `http://localhost:5173`
-   - Authorized Redirect URIs: `http://localhost:5173`
+   - Authorized JS Origins: `http://localhost:5174` (atau `http://localhost:5173`)
+   - Authorized Redirect URIs: `http://localhost:5174` (atau `http://localhost:5173`)
 4. Salin **Client ID** (bukan secret) ke `.env.local`.
 
 ## Instalasi
@@ -103,7 +108,9 @@ npm run check
 | `/` | Landing page dengan statistik komunitas |
 | `/login` | Masuk dengan Google |
 | `/dashboard` | Dasbor alokasi & target dana |
+| `/recap` | Rekap bulanan historis & akumulasi investasi |
 | `/ledger` | Pencatatan pemasukan & pengeluaran |
+| `/chat` | Asisten Keuangan AI pintar |
 | `/settings` | Pengaturan zona waktu & tanggal gajian |
 | `/privacy` | Kebijakan Privasi |
 | `/terms` | Ketentuan Layanan |

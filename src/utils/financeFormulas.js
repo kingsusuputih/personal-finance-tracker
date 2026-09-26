@@ -13,6 +13,77 @@ export function calculateFundTargets(totalMonthlyExpenses) {
   };
 }
 
+export function calculateCycleRecap({
+  cycleKey,
+  cycleStartDate,
+  cycleEndDate,
+  income = [],
+  additionalIncome = [],
+  transactions = [],
+  allTransactions = [],
+}) {
+  const monthIncomes = income.filter((r) => r.month === cycleKey);
+  const mainIncome = monthIncomes.length
+    ? Number(monthIncomes[monthIncomes.length - 1].amount) || 0
+    : 0;
+  const hasMainIncome = monthIncomes.length > 0;
+
+  const cycleAddIncomes = additionalIncome.filter(
+    (a) => a.date >= cycleStartDate && a.date <= cycleEndDate,
+  );
+  const totalAdditionalIncome = cycleAddIncomes.reduce(
+    (sum, a) => sum + (Number(a.amount) || 0),
+    0,
+  );
+  const totalIncome = mainIncome + totalAdditionalIncome;
+
+  const cycleTransactions = transactions.filter(
+    (t) => t.date >= cycleStartDate && t.date <= cycleEndDate,
+  );
+
+  const needsExpenses = cycleTransactions
+    .filter((t) => t.category === "Needs")
+    .reduce((sum, t) => sum + (Number(t.amount) || 0), 0);
+
+  const lifestyleExpenses = cycleTransactions
+    .filter((t) => t.category === "Lifestyle")
+    .reduce((sum, t) => sum + (Number(t.amount) || 0), 0);
+
+  const consumptionExpenses = needsExpenses + lifestyleExpenses;
+
+  const investmentExpenses = cycleTransactions
+    .filter((t) => t.category === "Investment")
+    .reduce((sum, t) => sum + (Number(t.amount) || 0), 0);
+
+  const totalMonthlyExpenses = consumptionExpenses + investmentExpenses;
+
+  const surplusBeforeInvestment = totalIncome - consumptionExpenses;
+  const remainingAfterInvestment = totalIncome - consumptionExpenses - investmentExpenses;
+
+  const targetAllTx = allTransactions && allTransactions.length ? allTransactions : transactions;
+  const cumulativeInvestments = targetAllTx
+    .filter((t) => t.category === "Investment" && t.date <= cycleEndDate)
+    .reduce((sum, t) => sum + (Number(t.amount) || 0), 0);
+
+  return {
+    cycleKey,
+    hasMainIncome,
+    mainIncome,
+    totalAdditionalIncome,
+    additionalIncomes: cycleAddIncomes,
+    totalIncome,
+    needsExpenses,
+    lifestyleExpenses,
+    consumptionExpenses,
+    investmentExpenses,
+    totalMonthlyExpenses,
+    surplusBeforeInvestment,
+    remainingAfterInvestment,
+    cumulativeInvestments,
+    cycleTransactions,
+  };
+}
+
 export function sumByCategory(transactions, category, month) {
   return transactions
     .filter((t) => t.category === category && t.date.startsWith(month))

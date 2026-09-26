@@ -92,6 +92,28 @@ export function getCycleInfo(date = new Date(), timeZone = "Asia/Jakarta", cutof
   return { cycleKey, startDate, endDate, cutoffDay: cutoff };
 }
 
+export function getCycleBounds(cycleKey, cutoffDay = 25) {
+  if (!cycleKey || typeof cycleKey !== "string") return null;
+  const match = cycleKey.match(/^(\d{4})-(\d{2})$/);
+  if (!match) return null;
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const cutoff = Number.isInteger(cutoffDay) && cutoffDay >= 1 && cutoffDay <= 28 ? cutoffDay : 25;
+
+  if (cutoff === 1) {
+    const start = `${cycleKey}-01`;
+    const lastDay = new Date(year, month, 0).getDate();
+    const end = `${cycleKey}-${String(lastDay).padStart(2, "0")}`;
+    return { cycleKey, startDate: start, endDate: end, cutoffDay: 1 };
+  }
+
+  const nextYear = month === 12 ? year + 1 : year;
+  const nextMonth = month === 12 ? 1 : month + 1;
+  const startDate = `${year}-${String(month).padStart(2, "0")}-${String(cutoff).padStart(2, "0")}`;
+  const endDate = `${nextYear}-${String(nextMonth).padStart(2, "0")}-${String(cutoff - 1).padStart(2, "0")}`;
+  return { cycleKey, startDate, endDate, cutoffDay: cutoff };
+}
+
 export function getCycleKeyForDate(dateStr, cutoffDay = 25) {
   if (!dateStr || typeof dateStr !== "string") return "";
   const match = dateStr.match(/^(\d{4})-(\d{2})-(\d{2})/);

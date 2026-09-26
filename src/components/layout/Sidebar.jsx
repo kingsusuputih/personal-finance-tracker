@@ -9,7 +9,9 @@ import { DONATE_URL } from "../../constants/donate.js";
 
 const navItems = [
   { to: "/dashboard", labelKey: "nav.dashboard" },
+  { to: "/recap", labelKey: "nav.recap" },
   { to: "/ledger", labelKey: "nav.ledger" },
+  { to: "/chat", labelKey: "nav.chat" },
   { to: "/settings", labelKey: "nav.settings" },
 ];
 

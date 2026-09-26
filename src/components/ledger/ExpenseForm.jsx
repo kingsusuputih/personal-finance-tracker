@@ -12,19 +12,26 @@ import {
   currentZonedDateKey,
 } from "../../utils/dateTime.js";
 
-export function ExpenseForm({ editingRow = null, onCancelEdit }) {
+export function ExpenseForm({ editingRow = null, onCancelEdit, draft = null, onClearDraft = null }) {
   const { addTransaction, updateTransaction, settings } = useSpreadsheet();
   const toast = useToast();
   const t = useT();
   const timeZone = getEffectiveTimezone(settings);
   const defaultDate = currentZonedDateKey(new Date(), timeZone);
-  const [date, setDate] = useState(editingRow?.date || defaultDate);
+  const [date, setDate] = useState(editingRow?.date || draft?.date || defaultDate);
   const [category, setCategory] = useState(
-    editingRow?.category || EXPENSE_CATEGORIES[0],
+    editingRow?.category || draft?.category || EXPENSE_CATEGORIES[0],
   );
-  const [description, setDescription] = useState(editingRow?.description || "");
+  const [description, setDescription] = useState(editingRow?.description || draft?.description || "");
   const [amount, setAmount] = useState(
-    editingRow ? formatRupiah(String(editingRow.amount)) : "",
+    editingRow
+      ? formatRupiah(String(editingRow.amount))
+      : draft
+      ? formatRupiah(String(draft.amount))
+      : "",
+  );
+  const [groupOverride, setGroupOverride] = useState(
+    editingRow?.group_override || draft?.group_override || "",
   );
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
@@ -48,6 +55,8 @@ export function ExpenseForm({ editingRow = null, onCancelEdit }) {
       description,
       value,
       editingRow?.created_at,
+      groupOverride.trim(),
+      editingRow?.id,
     );
     try {
       if (editingRow) {
@@ -63,6 +72,8 @@ export function ExpenseForm({ editingRow = null, onCancelEdit }) {
         toast.success(t("expense.saved"));
         setAmount("");
         setDescription("");
+        setGroupOverride("");
+        if (onClearDraft) onClearDraft();
       }
     } catch (err) {
       toast.error(err.message || t("form.err.amount"));
@@ -107,18 +118,32 @@ export function ExpenseForm({ editingRow = null, onCancelEdit }) {
             </select>
           </label>
         </div>
-        <label className="block">
-          <span className="kbd mb-1.5 block text-[10px] text-ink-3">
-            {t("expense.description")}
-          </span>
-          <input
-            type="text"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder={t("expense.descPlaceholder")}
-            className="field"
-          />
-        </label>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <label className="block">
+            <span className="kbd mb-1.5 block text-[10px] text-ink-3">
+              {t("expense.description")}
+            </span>
+            <input
+              type="text"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder={t("expense.descPlaceholder")}
+              className="field"
+            />
+          </label>
+          <label className="block">
+            <span className="kbd mb-1.5 block text-[10px] text-ink-3">
+              {t("expense.groupOverride")}
+            </span>
+            <input
+              type="text"
+              value={groupOverride}
+              onChange={(e) => setGroupOverride(e.target.value)}
+              placeholder={t("expense.groupOverridePlaceholder")}
+              className="field"
+            />
+          </label>
+        </div>
         <label className="block">
           <span className="kbd mb-1.5 block text-[10px] text-ink-3">
             {t("expense.amount")}

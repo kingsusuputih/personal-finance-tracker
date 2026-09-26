@@ -22,6 +22,22 @@ const items = [
     ),
   },
   {
+    to: "/recap",
+    labelKey: "nav.recap",
+    icon: (
+      <svg
+        viewBox="0 0 24 24"
+        className="h-5 w-5"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        aria-hidden="true">
+        <path d="M3 3v18h18" />
+        <path d="M18 9l-5 5-3-3-4 4" />
+      </svg>
+    ),
+  },
+  {
     to: "/ledger",
     labelKey: "nav.ledger",
     icon: (
@@ -36,6 +52,21 @@ const items = [
         <circle cx="3.5" cy="6" r="1.2" fill="currentColor" stroke="none" />
         <circle cx="3.5" cy="12" r="1.2" fill="currentColor" stroke="none" />
         <circle cx="3.5" cy="18" r="1.2" fill="currentColor" stroke="none" />
+      </svg>
+    ),
+  },
+  {
+    to: "/chat",
+    labelKey: "nav.chat",
+    icon: (
+      <svg
+        viewBox="0 0 24 24"
+        className="h-5 w-5"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        aria-hidden="true">
+        <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
       </svg>
     ),
   },

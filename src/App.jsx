@@ -15,7 +15,9 @@ import ChangelogPage from "./pages/ChangelogPage.jsx";
 import { Skeleton } from "./components/ui/Skeleton.jsx";
 
 const DashboardPage = lazy(() => import("./pages/DashboardPage.jsx"));
+const RecapPage = lazy(() => import("./pages/RecapPage.jsx"));
 const LedgerPage = lazy(() => import("./pages/LedgerPage.jsx"));
+const ChatPage = lazy(() => import("./pages/ChatPage.jsx"));
 const SettingsPage = lazy(() => import("./pages/SettingsPage.jsx"));
 
 function PageFallback() {
@@ -62,10 +64,26 @@ export default function App() {
             }
           />
           <Route
+            path="/recap"
+            element={
+              <Suspense fallback={<PageFallback />}>
+                <RecapPage />
+              </Suspense>
+            }
+          />
+          <Route
             path="/ledger"
             element={
               <Suspense fallback={<PageFallback />}>
                 <LedgerPage />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/chat"
+            element={
+              <Suspense fallback={<PageFallback />}>
+                <ChatPage />
               </Suspense>
             }
           />

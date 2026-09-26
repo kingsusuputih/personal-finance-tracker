@@ -1,6 +1,14 @@
 {
   "rewrites": [
     {
+      "source": "/api/chat/:path*",
+      "destination": "https://jwircppgmbyasmmaemho.supabase.co/functions/v1/chat/:path*"
+    },
+    {
+      "source": "/api/chat",
+      "destination": "https://jwircppgmbyasmmaemho.supabase.co/functions/v1/chat"
+    },
+    {
       "source": "/api/registry/:path*",
       "destination": "https://jwircppgmbyasmmaemho.supabase.co/functions/v1/registry/:path*"
     },

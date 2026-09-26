@@ -4,6 +4,7 @@ import { DEFAULT_SETTINGS } from "../constants/sheets.js";
 const initialState = {
   spreadsheetId: null,
   income: [],
+  additionalIncome: [],
   transactions: [],
   settings: DEFAULT_SETTINGS,
   provisioning: false,
@@ -14,6 +15,7 @@ export const useFinanceStore = create((set) => ({
   ...initialState,
   setSpreadsheetId: (spreadsheetId) => set({ spreadsheetId }),
   setIncome: (income) => set({ income }),
+  setAdditionalIncome: (additionalIncome) => set({ additionalIncome }),
   setTransactions: (transactions) => set({ transactions }),
   setSettings: (settings) => set({ settings }),
   setProvisioning: (provisioning) => set({ provisioning }),

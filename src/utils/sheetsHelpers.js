@@ -4,12 +4,30 @@ export function serializeIncomeRow(month, amount) {
   return [month, Number(amount), new Date().toISOString()];
 }
 
+export function serializeAdditionalIncomeRow(
+  date,
+  source,
+  amount,
+  createdAt = new Date().toISOString(),
+  id = (typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : String(Date.now())),
+) {
+  return [
+    date,
+    source || "",
+    Number(amount),
+    createdAt || new Date().toISOString(),
+    id || (typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : String(Date.now())),
+  ];
+}
+
 export function serializeExpenseRow(
   date,
   category,
   description,
   amount,
   createdAt = new Date().toISOString(),
+  groupOverride = "",
+  id = (typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : String(Date.now())),
 ) {
   return [
     date,
@@ -17,6 +35,8 @@ export function serializeExpenseRow(
     description || "",
     Number(amount),
     createdAt || new Date().toISOString(),
+    groupOverride || "",
+    id || (typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : String(Date.now())),
   ];
 }
 
@@ -47,12 +67,17 @@ export function deserializeRows(headers, rawRows = []) {
   if (!rawRows.length) return [];
   const [headerRow, ...body] = rawRows;
   if (!headerRow || !headerRow.length) return [];
+  const colIndexMap = {};
+  headerRow.forEach((h, idx) => {
+    if (h) colIndexMap[String(h).trim()] = idx;
+  });
   return body
     .map((row, i) => {
       const record = { rowNumber: i + 2 };
       let hasData = false;
-      headers.forEach((header, j) => {
-        const value = row[j] ?? "";
+      headers.forEach((header, defaultIdx) => {
+        const idx = colIndexMap[header] !== undefined ? colIndexMap[header] : defaultIdx;
+        const value = row[idx] ?? "";
         if (header === "amount") record[header] = Number(value) || 0;
         else record[header] = String(value);
         if (String(value).trim() !== "") hasData = true;

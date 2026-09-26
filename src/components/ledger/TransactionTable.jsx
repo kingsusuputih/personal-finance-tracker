@@ -160,6 +160,11 @@ export function TransactionTable({
                   {row.description && (
                     <p className="mt-1 truncate text-sm text-ink-2">
                       {row.description}
+                      {row.group_override && (
+                        <span className="ml-1.5 rounded bg-paper-3 px-1.5 py-0.5 text-[10px] text-ink-3">
+                          {row.group_override}
+                        </span>
+                      )}
                     </p>
                   )}
                 </div>
@@ -212,6 +217,11 @@ export function TransactionTable({
                     </td>
                     <td className="px-5 py-3 text-ink-2">
                       {row.description || <span className="text-ink-3">—</span>}
+                      {row.group_override && (
+                        <span className="ml-2 rounded bg-paper-3 px-1.5 py-0.5 text-[10px] text-ink-3">
+                          {row.group_override}
+                        </span>
+                      )}
                     </td>
                     <td className="amount whitespace-nowrap px-5 py-3 text-right font-medium text-ink">
                       {formatIDR(row.amount)}

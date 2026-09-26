@@ -8,27 +8,48 @@ import { serializeSettingsRow } from "../utils/sheetsHelpers.js";
 
 const sheetIdCache = {};
 
-export async function ensureSettingsSheet(accessToken, spreadsheetId) {
+export async function ensureSchemaSheets(accessToken, spreadsheetId) {
   const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}?fields=sheets.properties(sheetId,title)`;
   const res = await authedRequest(accessToken, url);
   if (!res.ok) throw new Error("Failed to load spreadsheet metadata");
   const data = await res.json();
-  const existing = (data.sheets || []).find(
-    (s) => s.properties.title === SHEETS.SETTINGS,
-  );
-  if (!existing) {
+  const sheets = data.sheets || [];
+
+  const requests = [];
+  const valueData = [];
+
+  const hasSettings = sheets.some((s) => s.properties.title === SHEETS.SETTINGS);
+  if (!hasSettings) {
+    requests.push({ addSheet: { properties: { title: SHEETS.SETTINGS } } });
+    valueData.push(
+      { range: `'${SHEETS.SETTINGS}'!A1:C1`, values: [SETTINGS_HEADERS] },
+      { range: `'${SHEETS.SETTINGS}'!A2:C2`, values: [serializeSettingsRow(DEFAULT_SETTINGS)] },
+    );
+  }
+
+  const hasAddIncome = sheets.some((s) => s.properties.title === SHEETS.ADDITIONAL_INCOME);
+  if (!hasAddIncome) {
+    requests.push({ addSheet: { properties: { title: SHEETS.ADDITIONAL_INCOME } } });
+    valueData.push({
+      range: `'${SHEETS.ADDITIONAL_INCOME}'!A1:E1`,
+      values: [ADDITIONAL_INCOME_HEADERS],
+    });
+  }
+
+  if (requests.length > 0) {
     const addRes = await authedRequest(
       accessToken,
       `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}:batchUpdate`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          requests: [{ addSheet: { properties: { title: SHEETS.SETTINGS } } }],
-        }),
+        body: JSON.stringify({ requests }),
       },
     );
-    if (!addRes.ok) throw new Error("Failed to create Settings sheet");
+    if (!addRes.ok) throw new Error("Failed to add missing sheets");
+  }
+
+  if (valueData.length > 0) {
     const writeRes = await authedRequest(
       accessToken,
       `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values:batchUpdate`,
@@ -37,19 +58,15 @@ export async function ensureSettingsSheet(accessToken, spreadsheetId) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           valueInputOption: "RAW",
-          data: [
-            { range: `'${SHEETS.SETTINGS}'!A1:C1`, values: [SETTINGS_HEADERS] },
-            {
-              range: `'${SHEETS.SETTINGS}'!A2:C2`,
-              values: [serializeSettingsRow(DEFAULT_SETTINGS)],
-            },
-          ],
+          data: valueData,
         }),
       },
     );
-    if (!writeRes.ok) throw new Error("Failed to initialize Settings sheet");
+    if (!writeRes.ok) throw new Error("Failed to initialize missing sheets");
   }
 }
+
+export const ensureSettingsSheet = ensureSchemaSheets;
 
 async function resolveSheetId(accessToken, spreadsheetId, sheetName) {
   const cacheKey = `${spreadsheetId}:${sheetName}`;

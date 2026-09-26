@@ -1,8 +1,16 @@
 import { Link } from "react-router-dom";
 import { useI18n } from "../i18n/LanguageProvider.jsx";
 import { LangToggle } from "../components/ui/LangToggle.jsx";
+import { Badge } from "../components/ui/Badge.jsx";
 import { changelogEntries } from "../constants/changelog.js";
 import { CONTACT_EMAIL } from "../constants/legalContent.js";
+
+const sectionTone = {
+  added: "success",
+  changed: "accent",
+  fixed: "warning",
+  security: "danger",
+};
 
 export default function ChangelogPage() {
   const { lang, t } = useI18n();
@@ -47,14 +55,37 @@ export default function ChangelogPage() {
                     {entry.date}
                   </time>
                 </div>
-                <ul className="mt-3 space-y-2 text-sm leading-relaxed text-ink-2">
-                  {data.items.map((item, idx) => (
-                    <li key={idx} className="flex items-start gap-2">
-                      <span className="text-accent">•</span>
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
+
+                {data.sections && data.sections.length > 0 ? (
+                  <div className="mt-4 space-y-4">
+                    {data.sections.map((sec, secIdx) => (
+                      <div key={secIdx} className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <Badge tone={sectionTone[sec.type] || "neutral"}>
+                            {sec.label || sec.type}
+                          </Badge>
+                        </div>
+                        <ul className="space-y-1.5 pl-1 text-sm leading-relaxed text-ink-2">
+                          {sec.items.map((item, idx) => (
+                            <li key={idx} className="flex items-start gap-2">
+                              <span className="text-accent">•</span>
+                              <span>{item}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <ul className="mt-3 space-y-2 text-sm leading-relaxed text-ink-2">
+                    {(data.items || []).map((item, idx) => (
+                      <li key={idx} className="flex items-start gap-2">
+                        <span className="text-accent">•</span>
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </article>
             );
           })}

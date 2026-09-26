@@ -1,9 +1,10 @@
 import { authedRequest } from "./http.js";
-import { ensureSettingsSheet } from "./googleSheets.js";
+import { ensureSchemaSheets } from "./googleSheets.js";
 import {
   SPREADSHEET_NAME,
   SHEETS,
   INCOME_HEADERS,
+  ADDITIONAL_INCOME_HEADERS,
   EXPENSE_HEADERS,
   SETTINGS_HEADERS,
   DEFAULT_SETTINGS,
@@ -35,7 +36,8 @@ async function writeHeaders(accessToken, spreadsheetId) {
         valueInputOption: "RAW",
         data: [
           { range: `'${SHEETS.INCOME}'!A1:C1`, values: [INCOME_HEADERS] },
-          { range: `'${SHEETS.EXPENSES}'!A1:E1`, values: [EXPENSE_HEADERS] },
+          { range: `'${SHEETS.ADDITIONAL_INCOME}'!A1:E1`, values: [ADDITIONAL_INCOME_HEADERS] },
+          { range: `'${SHEETS.EXPENSES}'!A1:G1`, values: [EXPENSE_HEADERS] },
           { range: `'${SHEETS.SETTINGS}'!A1:C1`, values: [SETTINGS_HEADERS] },
           {
             range: `'${SHEETS.SETTINGS}'!A2:C2`,
@@ -59,8 +61,9 @@ export async function createSpreadsheet(accessToken) {
         properties: { title: SPREADSHEET_NAME },
         sheets: [
           { properties: { title: SHEETS.INCOME, index: 0 } },
-          { properties: { title: SHEETS.EXPENSES, index: 1 } },
-          { properties: { title: SHEETS.SETTINGS, index: 2 } },
+          { properties: { title: SHEETS.ADDITIONAL_INCOME, index: 1 } },
+          { properties: { title: SHEETS.EXPENSES, index: 2 } },
+          { properties: { title: SHEETS.SETTINGS, index: 3 } },
         ],
       }),
     },
@@ -74,7 +77,7 @@ export async function createSpreadsheet(accessToken) {
 export async function getOrCreateSpreadsheet(accessToken) {
   const existing = await findSpreadsheet(accessToken);
   if (existing) {
-    await ensureSettingsSheet(accessToken, existing);
+    await ensureSchemaSheets(accessToken, existing);
     return existing;
   }
   return createSpreadsheet(accessToken);

@@ -1,7 +1,7 @@
 # PRD: Personal Finance Tracker
-**Version:** 1.2.0
-**Status:** Implemented
-**Last Updated:** 2026-09-06
+**Version:** 1.3.0
+**Status:** Implemented (Recap, Additional Income, Smart Grouping, AI Chat)
+**Last Updated:** 2026-09-26
 **Prepared for:** AI Agent CLI Execution
 
 ---
@@ -282,9 +282,65 @@ VITE_GOOGLE_CLIENT_ID=xxxxxxxxxxxx.apps.googleusercontent.com
 
 ---
 
+### Feature 6: Historical Recap & Savings Tracker
+
+**User Story:** As a user, I want to review past payday cycles to see if my spending exceeded income (surplus vs deficit), how much money remains available to save/invest, and track total accumulated money placed in investments.
+
+**Acceptance Criteria:**
+- [ ] Dedicated `/recap` page accessible from sidebar and bottom navigation
+- [ ] Cycle selector allowing users to switch between historical and current payday cycles
+- [ ] Displays date bounds (e.g. 25 Aug – 24 Sep) and indicates if it is the active cycle
+- [ ] Calculates:
+  - Total Income: Main Salary (latest entry for the cycle) + Additional Incomes in cycle
+  - Consumption Expenses: Needs + Lifestyle expenses
+  - Period Investment: Total `Investment` category contributions during cycle
+  - Surplus/Deficit Before Investment: Total Income − Consumption Expenses
+  - Remaining After Investment: Total Income − Consumption Expenses − Investment Expenses
+  - Cumulative Saved: Total sum of all recorded `Investment` entries up to the cycle cutoff
+- [ ] Does not double-count investment expenses as consumption
+
+**Components:** `RecapPage.jsx`
+**Hook:** `useFinanceCalc.js`, `financeFormulas.js`
+
+---
+
+### Feature 7: Additional Income & Smart Expense Grouping
+
+**User Story:** As a user, I want to log extra income sources (bonuses, side jobs, ride-hailing) separately from my primary salary, and see my expenses automatically grouped by item (e.g. Cigarettes, Coffee) with the ability to override groups.
+
+**Acceptance Criteria:**
+- [ ] Ledger includes tabs for "Gaji Utama" (Main Salary) and "Pemasukan Tambahan" (Additional Income)
+- [ ] Additional income records: date, source name, amount, created_at, and unique ID
+- [ ] Automatic keyword-based item grouping (e.g. "beli rokok", "rokok surya" → "Rokok") within category boundaries without splitting mixed transactions
+- [ ] Expense form supports manual `group_override` field to customize or separate groups
+- [ ] Transaction table displays group override tags when present
+
+**Components:** `IncomeForm.jsx`, `ExpenseForm.jsx`, `TransactionTable.jsx`
+**Utilities:** `expenseGrouping.js`, `sheetsHelpers.js`
+
+---
+
+### Feature 8: AI Financial Assistant (Gemini Free Tier)
+
+**User Story:** As a user, I want an intelligent chatbot inside the member area to analyze my financial numbers and draft new transactions with explicit confirmation.
+
+**Acceptance Criteria:**
+- [ ] Dedicated `/chat` route with mobile & desktop navigation links
+- [ ] Explicit consent dialog previewing financial metrics before sending data to AI
+- [ ] Client calls Supabase Edge Function (`/api/chat`) with Google OAuth bearer token
+- [ ] Server validates token audience and expiry before calling Gemini 1.5 Flash
+- [ ] Displays transaction proposals as editable cards; user must explicitly click "Confirm & save" to write to Google Sheets
+- [ ] Rate limit & quota guard (429 handling) with countdown timer when retry headers are present; no paid fallback
+- [ ] Ephemeral in-memory chat session; no chat transcripts or credentials saved to server
+
+**Components:** `ChatPage.jsx`, `api/chat.js`
+**Backend:** `supabase/functions/chat/index.ts`
+
+---
+
 ## 8. Data Schema (Google Sheets)
 
-The spreadsheet `Finance_Tracker_Data` must contain exactly **2 sheets (tabs)**:
+The spreadsheet `Finance_Tracker_Data` contains **4 sheets (tabs)**:
 
 ### Sheet 1: `Income`
 
@@ -294,7 +350,17 @@ The spreadsheet `Finance_Tracker_Data` must contain exactly **2 sheets (tabs)**:
 | B | `amount` | Number | Monthly income in IDR |
 | C | `created_at` | String | ISO 8601 timestamp |
 
-### Sheet 2: `Expenses`
+### Sheet 2: `AdditionalIncome`
+
+| Column | Header | Type | Notes |
+|---|---|---|---|
+| A | `date` | String | Format: `YYYY-MM-DD` |
+| B | `source` | String | Source name (e.g. Bonus, Side job) |
+| C | `amount` | Number | Income amount in IDR |
+| D | `created_at` | String | ISO 8601 timestamp |
+| E | `id` | String | Unique ID / UUID |
+
+### Sheet 3: `Expenses`
 
 | Column | Header | Type | Notes |
 |---|---|---|---|
@@ -303,13 +369,21 @@ The spreadsheet `Finance_Tracker_Data` must contain exactly **2 sheets (tabs)**:
 | C | `description` | String | Optional, free text |
 | D | `amount` | Number | Expense amount in IDR |
 | E | `created_at` | String | ISO 8601 timestamp |
+| F | `group_override` | String | Optional manual grouping tag |
+| G | `id` | String | Unique ID / UUID |
 
-### Initialization Logic
-When creating the spreadsheet for the first time:
-1. Rename default "Sheet1" → `Income`
-2. Add headers row to `Income!A1:C1`
-3. Create new sheet tab `Expenses`
-4. Add headers row to `Expenses!A1:E1`
+### Sheet 4: `Settings`
+
+| Column | Header | Type | Notes |
+|---|---|---|---|
+| A | `timezone_mode` | String | `auto` or `manual` |
+| B | `timezone` | String | IANA timezone string |
+| C | `cutoff_day` | Number | Cutoff day integer (1–28) |
+
+### Initialization & Migration Logic
+When connecting to a spreadsheet:
+1. Ensure all 4 sheets (`Income`, `AdditionalIncome`, `Expenses`, `Settings`) exist via idempotent `ensureSchemaSheets`.
+2. Existing 5-column `Expenses` rows remain compatible; new columns `group_override` and `id` are appended gracefully.
 
 ---
 
@@ -571,6 +645,16 @@ cp .env.example .env.local
 12. **`vercel.json` must have SPA rewrite rule** — all routes serve `index.html`.
 13. **`.env.local` must be in `.gitignore`** — never commit real credentials.
 
+### Documentation & History Synchronization Rules — MUST ENFORCE
+14. **Always-sync documentation upon any change** — Any addition, update, or removal of features, behavior, data schemas, API integrations, or privacy handling must synchronize `PRD.md`, `README.md`, `src/constants/changelog.js`, and `src/constants/legalContent.js` in the same change set.
+15. **Truthful versioning, dates, and status** — Always accurately distinguish code implementation, local self-check verification, and actual production deployment. Never claim a feature is deployed or verified without concrete evidence.
+16. **Pre-completion documentation checklist**:
+    - [ ] `PRD.md` reflects actual codebase behavior, schemas, routes, and constraints.
+    - [ ] `src/constants/changelog.js` updated with version entry and bilingual items (`en` and `id`).
+    - [ ] `README.md` updated with current features, routes, tech stack, and privacy explanations.
+    - [ ] Terms and Privacy Policy in `src/constants/legalContent.js` updated for all data transit or AI flows in both English and Indonesian.
+    - [ ] `npm run check` and `npm run build` pass without error.
+
 ---
 
-*End of PRD — Finance Tracker v1.0.0*
+*End of PRD — Finance Tracker v1.3.0*

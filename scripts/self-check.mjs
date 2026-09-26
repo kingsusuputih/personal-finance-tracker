@@ -7,6 +7,7 @@ import {
   getZonedDateParts,
   currentZonedDateKey,
   getCycleInfo,
+  getCycleBounds,
   getCycleKeyForDate,
   formatTransactionTime,
   formatDisplayDate,
@@ -69,6 +70,18 @@ assert.equal(infoCalendar.cycleKey, "2026-09");
 assert.equal(infoCalendar.startDate, "2026-09-01");
 assert.equal(infoCalendar.endDate, "2026-09-30");
 
+const bounds25 = getCycleBounds("2026-08", 25);
+assert.equal(bounds25.startDate, "2026-08-25");
+assert.equal(bounds25.endDate, "2026-09-24");
+
+const boundsDec = getCycleBounds("2026-12", 25);
+assert.equal(boundsDec.startDate, "2026-12-25");
+assert.equal(boundsDec.endDate, "2027-01-24");
+
+const bounds1 = getCycleBounds("2026-02", 1);
+assert.equal(bounds1.startDate, "2026-02-01");
+assert.equal(bounds1.endDate, "2026-02-28");
+
 const dispId = formatDisplayDate("2026-08-25", "id");
 assert(dispId.includes("25") && dispId.includes("2026"));
 const dispEn = formatDisplayDate("2026-08-25", "en");
@@ -86,13 +99,44 @@ assert.equal(formattedTime, "17.30");
 
 import {
   serializeExpenseRow,
+  serializeAdditionalIncomeRow,
   serializeSettingsRow,
   deserializeSettings,
+  deserializeRows,
 } from "../src/utils/sheetsHelpers.js";
+import { EXPENSE_HEADERS, ADDITIONAL_INCOME_HEADERS } from "../src/constants/sheets.js";
 
 const oldCreatedAt = "2026-09-01T08:00:00.000Z";
-const editedRow = serializeExpenseRow("2026-09-02", "Needs", "Edit test", 50000, oldCreatedAt);
+const editedRow = serializeExpenseRow("2026-09-02", "Needs", "Edit test", 50000, oldCreatedAt, "Custom Group", "uuid-123");
 assert.equal(editedRow[4], oldCreatedAt);
+assert.equal(editedRow[5], "Custom Group");
+assert.equal(editedRow[6], "uuid-123");
+
+const addIncRow = serializeAdditionalIncomeRow("2026-09-03", "Bonus", 250000, oldCreatedAt, "inc-uuid-456");
+assert.equal(addIncRow[0], "2026-09-03");
+assert.equal(addIncRow[1], "Bonus");
+assert.equal(addIncRow[2], 250000);
+assert.equal(addIncRow[3], oldCreatedAt);
+assert.equal(addIncRow[4], "inc-uuid-456");
+
+const legacyExpenseRaw = [
+  ["date", "category", "description", "amount", "created_at"],
+  ["2026-09-01", "Needs", "Groceries", "150000", oldCreatedAt],
+];
+const parsedLegacy = deserializeRows(EXPENSE_HEADERS, legacyExpenseRaw);
+assert.equal(parsedLegacy.length, 1);
+assert.equal(parsedLegacy[0].amount, 150000);
+assert.equal(parsedLegacy[0].group_override, "");
+assert.equal(parsedLegacy[0].id, "");
+
+const modernExpenseRaw = [
+  ["date", "category", "description", "amount", "created_at", "group_override", "id"],
+  ["2026-09-02", "Lifestyle", "Rokok Surya", "30000", oldCreatedAt, "Rokok", "exp-789"],
+];
+const parsedModern = deserializeRows(EXPENSE_HEADERS, modernExpenseRaw);
+assert.equal(parsedModern.length, 1);
+assert.equal(parsedModern[0].group_override, "Rokok");
+assert.equal(parsedModern[0].id, "exp-789");
 
 const sRow = serializeSettingsRow({ timezone_mode: "manual", timezone: "America/New_York", cutoff_day: "15" });
 assert.deepEqual(sRow, ["manual", "America/New_York", 15]);
@@ -132,5 +176,114 @@ assert.equal(maskTestName("Harsa Aditya"), "H*** A***");
 assert.equal(maskTestName("John Doe Smith"), "J*** D***");
 assert.equal(maskTestName("Budi"), "B***");
 assert.equal(maskTestName(""), "Anonymous");
+
+import { calculateCycleRecap } from "../src/utils/financeFormulas.js";
+import { resolveExpenseGroup, groupExpenses } from "../src/utils/expenseGrouping.js";
+
+assert.equal(resolveExpenseGroup("beli rokok"), "Rokok");
+assert.equal(resolveExpenseGroup("rokok surya"), "Rokok");
+assert.equal(resolveExpenseGroup("sampoerna mild"), "Rokok");
+assert.equal(resolveExpenseGroup("kopi susu"), "Kopi");
+assert.equal(resolveExpenseGroup("beli rokok dan kopi"), "beli rokok dan kopi");
+assert.equal(resolveExpenseGroup("beli rokok", "__separate__"), "beli rokok");
+assert.equal(resolveExpenseGroup("beli rokok", "Kebutuhan Khusus"), "Kebutuhan Khusus");
+
+const sampleTx = [
+  { date: "2026-08-26", category: "Lifestyle", description: "beli rokok", amount: 25000 },
+  { date: "2026-08-28", category: "Lifestyle", description: "rokok surya", amount: 30000 },
+  { date: "2026-08-29", category: "Needs", description: "beras", amount: 65000 },
+  { date: "2026-08-30", category: "Investment", description: "Bibit Reksadana", amount: 500000 },
+];
+const grouped = groupExpenses(sampleTx);
+assert.equal(grouped.Lifestyle["Rokok"].total, 55000);
+assert.equal(grouped.Lifestyle["Rokok"].count, 2);
+assert.equal(grouped.Needs["beras"].total, 65000);
+assert.equal(grouped.Investment["Bibit Reksadana"].total, 500000);
+
+const recap = calculateCycleRecap({
+  cycleKey: "2026-08",
+  cycleStartDate: "2026-08-25",
+  cycleEndDate: "2026-09-24",
+  income: [{ month: "2026-08", amount: 5000000 }],
+  additionalIncome: [
+    { date: "2026-08-27", source: "Bonus", amount: 500000 },
+    { date: "2026-09-01", source: "Ngojek", amount: 300000 },
+  ],
+  transactions: sampleTx,
+  allTransactions: [
+    { date: "2026-07-20", category: "Investment", amount: 1000000 },
+    ...sampleTx,
+  ],
+});
+
+assert.equal(recap.mainIncome, 5000000);
+assert.equal(recap.totalAdditionalIncome, 800000);
+assert.equal(recap.totalIncome, 5800000);
+assert.equal(recap.needsExpenses, 65000);
+assert.equal(recap.lifestyleExpenses, 55000);
+assert.equal(recap.consumptionExpenses, 120000);
+assert.equal(recap.investmentExpenses, 500000);
+assert.equal(recap.surplusBeforeInvestment, 5680000);
+assert.equal(recap.remainingAfterInvestment, 5180000);
+assert.equal(recap.cumulativeInvestments, 1500000);
+
+const unrecordedMainRecap = calculateCycleRecap({
+  cycleKey: "2026-09",
+  cycleStartDate: "2026-09-25",
+  cycleEndDate: "2026-10-24",
+  income: [],
+  additionalIncome: [
+    { date: "2026-10-01", source: "Side project", amount: 1200000 },
+  ],
+  transactions: [
+    { date: "2026-09-26", category: "Needs", amount: 1500000 },
+  ],
+  allTransactions: [
+    { date: "2026-08-30", category: "Investment", amount: 500000 },
+    { date: "2026-10-02", category: "Investment", amount: 200000 },
+    { date: "2026-11-01", category: "Investment", amount: 999999 },
+  ],
+});
+assert.equal(unrecordedMainRecap.hasMainIncome, false);
+assert.equal(unrecordedMainRecap.mainIncome, 0);
+assert.equal(unrecordedMainRecap.totalIncome, 1200000);
+assert.equal(unrecordedMainRecap.consumptionExpenses, 1500000);
+assert.equal(unrecordedMainRecap.surplusBeforeInvestment, -300000);
+assert.equal(unrecordedMainRecap.cumulativeInvestments, 700000);
+
+import { changelogEntries } from "../src/constants/changelog.js";
+import { privacy, terms } from "../src/constants/legalContent.js";
+
+assert(Array.isArray(changelogEntries) && changelogEntries.length >= 4);
+const seenVersions = new Set();
+changelogEntries.forEach((entry) => {
+  assert(entry.version && typeof entry.version === "string");
+  assert(!seenVersions.has(entry.version), `Duplicate changelog version: ${entry.version}`);
+  seenVersions.add(entry.version);
+  assert(/^\d{4}-\d{2}-\d{2}$/.test(entry.date), `Invalid changelog date: ${entry.date}`);
+  assert(entry.en && entry.en.title && Array.isArray(entry.en.items));
+  assert(entry.id && entry.id.title && Array.isArray(entry.id.items));
+  if (entry.en.sections) {
+    assert(Array.isArray(entry.en.sections));
+    entry.en.sections.forEach((s) => {
+      assert(["added", "changed", "fixed", "deprecated", "removed", "security"].includes(s.type));
+      assert(s.label && typeof s.label === "string");
+      assert(Array.isArray(s.items) && s.items.length > 0);
+    });
+  }
+  if (entry.id.sections) {
+    assert(Array.isArray(entry.id.sections));
+    entry.id.sections.forEach((s) => {
+      assert(["added", "changed", "fixed", "deprecated", "removed", "security"].includes(s.type));
+      assert(s.label && typeof s.label === "string");
+      assert(Array.isArray(s.items) && s.items.length > 0);
+    });
+  }
+});
+
+assert(Array.isArray(privacy.en) && privacy.en.length > 5);
+assert(Array.isArray(privacy.id) && privacy.id.length === privacy.en.length);
+assert(Array.isArray(terms.en) && terms.en.length > 5);
+assert(Array.isArray(terms.id) && terms.id.length === terms.en.length);
 
 console.log("self-check passed");

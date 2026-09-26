@@ -30,7 +30,11 @@ export const privacy = {
     },
     {
       title: "Third parties & analytics",
-      body: `Third-party services used by the app include Google (Sign-in, Drive, and Sheets APIs), Supabase (Singapore region, for unique user registry and public community count), and web analytics (Vercel Web Analytics and Google Analytics). These services operate under their respective privacy policies. Your financial records are stored only in your Google Sheet and are never transmitted to analytics or registry services. The app does not run advertising.`,
+      body: `Third-party services used by the app include Google (Sign-in, Drive, Sheets, and Gemini APIs), Supabase (Singapore region, for user registry and secure Edge Function proxy), and web analytics (Vercel Web Analytics and Google Analytics). These services operate under their respective privacy policies. Your primary financial records remain in your Google Sheet. When using the AI Assistant, calculated summary numbers and user prompts are passed to Google Gemini free tier with your explicit consent. The app does not run advertising.`,
+    },
+    {
+      title: "AI Assistant & data processing",
+      body: `If you choose to use the optional AI Financial Assistant, your prompts and calculated financial summaries (such as total income, consumption spending, and savings surplus) are transmitted via a Supabase Edge Function proxy to Google's Gemini API (free tier) to generate responses and transaction drafts. An explicit consent dialog is required before any financial summary is sent. Your chat messages are kept only in temporary browser memory and are never persisted in any app database.`,
     },
     {
       title: "Your control & deletion",
@@ -72,7 +76,11 @@ export const privacy = {
     },
     {
       title: "Pihak ketiga & analitik",
-      body: `Pihak ketiga yang digunakan meliputi Google (API Sign-in, Drive, dan Sheets), Supabase (wilayah Singapura, untuk registry pengguna dan hitungan komunitas), serta analitik web (Vercel Web Analytics dan Google Analytics). Layanan ini beroperasi sesuai kebijakan privasi masing-masing. Catatan keuangan Anda hanya tersimpan di Google Sheet Anda dan tidak dikirim ke layanan registry maupun analitik. Aplikasi tidak menjalankan iklan.`,
+      body: `Pihak ketiga yang digunakan meliputi Google (API Sign-in, Drive, Sheets, dan Gemini), Supabase (wilayah Singapura, untuk registry pengguna dan proksi Edge Function aman), serta analitik web (Vercel Web Analytics dan Google Analytics). Layanan ini beroperasi sesuai kebijakan privasi masing-masing. Catatan keuangan utama Anda tetap tersimpan di Google Sheet Anda. Saat menggunakan Asisten AI, ringkasan kalkulasi dan pesan Anda dikirim ke Google Gemini tier gratis atas persetujuan eksplisit Anda. Aplikasi tidak menjalankan iklan.`,
+    },
+    {
+      title: "Asisten AI & pemrosesan data",
+      body: `Jika Anda memilih untuk menggunakan Asisten Keuangan AI opsional, pertanyaan Anda dan ringkasan kalkulasi keuangan (seperti total pemasukan, pengeluaran konsumsi, dan sisa tabungan) dikirim melalui perantara Supabase Edge Function ke Google Gemini API (tier gratis) guna menghasilkan jawaban dan draf transaksi. Persetujuan eksplisit ditampilkan sebelum ringkasan keuangan dikirim. Pesan percakapan Anda hanya disimpan di memori sementara browser dan tidak pernah disimpan di database aplikasi kami.`,
     },
     {
       title: "Kendali & penghapusan data Anda",
@@ -108,6 +116,10 @@ export const terms = {
       body: `Do not use the app to store unlawful material, attempt to interfere with the service, or access another person's spreadsheet.`,
     },
     {
+      title: "AI Assistant & automated grouping",
+      body: `The AI assistant and automatic expense grouping features are provided solely for personal convenience. AI answers and drafted transactions may contain inaccuracies. You are solely responsible for reviewing and confirming any proposed transaction before saving it to your spreadsheet. The AI assistant does not provide certified financial, tax, or investment advice. AI features operate on a free-tier quota and may be subject to temporary rate limits or downtime without guarantee of availability.`,
+    },
+    {
       title: "No warranty",
       body: `The app is provided "as is" and "as available", without warranty of any kind — including fitness for a particular purpose or non-infringement. It is a tool for your own record-keeping; we do not guarantee it is error-free, uninterrupted, or a substitute for professional financial advice.`,
     },
@@ -140,6 +152,10 @@ export const terms = {
     {
       title: "Penggunaan yang dapat diterima",
       body: `Jangan gunakan aplikasi untuk menyimpan materi ilegal, mencoba mengganggu layanan, atau mengakses spreadsheet milik orang lain.`,
+    },
+    {
+      title: "Asisten AI & pengelompokan otomatis",
+      body: `Fitur asisten AI dan pengelompokan pengeluaran otomatis disediakan semata-mata untuk kemudahan pencatatan pribadi. Jawaban AI dan usulan draf transaksi dapat memuat kekeliruan. Anda bertanggung jawab penuh untuk memeriksa dan mengonfirmasi setiap draf transaksi sebelum menyimpannya ke spreadsheet Anda. Asisten AI bukan pengganti nasihat keuangan, pajak, atau investasi profesional. Fitur AI beroperasi dengan kuota tier gratis dan dapat mengalami pembatasan sementara tanpa jaminan ketersediaan.`,
     },
     {
       title: "Tanpa jaminan",

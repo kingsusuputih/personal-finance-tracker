@@ -11,6 +11,7 @@ import {
 import {
   SHEETS,
   INCOME_HEADERS,
+  ADDITIONAL_INCOME_HEADERS,
   EXPENSE_HEADERS,
   SETTINGS_HEADERS,
 } from "../constants/sheets.js";
@@ -25,12 +26,14 @@ export function useSpreadsheet() {
   const {
     spreadsheetId,
     income,
+    additionalIncome,
     transactions,
     settings,
     provisioning,
     loading,
     setSpreadsheetId,
     setIncome,
+    setAdditionalIncome,
     setTransactions,
     setSettings,
     setProvisioning,
@@ -56,18 +59,20 @@ export function useSpreadsheet() {
     if (!id || !accessToken) return;
     setLoading(true);
     try {
-      const [incomeRows, expenseRows, settingsRows] = await Promise.all([
+      const [incomeRows, addIncomeRows, expenseRows, settingsRows] = await Promise.all([
         getRows(accessToken, id, SHEETS.INCOME),
+        getRows(accessToken, id, SHEETS.ADDITIONAL_INCOME).catch(() => []),
         getRows(accessToken, id, SHEETS.EXPENSES),
         getRows(accessToken, id, SHEETS.SETTINGS).catch(() => []),
       ]);
       setIncome(deserializeRows(INCOME_HEADERS, incomeRows));
+      setAdditionalIncome(deserializeRows(ADDITIONAL_INCOME_HEADERS, addIncomeRows));
       setTransactions(deserializeRows(EXPENSE_HEADERS, expenseRows));
       setSettings(deserializeSettings(settingsRows));
     } finally {
       setLoading(false);
     }
-  }, [accessToken, setIncome, setTransactions, setSettings, setLoading]);
+  }, [accessToken, setIncome, setAdditionalIncome, setTransactions, setSettings, setLoading]);
 
   const addTransaction = useCallback(
     async (sheetName, rowValues) => {
@@ -119,6 +124,7 @@ export function useSpreadsheet() {
     saveSettings,
     spreadsheetId,
     income,
+    additionalIncome,
     transactions,
     settings,
     provisioning,
