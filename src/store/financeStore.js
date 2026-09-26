@@ -10,7 +10,19 @@ const initialState = {
   settings: DEFAULT_SETTINGS,
   provisioning: false,
   loading: false,
+  isReady: false,
+  loadError: null,
 };
+
+export function isAccountEmpty(state) {
+  if (!state || !state.isReady) return false;
+  return (
+    state.income.length === 0 &&
+    state.additionalIncome.length === 0 &&
+    state.transactions.length === 0 &&
+    state.budgets.length === 0
+  );
+}
 
 export const useFinanceStore = create((set) => ({
   ...initialState,
@@ -22,5 +34,7 @@ export const useFinanceStore = create((set) => ({
   setSettings: (settings) => set({ settings }),
   setProvisioning: (provisioning) => set({ provisioning }),
   setLoading: (loading) => set({ loading }),
+  setIsReady: (isReady) => set({ isReady }),
+  setLoadError: (loadError) => set({ loadError }),
   reset: () => set(initialState),
 }));

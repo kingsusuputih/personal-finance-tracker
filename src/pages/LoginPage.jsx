@@ -17,13 +17,16 @@ export default function LoginPage() {
         <div className="mb-8 text-center">
           <Link
             to="/"
-            className="mx-auto mb-4 inline-flex h-12 w-12 items-center justify-center rounded-lg bg-accent font-display text-xl font-bold text-accent-ink transition-colors hover:bg-accent-strong"
+            className="group inline-flex flex-col items-center"
+            title={t("app.name")}
           >
-            F
+            <span className="mx-auto mb-4 inline-flex h-12 w-12 items-center justify-center rounded-lg bg-accent font-display text-xl font-bold text-accent-ink transition-colors group-hover:bg-accent-strong">
+              F
+            </span>
+            <h1 className="font-bold leading-tight text-[clamp(1.75rem,6vw,2.5rem)] text-ink transition-colors group-hover:text-accent">
+              {t("app.name")}
+            </h1>
           </Link>
-          <h1 className="font-bold leading-tight text-[clamp(1.75rem,6vw,2.5rem)]">
-            {t("app.name")}
-          </h1>
           <p className="mt-2 text-sm leading-relaxed text-ink-3">
             {t("login.tagline")}
           </p>

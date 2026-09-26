@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth.js";
 import { Modal } from "../ui/Modal.jsx";
 import { Button } from "../ui/Button.jsx";
@@ -28,14 +28,17 @@ export function Sidebar() {
 
   return (
     <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 flex-col border-r border-rule bg-paper-2 lg:flex">
-      <div className="flex h-14 items-center gap-2.5 border-b border-rule px-5">
+      <Link
+        to="/"
+        className="flex h-14 items-center gap-2.5 border-b border-rule px-5 transition-opacity hover:opacity-85"
+        title={t("app.name")}>
         <span className="inline-flex h-6 w-6 items-center justify-center rounded-sm bg-accent font-display text-xs font-bold text-accent-ink">
           F
         </span>
         <span className="font-display text-base font-semibold tracking-tight text-ink">
           {t("app.name")}
         </span>
-      </div>
+      </Link>
 
       <nav className="flex flex-1 flex-col gap-1 p-3" aria-label="Main">
         {navItems.map((item) => (

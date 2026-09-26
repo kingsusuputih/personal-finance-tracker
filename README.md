@@ -10,6 +10,8 @@ Finance Tracker adalah aplikasi web untuk mencatat pemasukan dan pengeluaran ser
 
 ## Fitur
 
+- Landing page modern berbasis prinsip Taste Skill dengan proposisi nilai jelas, pratinjau produk visual nyata, bento layout, dan FAQ interaktif
+- Onboarding pencatatan transaksi pertama langsung di dashboard kosong tanpa interupsi
 - Masuk dengan Google OAuth 2.0
 - Spreadsheet otomatis dibuat di Google Drive Anda (`drive.file` scope, hanya file yang dibuat aplikasi)
 - Mencatat pemasukan bulanan utama dan pemasukan tambahan (bonus, side job, ngojek) secara terpisah
@@ -24,7 +26,7 @@ Finance Tracker adalah aplikasi web untuk mencatat pemasukan dan pengeluaran ser
 - Alokasi 50 / 30 / 20 (Kebutuhan 50%, Investasi 30%, Gaya Hidup 20%)
 - Target dana: Dana Darurat 6× dan Dana Pensiun 300× pengeluaran bulanan
 - Grafik pengeluaran per kategori (Apache ECharts)
-- Penghitungan jumlah pengguna aktif dan notifikasi pendaftar baru tersamarkan di landing page
+- Penghitungan jumlah pengguna terdaftar dan notifikasi pendaftar baru tersamarkan di landing page
 - Halaman Catatan Rilis (Changelog) publik dan Pengaturan terintegrasi
 - Dukungan dua bahasa: Indonesia & English
 - Analitik agregat: Vercel Web Analytics & Google Analytics (GA4)

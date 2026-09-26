@@ -1,0 +1,146 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 760" width="1200" height="760" fill="none">
+  <defs>
+    <style>
+      .app-bg { fill: #fcfdfe; }
+      .card-bg { fill: #ffffff; stroke: #e3e8ee; stroke-width: 1; rx: 10px; }
+      .header-rule { stroke: #eaedf1; stroke-width: 1; }
+      .txt-ink { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; fill: #1f2533; }
+      .txt-ink-2 { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; fill: #4a5468; }
+      .txt-ink-3 { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; fill: #748094; }
+      .txt-mono { font-family: "JetBrains Mono", ui-monospace, monospace; }
+      .accent-blue { fill: #1461eb; }
+      .accent-badge-bg { fill: #edf3fd; rx: 4px; }
+      .accent-badge-txt { fill: #1461eb; font-family: -apple-system, sans-serif; font-size: 11px; font-weight: 600; }
+      .progress-bg { fill: #eaedf1; rx: 3px; }
+      .bar-needs { fill: #1461eb; rx: 3px; }
+      .bar-invest { fill: #2e9e5b; rx: 3px; }
+      .bar-life { fill: #d9971b; rx: 3px; }
+    </style>
+    <filter id="shadow" x="-4%" y="-2%" width="108%" height="108%" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="8" stdDeviation="16" flood-color="#0f172a" flood-opacity="0.06" />
+    </filter>
+  </defs>
+
+  <!-- App Container with subtle shadow -->
+  <rect x="20" y="20" width="1160" height="720" rx="14" fill="#ffffff" stroke="#e1e6ed" stroke-width="1.5" filter="url(#shadow)" />
+
+  <!-- Top App Navigation Bar -->
+  <rect x="20" y="20" width="1160" height="60" rx="14" fill="#ffffff" />
+  <line x1="20" y1="80" x2="1180" y2="80" class="header-rule" />
+  
+  <!-- Logo & App Name -->
+  <rect x="44" y="37" width="26" height="26" rx="6" class="accent-blue" />
+  <text x="52" y="55" fill="#ffffff" font-family="sans-serif" font-weight="700" font-size="14">F</text>
+  <text x="80" y="55" class="txt-ink" font-weight="700" font-size="16" letter-spacing="-0.02em">Finance Tracker</text>
+  <text x="220" y="55" class="txt-ink-3" font-size="13">/ Dashboard</text>
+
+  <!-- Google Sheets Sync Indicator -->
+  <g transform="translate(930, 36)">
+    <rect x="0" y="0" width="206" height="28" rx="14" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="1" />
+    <circle cx="14" cy="14" r="4" fill="#16a34a" />
+    <text x="26" y="18" fill="#15803d" font-family="sans-serif" font-size="11" font-weight="600">Google Sheets Terhubung</text>
+  </g>
+
+  <!-- Header Info -->
+  <text x="48" y="120" class="txt-mono txt-ink-3" font-size="11" letter-spacing="0.05em">AGUSTUS 2026 · PERIODE: 25 AGU – 24 SEP</text>
+  <text x="48" y="152" class="txt-ink" font-size="26" font-weight="700" letter-spacing="-0.03em">Ringkasan Finansial</text>
+
+  <!-- Top Summary Cards -->
+  <!-- Income Card -->
+  <g transform="translate(48, 175)">
+    <rect x="0" y="0" width="526" height="106" class="card-bg" />
+    <text x="24" y="36" class="txt-mono txt-ink-3" font-size="11" letter-spacing="0.05em">PEMASUKAN PERIODE INI</text>
+    <text x="24" y="76" class="txt-ink txt-mono" font-size="28" font-weight="700">Rp 12.500.000</text>
+    <rect x="420" y="24" width="82" height="24" class="accent-badge-bg" />
+    <text x="432" y="40" class="accent-badge-txt">Gaji Pokok</text>
+  </g>
+
+  <!-- Expense Card -->
+  <g transform="translate(606, 175)">
+    <rect x="0" y="0" width="546" height="106" class="card-bg" />
+    <text x="24" y="36" class="txt-mono txt-ink-3" font-size="11" letter-spacing="0.05em">TOTAL PENGELUARAN SAAT INI</text>
+    <text x="24" y="76" class="txt-ink txt-mono" font-size="28" font-weight="700">Rp 5.120.000</text>
+    <rect x="410" y="24" width="112" height="24" fill="#fef2f2" rx="4" />
+    <text x="422" y="40" fill="#dc2626" font-family="sans-serif" font-size="11" font-weight="600">41% Terpakai</text>
+  </g>
+
+  <!-- Section: Allocation 50 / 30 / 20 -->
+  <text x="48" y="325" class="txt-ink" font-size="16" font-weight="600">Alokasi Anggaran (50 / 30 / 20)</text>
+
+  <!-- Needs Card (50%) -->
+  <g transform="translate(48, 345)">
+    <rect x="0" y="0" width="348" height="126" class="card-bg" />
+    <text x="20" y="32" class="txt-ink-2" font-size="14" font-weight="600">Kebutuhan (Needs · 50%)</text>
+    <text x="270" y="32" class="accent-blue txt-mono" font-size="12" font-weight="600">54%</text>
+    <rect x="20" y="46" width="308" height="8" class="progress-bg" />
+    <rect x="20" y="46" width="166" height="8" class="bar-needs" />
+    <text x="20" y="80" class="txt-ink-3" font-size="12">Terpakai:</text>
+    <text x="180" y="80" class="txt-ink txt-mono" font-size="12" font-weight="600">Rp 3.380.000</text>
+    <text x="20" y="102" class="txt-ink-3" font-size="12">Target batas:</text>
+    <text x="180" y="102" class="txt-ink-3 txt-mono" font-size="12">Rp 6.250.000</text>
+  </g>
+
+  <!-- Investments Card (30%) -->
+  <g transform="translate(424, 345)">
+    <rect x="0" y="0" width="348" height="126" class="card-bg" />
+    <text x="20" y="32" class="txt-ink-2" font-size="14" font-weight="600">Investasi (30%)</text>
+    <text x="270" y="32" fill="#2e9e5b" class="txt-mono" font-size="12" font-weight="600">40%</text>
+    <rect x="20" y="46" width="308" height="8" class="progress-bg" />
+    <rect x="20" y="46" width="123" height="8" class="bar-invest" />
+    <text x="20" y="80" class="txt-ink-3" font-size="12">Teralokasi:</text>
+    <text x="180" y="80" class="txt-ink txt-mono" font-size="12" font-weight="600">Rp 1.500.000</text>
+    <text x="20" y="102" class="txt-ink-3" font-size="12">Target alokasi:</text>
+    <text x="180" y="102" class="txt-ink-3 txt-mono" font-size="12">Rp 3.750.000</text>
+  </g>
+
+  <!-- Lifestyle Card (20%) -->
+  <g transform="translate(800, 345)">
+    <rect x="0" y="0" width="352" height="126" class="card-bg" />
+    <text x="20" y="32" class="txt-ink-2" font-size="14" font-weight="600">Gaya Hidup (20%)</text>
+    <text x="274" y="32" fill="#d9971b" class="txt-mono" font-size="12" font-weight="600">10%</text>
+    <rect x="20" y="46" width="312" height="8" class="progress-bg" />
+    <rect x="20" y="46" width="31" height="8" class="bar-life" />
+    <text x="20" y="80" class="txt-ink-3" font-size="12">Terpakai:</text>
+    <text x="180" y="80" class="txt-ink txt-mono" font-size="12" font-weight="600">Rp 240.000</text>
+    <text x="20" y="102" class="txt-ink-3" font-size="12">Target batas:</text>
+    <text x="180" y="102" class="txt-ink-3 txt-mono" font-size="12">Rp 2.500.000</text>
+  </g>
+
+  <!-- Lower Section: Recent Real Entries -->
+  <g transform="translate(48, 495)">
+    <rect x="0" y="0" width="1104" height="205" class="card-bg" />
+    <text x="24" y="34" class="txt-ink" font-size="14" font-weight="600">Catatan Transaksi Terakhir (Sync Langsung ke Sheet)</text>
+    
+    <!-- Table Header -->
+    <line x1="24" y1="48" x2="1080" y2="48" class="header-rule" />
+    <text x="24" y="68" class="txt-mono txt-ink-3" font-size="11">TANGGAL</text>
+    <text x="160" y="68" class="txt-mono txt-ink-3" font-size="11">DESKRIPSI</text>
+    <text x="470" y="68" class="txt-mono txt-ink-3" font-size="11">KATEGORI</text>
+    <text x="700" y="68" class="txt-mono txt-ink-3" font-size="11">POS ANGGARAN</text>
+    <text x="960" y="68" class="txt-mono txt-ink-3" font-size="11">JUMLAH</text>
+    
+    <!-- Row 1 -->
+    <line x1="24" y1="80" x2="1080" y2="80" stroke="#f1f5f9" stroke-width="1" />
+    <text x="24" y="102" class="txt-mono txt-ink-2" font-size="12">2026-08-28</text>
+    <text x="160" y="102" class="txt-ink" font-size="13" font-weight="500">Belanja Bulanan Superindo</text>
+    <text x="470" y="102" class="txt-ink-2" font-size="12">Groceries</text>
+    <text x="700" y="102" fill="#1461eb" font-size="12">Needs (50%)</text>
+    <text x="960" y="102" class="txt-mono txt-ink" font-size="13" font-weight="600">Rp 620.000</text>
+
+    <!-- Row 2 -->
+    <line x1="24" y1="120" x2="1080" y2="120" stroke="#f1f5f9" stroke-width="1" />
+    <text x="24" y="142" class="txt-mono txt-ink-2" font-size="12">2026-08-30</text>
+    <text x="160" y="142" class="txt-ink" font-size="13" font-weight="500">Tagihan Internet &amp; Listrik</text>
+    <text x="470" y="142" class="txt-ink-2" font-size="12">Utilities</text>
+    <text x="700" y="142" fill="#1461eb" font-size="12">Needs (50%)</text>
+    <text x="960" y="142" class="txt-mono txt-ink" font-size="13" font-weight="600">Rp 480.000</text>
+
+    <!-- Row 3 -->
+    <line x1="24" y1="160" x2="1080" y2="160" stroke="#f1f5f9" stroke-width="1" />
+    <text x="24" y="182" class="txt-mono txt-ink-2" font-size="12">2026-09-02</text>
+    <text x="160" y="182" class="txt-ink" font-size="13" font-weight="500">Kopi Teman Kerja &amp; Makan Siang</text>
+    <text x="470" y="182" class="txt-ink-2" font-size="12">Dining Out</text>
+    <text x="700" y="182" fill="#d9971b" font-size="12">Lifestyle (20%)</text>
+    <text x="960" y="182" class="txt-mono txt-ink" font-size="13" font-weight="600">Rp 45.000</text>
+  </g>
+</svg>

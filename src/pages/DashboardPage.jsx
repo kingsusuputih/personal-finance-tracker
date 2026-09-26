@@ -11,6 +11,7 @@ import { Navbar } from "../components/layout/Navbar.jsx";
 import { BottomNav } from "../components/layout/BottomNav.jsx";
 import { Card } from "../components/ui/Card.jsx";
 import { Badge } from "../components/ui/Badge.jsx";
+import { Button } from "../components/ui/Button.jsx";
 import { Skeleton } from "../components/ui/Skeleton.jsx";
 import { useI18n } from "../i18n/LanguageProvider.jsx";
 import { formatIDR } from "../utils/financeFormulas.js";
@@ -18,6 +19,8 @@ import { formatDisplayDate } from "../utils/dateTime.js";
 import { PublicationConsent } from "../components/auth/PublicationConsent.jsx";
 import { registerUser } from "../api/registry.js";
 import { useAuthStore } from "../store/authStore.js";
+import { useFinanceStore, isAccountEmpty } from "../store/financeStore.js";
+import { ExpenseForm } from "../components/ledger/ExpenseForm.jsx";
 
 function EyeIcon() {
   return (
@@ -56,7 +59,7 @@ function EyeOffIcon() {
 }
 
 export default function DashboardPage() {
-  const { ensureSpreadsheet, loadData, provisioning, loading } =
+  const { ensureSpreadsheet, loadData, provisioning, loading, isReady, loadError } =
     useSpreadsheet();
   const accessToken = useAuthStore((s) => s.accessToken);
   const calc = useFinanceCalc();
@@ -66,27 +69,66 @@ export default function DashboardPage() {
   const [showExpenses, setShowExpenses] = useState(false);
   const [consentOpen, setConsentOpen] = useState(false);
   const [maskedName, setMaskedName] = useState("");
+  const [onboardingDismissed, setOnboardingDismissed] = useState(false);
+
+  const transactions = useFinanceStore((s) => s.transactions);
+  const income = useFinanceStore((s) => s.income);
+  const additionalIncome = useFinanceStore((s) => s.additionalIncome);
+  const budgets = useFinanceStore((s) => s.budgets);
 
   useEffect(() => {
-    ensureSpreadsheet().then((id) => {
-      if (id) loadData();
-    });
+    ensureSpreadsheet()
+      .then((id) => {
+        if (id) return loadData();
+      })
+      .catch(() => {});
   }, [ensureSpreadsheet, loadData]);
 
   useEffect(() => {
-    if (accessToken && !localStorage.getItem("pft_consent_prompted")) {
-      registerUser(accessToken).then((res) => {
+    if (!accessToken) return;
+    registerUser(accessToken)
+      .then((res) => {
         if (res) {
           setMaskedName(res.maskedName || "");
-          if (!res.publishName) {
-            setConsentOpen(true);
-          } else {
+          if (res.publishName) {
             localStorage.setItem("pft_consent_prompted", "true");
           }
         }
-      });
-    }
+      })
+      .catch(() => {});
   }, [accessToken]);
+
+  useEffect(() => {
+    if (!accessToken || !isReady) return;
+    if (localStorage.getItem("pft_consent_prompted")) return;
+
+    const hasHistory =
+      transactions.length > 0 || income.length > 0 || additionalIncome.length > 0;
+    const isReturnVisit = sessionStorage.getItem("pft_dash_visited");
+
+    if (hasHistory && isReturnVisit && maskedName) {
+      setConsentOpen(true);
+    } else {
+      sessionStorage.setItem("pft_dash_visited", "true");
+    }
+  }, [
+    accessToken,
+    isReady,
+    transactions.length,
+    income.length,
+    additionalIncome.length,
+    maskedName,
+  ]);
+
+  const isEmptyAccount = isAccountEmpty({
+    isReady,
+    income,
+    additionalIncome,
+    transactions,
+    budgets,
+  });
+
+  const showOnboarding = isEmptyAccount && !onboardingDismissed;
 
   const allocationCards = [
     {
@@ -145,13 +187,58 @@ export default function DashboardPage() {
               </h1>
             </header>
 
-            {provisioning ? (
+            {loadError && !isReady ? (
+              <Card className="p-6 text-center">
+                <p className="text-sm font-semibold text-danger">{loadError}</p>
+                <div className="mt-4">
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => {
+                      ensureSpreadsheet()
+                        .then((id) => {
+                          if (id) return loadData();
+                        })
+                        .catch(() => {});
+                    }}>
+                    {t("common.retry")}
+                  </Button>
+                </div>
+              </Card>
+            ) : provisioning || (!isReady && loading) ? (
               <div className="grid gap-4 sm:grid-cols-2">
                 <Skeleton className="h-24 w-full" />
                 <Skeleton className="h-24 w-full" />
               </div>
             ) : (
               <>
+                {showOnboarding && (
+                  <section className="mb-8 rounded-card border border-rule bg-paper p-5 sm:p-6 shadow-sm">
+                    <div className="max-w-xl">
+                      <p className="kbd text-[11px] text-accent">
+                        {t("dash.firstTxKicker")}
+                      </p>
+                      <h2 className="mt-1 text-lg font-bold text-ink sm:text-xl">
+                        {t("dash.firstTxTitle")}
+                      </h2>
+                      <p className="mt-1 text-sm leading-relaxed text-ink-3">
+                        {t("dash.firstTxDesc")}
+                      </p>
+                    </div>
+                    <div className="mt-5 max-w-xl">
+                      <ExpenseForm onSuccess={() => setOnboardingDismissed(true)} />
+                    </div>
+                    <div className="mt-4 flex flex-wrap items-center gap-2 text-xs text-ink-3">
+                      <span>{t("dash.orIncome")}</span>
+                      <Link
+                        to="/ledger"
+                        className="font-medium text-accent hover:underline">
+                        {t("dash.recordIncomeFirst")} →
+                      </Link>
+                    </div>
+                  </section>
+                )}
+
                 <section className="mb-8 grid gap-4 sm:grid-cols-2">
                   <Card className="p-5">
                     <div className="flex items-center justify-between gap-2">

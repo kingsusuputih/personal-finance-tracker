@@ -490,12 +490,23 @@ function formatIDR(amount) {
 | Text Secondary | `gray-500` |
 
 ### Pages & Routes
-| Route | Component | Guard |
-|---|---|---|
-| `/` | Redirect to `/login` or `/dashboard` | — |
-| `/login` | `LoginPage.jsx` | Redirect to `/dashboard` if authed |
-| `/dashboard` | `DashboardPage.jsx` | Require auth |
-| `/ledger` | `LedgerPage.jsx` | Require auth |
+| Route | Component | Guard | Description |
+|---|---|---|---|
+| `/` | `LandingPage.jsx` | Public | Conversion-optimized split hero, realistic sample data visual preview, bento features, FAQ, and privacy clarity |
+| `/login` | `LoginPage.jsx` | Guest only | Google OAuth authentication, spreadsheet preparation context |
+| `/dashboard` | `DashboardPage.jsx` | Require auth | Financial overview, 50/30/20 cards, spending charts, inline first-transaction onboarding for empty accounts |
+| `/recap` | `RecapPage.jsx` | Require auth | Monthly and cycle history recap, custom budget controls |
+| `/ledger` | `LedgerPage.jsx` | Require auth | Monthly income and expense transaction logs |
+| `/chat` | `ChatPage.jsx` | Require auth | AI financial assistant with multi-period context |
+| `/settings` | `SettingsPage.jsx` | Require auth | Timezone, cutoff day, and community registry preferences |
+| `/privacy` | `PrivacyPolicyPage.jsx` | Public | Data processing disclosures (Google Drive, Supabase, Gemini AI, Web Push) |
+| `/terms` | `TermsOfServicePage.jsx` | Public | Terms and conditions of service |
+| `/changelog` | `ChangelogPage.jsx` | Public | Release history and version updates |
+
+### First-Transaction Onboarding & Consent Timing
+1. **Empty-Account Detection:** Checked strictly against total history across all transaction-bearing sheets (`income`, `additionalIncome`, `transactions`, `budgets`) after successful readiness verification (`isReady: true`).
+2. **Inline Fast Entry:** Empty accounts immediately present an inline expense recording form on the dashboard to eliminate initial friction.
+3. **Deferred Consent:** Community social proof consent prompt never interrupts first-time onboarding; it only appears upon subsequent return visits after actual financial data has been recorded.
 
 ### Responsive Breakpoints
 - Mobile: default (single column layout)
@@ -701,4 +712,4 @@ cp .env.example .env.local
 
 ---
 
-*End of PRD — Finance Tracker v1.4.0*
+*End of PRD — Finance Tracker v1.4.1*

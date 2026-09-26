@@ -1,5 +1,83 @@
 export const changelogEntries = [
   {
+    version: "v1.4.1",
+    date: "2026-09-27",
+    en: {
+      title: "Landing Page Redesign, First-Transaction Onboarding & Direct Sheets Sync",
+      sections: [
+        {
+          type: "changed",
+          label: "Changed",
+          items: [
+            "Redesigned the public landing page with an outcome-first split hero, realistic sample data previews, and clear conversion hierarchy based on Taste Skill principles.",
+            "Replaced the centered text hero with a high-clarity value proposition: 'Know where your money really goes.'",
+            "Transformed the generic 3-card feature row into an asymmetric bento layout with real UI previews and allocation metrics.",
+            "Relocated the floating donation widget into the page footer to remove distraction from the primary onboarding CTA.",
+            "Improved the login page hierarchy and removed outdated technical jargon.",
+            "Linked application logos across landing, navigation bars, and sidebar directly to the home page for consistent navigation.",
+          ],
+        },
+        {
+          type: "added",
+          label: "Added",
+          items: [
+            "Inline first-transaction recording form directly on empty dashboards after verified data loading.",
+            "Account readiness tracking and resilient save handling that differentiates append success from subsequent refresh errors.",
+            "FAQ section addressing common setup and privacy questions to increase visitor confidence.",
+          ],
+        },
+      ],
+      items: [
+        "Redesigned the public landing page with an outcome-first split hero, realistic sample data previews, and clear conversion hierarchy based on Taste Skill principles.",
+        "Replaced the centered text hero with a high-clarity value proposition: 'Know where your money really goes.'",
+        "Transformed the generic 3-card feature row into an asymmetric bento layout with real UI previews and allocation metrics.",
+        "Relocated the floating donation widget into the page footer to remove distraction from the primary onboarding CTA.",
+        "Improved the login page hierarchy and removed outdated technical jargon.",
+        "Linked application logos across landing, navigation bars, and sidebar directly to the home page for consistent navigation.",
+        "Inline first-transaction recording form directly on empty dashboards after verified data loading.",
+        "Account readiness tracking and resilient save handling that differentiates append success from subsequent refresh errors.",
+        "FAQ section addressing common setup and privacy questions to increase visitor confidence.",
+      ],
+    },
+    id: {
+      title: "Redesign Landing Page, Onboarding Transaksi Pertama & Sinkronisasi Sheets",
+      sections: [
+        {
+          type: "changed",
+          label: "Perubahan (Changed)",
+          items: [
+            "Pembaruan desain landing page publik dengan tata letak split hero, pratinjau produk visual dengan data contoh, dan hierarki konversi yang jelas mengikuti prinsip Taste Skill.",
+            "Mengganti hero teks terpusat dengan proposisi nilai yang jelas: 'Tahu ke mana uangmu pergi.'",
+            "Mengubah susunan 3 kartu fitur generik menjadi tata letak bento asimetris dengan pratinjau pencatatan dan ringkasan alokasi.",
+            "Memindahkan tombol donasi mengambang ke bagian footer agar tidak menghalangi aksi utama pengunjung.",
+            "Menyempurnakan halaman login dengan penjelasan yang lebih ramah dan menghapus jargon teknis yang membingungkan.",
+            "Menambahkan tautan langsung ke beranda pada setiap logo aplikasi di landing page, navbar, dan sidebar.",
+          ],
+        },
+        {
+          type: "added",
+          label: "Fitur Baru (Added)",
+          items: [
+            "Formulir pencatatan transaksi pertama langsung di dashboard kosong setelah data berhasil dimuat.",
+            "Pelacakan kesiapan akun dan penanganan penyimpanan yang membedakan keberhasilan simpan dengan kegagalan refresh tampilan.",
+            "Bagian FAQ untuk menjawab keraguan pengunjung seputar setup spreadsheet dan keamanan privasi.",
+          ],
+        },
+      ],
+      items: [
+        "Pembaruan desain landing page publik dengan tata letak split hero, pratinjau produk visual dengan data contoh, dan hierarki konversi yang jelas mengikuti prinsip Taste Skill.",
+        "Mengganti hero teks terpusat dengan proposisi nilai yang jelas: 'Tahu ke mana uangmu pergi.'",
+        "Mengubah susunan 3 kartu fitur generik menjadi tata letak bento asimetris dengan pratinjau pencatatan dan ringkasan alokasi.",
+        "Memindahkan tombol donasi mengambang ke bagian footer agar tidak menghalangi aksi utama pengunjung.",
+        "Menyempurnakan halaman login dengan penjelasan yang lebih ramah dan menghapus jargon teknis yang membingungkan.",
+        "Menambahkan tautan langsung ke beranda pada setiap logo aplikasi di landing page, navbar, dan sidebar.",
+        "Formulir pencatatan transaksi pertama langsung di dashboard kosong setelah data berhasil dimuat.",
+        "Pelacakan kesiapan akun dan penanganan penyimpanan yang membedakan keberhasilan simpan dengan kegagalan refresh tampilan.",
+        "Bagian FAQ untuk menjawab keraguan pengunjung seputar setup spreadsheet dan keamanan privasi.",
+      ],
+    },
+  },
+  {
     version: "v1.4.0",
     date: "2026-09-27",
     en: {

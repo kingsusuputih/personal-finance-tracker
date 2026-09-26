@@ -12,7 +12,7 @@ import {
   currentZonedDateKey,
 } from "../../utils/dateTime.js";
 
-export function ExpenseForm({ editingRow = null, onCancelEdit, draft = null, onClearDraft = null }) {
+export function ExpenseForm({ editingRow = null, onCancelEdit, draft = null, onClearDraft = null, onSuccess = null }) {
   const { addTransaction, updateTransaction, settings } = useSpreadsheet();
   const toast = useToast();
   const t = useT();
@@ -68,12 +68,17 @@ export function ExpenseForm({ editingRow = null, onCancelEdit, draft = null, onC
         toast.success(t("expense.updated"));
         onCancelEdit?.();
       } else {
-        await addTransaction(SHEETS.EXPENSES, rowValues);
-        toast.success(t("expense.saved"));
+        const res = await addTransaction(SHEETS.EXPENSES, rowValues);
+        if (res?.refreshError) {
+          toast.warning(t("toast.refreshFailed"));
+        } else {
+          toast.success(t("expense.saved"));
+        }
         setAmount("");
         setDescription("");
         setGroupOverride("");
         if (onClearDraft) onClearDraft();
+        if (onSuccess) onSuccess();
       }
     } catch (err) {
       toast.error(err.message || t("form.err.amount"));

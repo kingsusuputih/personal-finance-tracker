@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 520" width="760" height="520" fill="none">
+  <defs>
+    <style>
+      .card-bg { fill: #ffffff; stroke: #e3e8ee; stroke-width: 1; rx: 12px; }
+      .field-bg { fill: #fcfdfe; stroke: #cbd5e1; stroke-width: 1; rx: 6px; }
+      .txt-ink { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; fill: #1f2533; }
+      .txt-ink-2 { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; fill: #4a5468; }
+      .txt-ink-3 { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; fill: #64748b; }
+      .txt-mono { font-family: "JetBrains Mono", ui-monospace, monospace; }
+      .btn-primary { fill: #1461eb; rx: 6px; }
+    </style>
+    <filter id="card-shadow" x="-5%" y="-5%" width="110%" height="110%" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="10" stdDeviation="18" flood-color="#0f172a" flood-opacity="0.08" />
+    </filter>
+  </defs>
+
+  <rect x="20" y="20" width="720" height="480" class="card-bg" filter="url(#card-shadow)" />
+
+  <!-- Form Header -->
+  <text x="50" y="65" class="txt-ink" font-size="20" font-weight="700">Catat Pengeluaran Baru</text>
+  <text x="50" y="88" class="txt-ink-3" font-size="13">Setiap data otomatis tertulis ke baris spreadsheet Anda.</text>
+  <line x1="50" y1="108" x2="710" y2="108" stroke="#f1f5f9" stroke-width="1.5" />
+
+  <!-- Field 1: Tanggal & Kategori -->
+  <text x="50" y="142" class="txt-mono txt-ink-3" font-size="11">TANGGAL</text>
+  <rect x="50" y="152" width="310" height="42" class="field-bg" />
+  <text x="64" y="178" class="txt-mono txt-ink" font-size="13">2026-09-27 (Hari ini)</text>
+
+  <text x="390" y="142" class="txt-mono txt-ink-3" font-size="11">KATEGORI</text>
+  <rect x="390" y="152" width="320" height="42" class="field-bg" />
+  <text x="404" y="178" class="txt-ink" font-size="13">Groceries &amp; Kebutuhan Dapur</text>
+
+  <!-- Field 2: Deskripsi & Pos -->
+  <text x="50" y="228" class="txt-mono txt-ink-3" font-size="11">DESKRIPSI (OPSIONAL)</text>
+  <rect x="50" y="238" width="310" height="42" class="field-bg" />
+  <text x="64" y="264" class="txt-ink" font-size="13">Beli telur, susu, dan beras</text>
+
+  <text x="390" y="228" class="txt-mono txt-ink-3" font-size="11">POS ANGGARAN</text>
+  <rect x="390" y="238" width="320" height="42" class="field-bg" />
+  <text x="404" y="264" class="txt-ink" font-size="13">Otomatis: Needs (50%)</text>
+
+  <!-- Field 3: Jumlah Nominal -->
+  <text x="50" y="314" class="txt-mono txt-ink-3" font-size="11">JUMLAH NOMINAL (IDR)</text>
+  <rect x="50" y="324" width="660" height="48" class="field-bg" stroke="#1461eb" stroke-width="1.5" />
+  <text x="64" y="356" class="txt-mono txt-ink" font-size="20" font-weight="700">Rp 185.000</text>
+
+  <!-- Action Button -->
+  <rect x="50" y="400" width="660" height="48" class="btn-primary" />
+  <text x="310" y="430" fill="#ffffff" font-family="sans-serif" font-size="15" font-weight="600">Simpan Transaksi</text>
+
+  <!-- Sync confirmation footer -->
+  <g transform="translate(50, 465)">
+    <circle cx="6" cy="6" r="3" fill="#16a34a" />
+    <text x="16" y="10" fill="#16a34a" font-family="sans-serif" font-size="11" font-weight="500">Tersinkronisasi langsung ke Google Drive &amp; Sheets pribadi Anda</text>
+  </g>
+</svg>

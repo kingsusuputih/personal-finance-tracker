@@ -33,6 +33,8 @@ export function useSpreadsheet() {
     settings,
     provisioning,
     loading,
+    isReady,
+    loadError,
     setSpreadsheetId,
     setIncome,
     setAdditionalIncome,
@@ -41,6 +43,8 @@ export function useSpreadsheet() {
     setSettings,
     setProvisioning,
     setLoading,
+    setIsReady,
+    setLoadError,
   } = useFinanceStore();
 
   const ensureSpreadsheet = useCallback(async () => {
@@ -48,23 +52,28 @@ export function useSpreadsheet() {
     const cached = useFinanceStore.getState().spreadsheetId;
     if (cached) return cached;
     setProvisioning(true);
+    setLoadError(null);
     try {
       const id = await getOrCreateSpreadsheet(accessToken);
       setSpreadsheetId(id);
       return id;
+    } catch (err) {
+      setLoadError(err?.message || "Failed to connect spreadsheet");
+      throw err;
     } finally {
       setProvisioning(false);
     }
-  }, [accessToken, setProvisioning, setSpreadsheetId]);
+  }, [accessToken, setProvisioning, setSpreadsheetId, setLoadError]);
 
   const loadData = useCallback(async () => {
     const id = useFinanceStore.getState().spreadsheetId;
     if (!id || !accessToken) return;
     setLoading(true);
+    setLoadError(null);
     try {
       const [incomeRows, addIncomeRows, expenseRows, settingsRows, budgetRows] = await Promise.all([
         getRows(accessToken, id, SHEETS.INCOME),
-        getRows(accessToken, id, SHEETS.ADDITIONAL_INCOME).catch(() => []),
+        getRows(accessToken, id, SHEETS.ADDITIONAL_INCOME),
         getRows(accessToken, id, SHEETS.EXPENSES),
         getRows(accessToken, id, SHEETS.SETTINGS).catch(() => []),
         getRows(accessToken, id, SHEETS.BUDGETS).catch(() => []),
@@ -74,17 +83,29 @@ export function useSpreadsheet() {
       setTransactions(deserializeRows(EXPENSE_HEADERS, expenseRows));
       setSettings(deserializeSettings(settingsRows));
       setBudgets(deserializeRows(BUDGET_HEADERS, budgetRows));
+      setIsReady(true);
+      setLoadError(null);
+    } catch (err) {
+      const errMsg = err?.message || "Failed to load data";
+      setLoadError(errMsg);
+      throw err;
     } finally {
       setLoading(false);
     }
-  }, [accessToken, setIncome, setAdditionalIncome, setTransactions, setSettings, setBudgets, setLoading]);
+  }, [accessToken, setIncome, setAdditionalIncome, setTransactions, setSettings, setBudgets, setLoading, setIsReady, setLoadError]);
 
   const addTransaction = useCallback(
     async (sheetName, rowValues) => {
       const id = useFinanceStore.getState().spreadsheetId;
       if (!id || !accessToken) throw new Error("Spreadsheet not ready");
       await appendRow(accessToken, id, sheetName, rowValues);
-      await loadData();
+      let refreshError = null;
+      try {
+        await loadData();
+      } catch (err) {
+        refreshError = err?.message || "Failed to refresh data";
+      }
+      return { success: true, refreshError };
     },
     [accessToken, loadData],
   );
@@ -135,5 +156,7 @@ export function useSpreadsheet() {
     settings,
     provisioning,
     loading,
+    isReady,
+    loadError,
   };
 }

@@ -470,4 +470,14 @@ assert.deepEqual(parseBoldSegments("Tanda **** kosong"), [
   { text: "Tanda **** kosong", bold: false },
 ]);
 
+import { isAccountEmpty } from "../src/store/financeStore.js";
+
+assert.equal(isAccountEmpty(null), false);
+assert.equal(isAccountEmpty({ isReady: false, income: [], additionalIncome: [], transactions: [], budgets: [] }), false);
+assert.equal(isAccountEmpty({ isReady: true, income: [], additionalIncome: [], transactions: [], budgets: [] }), true);
+assert.equal(isAccountEmpty({ isReady: true, income: [{ amount: 1000 }], additionalIncome: [], transactions: [], budgets: [] }), false);
+assert.equal(isAccountEmpty({ isReady: true, income: [], additionalIncome: [{ amount: 500 }], transactions: [], budgets: [] }), false);
+assert.equal(isAccountEmpty({ isReady: true, income: [], additionalIncome: [], transactions: [{ amount: 200 }], budgets: [] }), false);
+assert.equal(isAccountEmpty({ isReady: true, income: [], additionalIncome: [], transactions: [], budgets: [{ amount: 1000 }] }), false);
+
 console.log("self-check passed");
