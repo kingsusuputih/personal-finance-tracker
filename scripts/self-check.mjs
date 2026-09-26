@@ -391,4 +391,36 @@ assert(Array.isArray(privacy.id) && privacy.id.length === privacy.en.length);
 assert(Array.isArray(terms.en) && terms.en.length > 5);
 assert(Array.isArray(terms.id) && terms.id.length === terms.en.length);
 
+import { parseBoldSegments } from "../src/utils/chatFormatting.js";
+
+assert.deepEqual(parseBoldSegments(""), []);
+assert.deepEqual(parseBoldSegments(null), []);
+assert.deepEqual(parseBoldSegments("Teks biasa tanpa format"), [
+  { text: "Teks biasa tanpa format", bold: false },
+]);
+assert.deepEqual(
+  parseBoldSegments("total pendapatan adalah **Rp 4.099.000** dan total pengeluaran Anda hemat di **Rp 149.485**."),
+  [
+    { text: "total pendapatan adalah ", bold: false },
+    { text: "Rp 4.099.000", bold: true },
+    { text: " dan total pengeluaran Anda hemat di ", bold: false },
+    { text: "Rp 149.485", bold: true },
+    { text: ".", bold: false },
+  ],
+);
+assert.deepEqual(
+  parseBoldSegments("Baris 1\n\n**sisa uang** adalah Rp 100"),
+  [
+    { text: "Baris 1\n\n", bold: false },
+    { text: "sisa uang", bold: true },
+    { text: " adalah Rp 100", bold: false },
+  ],
+);
+assert.deepEqual(parseBoldSegments("Ini **unclosed bold"), [
+  { text: "Ini **unclosed bold", bold: false },
+]);
+assert.deepEqual(parseBoldSegments("Tanda **** kosong"), [
+  { text: "Tanda **** kosong", bold: false },
+]);
+
 console.log("self-check passed");

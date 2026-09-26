@@ -10,6 +10,7 @@ import {
   serializeAdditionalIncomeRow,
 } from "../utils/sheetsHelpers.js";
 import { formatIDR, formatRupiah, parseRupiah } from "../utils/financeFormulas.js";
+import { parseBoldSegments } from "../utils/chatFormatting.js";
 import { Sidebar } from "../components/layout/Sidebar.jsx";
 import { Navbar } from "../components/layout/Navbar.jsx";
 import { BottomNav } from "../components/layout/BottomNav.jsx";
@@ -355,7 +356,19 @@ export default function ChatPage() {
                             ? "border border-danger/30 bg-danger/10 text-danger"
                             : "bg-paper-2 text-ink"
                         }`}>
-                        <div className="whitespace-pre-wrap leading-relaxed">{m.text}</div>
+                        <div className="whitespace-pre-wrap leading-relaxed">
+                          {m.role === "assistant" && !m.isError
+                            ? parseBoldSegments(m.text).map((seg, i) =>
+                                seg.bold ? (
+                                  <strong key={i} className="font-semibold text-ink">
+                                    {seg.text}
+                                  </strong>
+                                ) : (
+                                  seg.text
+                                ),
+                              )
+                            : m.text}
+                        </div>
                         {m.proposal && (
                           <ProposalCard proposal={m.proposal} />
                         )}
