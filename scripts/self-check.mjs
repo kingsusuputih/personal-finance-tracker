@@ -100,17 +100,36 @@ assert.equal(formattedTime, "17.30");
 import {
   serializeExpenseRow,
   serializeAdditionalIncomeRow,
+  serializeBudgetRow,
   serializeSettingsRow,
   deserializeSettings,
   deserializeRows,
 } from "../src/utils/sheetsHelpers.js";
-import { EXPENSE_HEADERS, ADDITIONAL_INCOME_HEADERS } from "../src/constants/sheets.js";
+import {
+  EXPENSE_HEADERS,
+  ADDITIONAL_INCOME_HEADERS,
+  BUDGET_HEADERS,
+} from "../src/constants/sheets.js";
 
 const oldCreatedAt = "2026-09-01T08:00:00.000Z";
 const editedRow = serializeExpenseRow("2026-09-02", "Needs", "Edit test", 50000, oldCreatedAt, "Custom Group", "uuid-123");
 assert.equal(editedRow[4], oldCreatedAt);
 assert.equal(editedRow[5], "Custom Group");
 assert.equal(editedRow[6], "uuid-123");
+
+const bRow = serializeBudgetRow("2026-09", 25, "Bensin", "Needs", "bensin-bbm", 500000, oldCreatedAt, "b-uuid-1");
+assert.deepEqual(bRow, ["b-uuid-1", "2026-09", 25, "Bensin", "Needs", "bensin-bbm", 500000, oldCreatedAt]);
+
+const rawBudgetData = [
+  ["id", "cycle_key", "cutoff_day", "name", "category", "group_key", "amount", "created_at"],
+  ["b-uuid-1", "2026-09", "25", "Bensin", "Needs", "bensin-bbm", "500000", oldCreatedAt],
+];
+const parsedBudgets = deserializeRows(BUDGET_HEADERS, rawBudgetData);
+assert.equal(parsedBudgets.length, 1);
+assert.equal(parsedBudgets[0].amount, 500000);
+assert.equal(parsedBudgets[0].name, "Bensin");
+assert.equal(parsedBudgets[0].group_key, "bensin-bbm");
+assert.equal(parsedBudgets[0].cutoff_day, "25");
 
 const addIncRow = serializeAdditionalIncomeRow("2026-09-03", "Bonus", 250000, oldCreatedAt, "inc-uuid-456");
 assert.equal(addIncRow[0], "2026-09-03");
@@ -178,7 +197,16 @@ assert.equal(maskTestName("Budi"), "B***");
 assert.equal(maskTestName(""), "Anonymous");
 
 import { calculateCycleRecap } from "../src/utils/financeFormulas.js";
-import { resolveExpenseGroup, groupExpenses } from "../src/utils/expenseGrouping.js";
+import {
+  resolveExpenseGroup,
+  resolveExpenseGroupKey,
+  getAvailableGroupChoices,
+  groupExpenses,
+} from "../src/utils/expenseGrouping.js";
+import {
+  getBudgetStatus,
+  calculateBudgetProgress,
+} from "../src/utils/budgetCalculations.js";
 
 assert.equal(resolveExpenseGroup("beli rokok"), "Rokok");
 assert.equal(resolveExpenseGroup("rokok surya"), "Rokok");
@@ -187,6 +215,83 @@ assert.equal(resolveExpenseGroup("kopi susu"), "Kopi");
 assert.equal(resolveExpenseGroup("beli rokok dan kopi"), "beli rokok dan kopi");
 assert.equal(resolveExpenseGroup("beli rokok", "__separate__"), "beli rokok");
 assert.equal(resolveExpenseGroup("beli rokok", "Kebutuhan Khusus"), "Kebutuhan Khusus");
+
+// Tests for resolveExpenseGroupKey
+assert.equal(resolveExpenseGroupKey("beli rokok"), "rokok");
+assert.equal(resolveExpenseGroupKey("rokok surya"), "rokok");
+assert.equal(resolveExpenseGroupKey("kopi susu"), "kopi");
+assert.equal(resolveExpenseGroupKey("pertamax 92"), "bensin-bbm");
+assert.equal(resolveExpenseGroupKey("beli apa", "Rokok"), "rokok");
+assert.equal(resolveExpenseGroupKey("beli apa", "kopi"), "kopi");
+assert.equal(resolveExpenseGroupKey("beli apa", "Kebutuhan Khusus"), "custom:kebutuhan khusus");
+assert.equal(resolveExpenseGroupKey("rokok surya", "__separate__"), "custom:rokok surya");
+assert.equal(resolveExpenseGroupKey("", "__separate__"), "tanpa-keterangan");
+assert.equal(resolveExpenseGroupKey(""), "lain-lain");
+assert.equal(resolveExpenseGroupKey("rokok dan kopi"), "custom:rokok dan kopi");
+
+// Test getAvailableGroupChoices
+const availableChoices = getAvailableGroupChoices([
+  { description: "bensin pertalite", group_override: "" },
+  { description: "service laptop", group_override: "Servis" },
+]);
+assert(availableChoices.some((c) => c.key === "bensin-bbm" && c.builtin === true));
+assert(availableChoices.some((c) => c.key === "custom:servis" && c.builtin === false));
+
+// Test getBudgetStatus
+assert.equal(getBudgetStatus(0, 100000), "safe");
+assert.equal(getBudgetStatus(79999, 100000), "safe");
+assert.equal(getBudgetStatus(80000, 100000), "near");
+assert.equal(getBudgetStatus(99999, 100000), "near");
+assert.equal(getBudgetStatus(100000, 100000), "reached");
+assert.equal(getBudgetStatus(100001, 100000), "exceeded");
+
+// Test calculateBudgetProgress
+const testBudgets = [
+  {
+    id: "b-1",
+    cycle_key: "2026-08",
+    cutoff_day: 25,
+    name: "Bensin Agustus",
+    category: "Needs",
+    group_key: "bensin-bbm",
+    amount: 100000,
+  },
+  {
+    id: "b-2",
+    cycle_key: "2026-08",
+    cutoff_day: 25,
+    name: "Rokok Agustus",
+    category: "Lifestyle",
+    group_key: "rokok",
+    amount: 50000,
+  },
+  {
+    id: "b-3",
+    cycle_key: "2026-08",
+    cutoff_day: 25,
+    name: "Rokok Needs (should not match lifestyle)",
+    category: "Needs",
+    group_key: "rokok",
+    amount: 50000,
+  },
+];
+const testTxForBudget = [
+  { date: "2026-08-26", category: "Needs", description: "pertalite", amount: 40000 },
+  { date: "2026-08-28", category: "Needs", description: "pertamax", amount: 45000 },
+  { date: "2026-08-29", category: "Lifestyle", description: "rokok surya", amount: 60000 },
+  { date: "2026-07-20", category: "Needs", description: "pertalite", amount: 50000 }, // outside bounds
+];
+const budgetRes = calculateBudgetProgress(testBudgets, testTxForBudget);
+assert.equal(budgetRes.length, 3);
+assert.equal(budgetRes[0].spent, 85000);
+assert.equal(budgetRes[0].remaining, 15000);
+assert.equal(budgetRes[0].status, "near");
+assert.equal(budgetRes[1].spent, 60000);
+assert.equal(budgetRes[1].remaining, -10000);
+assert.equal(budgetRes[1].over, true);
+assert.equal(budgetRes[1].status, "exceeded");
+assert.equal(budgetRes[2].spent, 0); // Strict category check: no Needs rokok
+assert.equal(budgetRes[2].status, "safe");
 
 const sampleTx = [
   { date: "2026-08-26", category: "Lifestyle", description: "beli rokok", amount: 25000 },

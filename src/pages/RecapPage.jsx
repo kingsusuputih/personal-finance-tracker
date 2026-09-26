@@ -12,6 +12,7 @@ import { Skeleton } from "../components/ui/Skeleton.jsx";
 import { Sidebar } from "../components/layout/Sidebar.jsx";
 import { Navbar } from "../components/layout/Navbar.jsx";
 import { BottomNav } from "../components/layout/BottomNav.jsx";
+import { BudgetSection } from "../components/budget/BudgetSection.jsx";
 import { useT, useI18n } from "../i18n/LanguageProvider.jsx";
 
 const categoryTone = {
@@ -236,6 +237,8 @@ export default function RecapPage() {
                     </div>
                   </Card>
                 </section>
+
+                <BudgetSection selectedCycle={selectedCycle} />
 
                 <section className="space-y-4">
                   <div>

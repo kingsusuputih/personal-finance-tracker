@@ -232,10 +232,19 @@ Jika tidak ada permintaan mencatat, jangan sertakan blok JSON proposal.`;
   });
 
   try {
-    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+    const rawModel = (Deno.env.get("GEMINI_MODEL") || "gemini-3.5-flash-lite").trim();
+    if (!/^[a-zA-Z0-9._-]+$/.test(rawModel)) {
+      return jsonResponse({ error: "Invalid GEMINI_MODEL configuration" }, 500, corsHeaders);
+    }
+    const model = rawModel;
+
+    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
     const geminiRes = await fetch(geminiUrl, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "x-goog-api-key": GEMINI_API_KEY,
+      },
       body: JSON.stringify({
         systemInstruction: {
           parts: [{ text: systemPrompt }],
@@ -243,11 +252,21 @@ Jika tidak ada permintaan mencatat, jangan sertakan blok JSON proposal.`;
         contents,
         generationConfig: {
           temperature: 0.3,
-          maxOutputTokens: 800,
+          maxOutputTokens: 1000,
         },
       }),
       signal: AbortSignal.timeout(25000),
     });
+
+    if (geminiRes.status === 404) {
+      return jsonResponse(
+        {
+          error: `Model "${model}" tidak ditemukan atau belum didukung di akun/endpoint ini. Periksa konfigurasi GEMINI_MODEL di Supabase Secrets.`,
+        },
+        502,
+        corsHeaders,
+      );
+    }
 
     if (geminiRes.status === 429) {
       const retryHeader = geminiRes.headers.get("retry-after");
@@ -266,22 +285,41 @@ Jika tidak ada permintaan mencatat, jangan sertakan blok JSON proposal.`;
 
     if (!geminiRes.ok) {
       const errText = await geminiRes.text();
-      return jsonResponse({ error: "Gemini error: " + errText }, 502, corsHeaders);
+      return jsonResponse({ error: `Gemini error (${geminiRes.status}): ${errText}` }, 502, corsHeaders);
     }
 
     const data = await geminiRes.json();
-    const candidate = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+    const candidateObj = data.candidates?.[0];
+    const parts = candidateObj?.content?.parts || [];
+    const textParts = parts
+      .filter((p: any) => !p.thought && typeof p.text === "string")
+      .map((p: any) => p.text);
+    const candidate = textParts.join("").trim();
+
+    const finishReason = candidateObj?.finishReason;
+    const blockReason = data.promptFeedback?.blockReason;
+
+    if (!candidate) {
+      const reason = blockReason
+        ? `Permintaan diblokir oleh filter keamanan (${blockReason}).`
+        : finishReason
+        ? `Model berhenti tanpa menghasilkan teks (alasan: ${finishReason}).`
+        : "Model tidak menghasilkan teks respons.";
+      return jsonResponse({ error: reason }, 502, corsHeaders);
+    }
 
     let proposal = null;
-    const jsonMatch = candidate.match(/```json\s*([\s\S]*?)\s*```/);
-    if (jsonMatch) {
-      try {
-        const parsed = JSON.parse(jsonMatch[1]);
-        if (parsed.proposal && typeof parsed.proposal === "object") {
-          proposal = parsed.proposal;
+    if (finishReason !== "MAX_TOKENS") {
+      const jsonMatch = candidate.match(/```json\s*([\s\S]*?)\s*```/);
+      if (jsonMatch) {
+        try {
+          const parsed = JSON.parse(jsonMatch[1]);
+          if (parsed.proposal && typeof parsed.proposal === "object") {
+            proposal = parsed.proposal;
+          }
+        } catch {
+          proposal = null;
         }
-      } catch {
-        proposal = null;
       }
     }
 

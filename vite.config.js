@@ -16,6 +16,11 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/registry/, ''),
       },
+      '/api/notify': {
+        target: 'https://jwircppgmbyasmmaemho.supabase.co/functions/v1/notify',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/notify/, ''),
+      },
     },
   },
   plugins: [react(), tailwindcss()],

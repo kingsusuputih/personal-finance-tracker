@@ -13,6 +13,14 @@
       "destination": "https://jwircppgmbyasmmaemho.supabase.co/functions/v1/registry/:path*"
     },
     {
+      "source": "/api/notify/:path*",
+      "destination": "https://jwircppgmbyasmmaemho.supabase.co/functions/v1/notify/:path*"
+    },
+    {
+      "source": "/api/notify",
+      "destination": "https://jwircppgmbyasmmaemho.supabase.co/functions/v1/notify"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }

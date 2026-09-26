@@ -39,7 +39,7 @@ Finance Tracker adalah aplikasi web untuk mencatat pemasukan dan pengeluaran ser
 | Autentikasi | @react-oauth/google |
 | Database Keuangan | Google Sheets API v4 (di Drive pengguna) |
 | Registry & AI Proxy | Supabase Postgres & Edge Functions (ap-southeast-1) |
-| Model AI | Google Gemini 1.5 Flash (tier gratis via Edge Function) |
+| Model AI | Google Gemini API (gemini-3.5-flash-lite via Edge Function) |
 | Analytics | @vercel/analytics · Google Analytics |
 | Deployment | Vercel |
 

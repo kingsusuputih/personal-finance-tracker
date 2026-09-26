@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { useSpreadsheet } from "../hooks/useSpreadsheet.js";
 import { useFinanceCalc } from "../hooks/useFinanceCalc.js";
+import { useBudgetProgress } from "../hooks/useBudgetProgress.js";
 import { AllocationCard } from "../components/dashboard/AllocationCard.jsx";
 import { FundTargetCard } from "../components/dashboard/FundTargetCard.jsx";
 import { SpendingChart } from "../components/dashboard/SpendingChart.jsx";
@@ -8,6 +10,7 @@ import { Sidebar } from "../components/layout/Sidebar.jsx";
 import { Navbar } from "../components/layout/Navbar.jsx";
 import { BottomNav } from "../components/layout/BottomNav.jsx";
 import { Card } from "../components/ui/Card.jsx";
+import { Badge } from "../components/ui/Badge.jsx";
 import { Skeleton } from "../components/ui/Skeleton.jsx";
 import { useI18n } from "../i18n/LanguageProvider.jsx";
 import { formatIDR } from "../utils/financeFormulas.js";
@@ -58,6 +61,7 @@ export default function DashboardPage() {
   const accessToken = useAuthStore((s) => s.accessToken);
   const calc = useFinanceCalc();
   const { lang, t } = useI18n();
+  const budgetSummary = useBudgetProgress();
   const [showIncome, setShowIncome] = useState(false);
   const [showExpenses, setShowExpenses] = useState(false);
   const [consentOpen, setConsentOpen] = useState(false);
@@ -223,6 +227,93 @@ export default function DashboardPage() {
                     ))}
                   </div>
                 </section>
+
+                {budgetSummary.budgets.length > 0 && (
+                  <section className="mb-8">
+                    <div className="mb-3 flex items-center justify-between">
+                      <h2 className="text-base font-semibold text-ink">
+                        {t("budget.dashTitle")}
+                      </h2>
+                      <Link
+                        to="/recap"
+                        className="text-xs font-medium text-accent hover:underline">
+                        {t("budget.viewAll")}
+                      </Link>
+                    </div>
+                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                      {budgetSummary.budgets.map((b) => {
+                        const barWidth = Math.min(b.ratio * 100, 100);
+                        const statusTone =
+                          b.status === "exceeded" || b.status === "reached"
+                            ? "danger"
+                            : b.status === "near"
+                            ? "warning"
+                            : "success";
+                        const statusLabel =
+                          b.status === "exceeded"
+                            ? t("budget.statusExceeded")
+                            : b.status === "reached"
+                            ? t("budget.statusReached")
+                            : b.status === "near"
+                            ? t("budget.statusNear")
+                            : t("budget.statusSafe");
+
+                        return (
+                          <Card key={b.id || b.rowNumber} className="p-4 sm:p-5">
+                            <div className="flex items-center justify-between gap-2 border-b border-rule pb-2">
+                              <span className="truncate text-sm font-semibold text-ink" title={b.name}>
+                                {b.name}
+                              </span>
+                              <Badge tone={statusTone}>{statusLabel}</Badge>
+                            </div>
+                            <div className="mt-3 space-y-1.5">
+                              <div className="flex items-baseline justify-between text-xs">
+                                <span className="text-ink-3">{t("budget.spent")}:</span>
+                                <span className="amount font-semibold text-ink">
+                                  {showExpenses ? formatIDR(b.spent) : "••••••••"}{" "}
+                                  <span className="text-[10px] text-ink-3 font-normal">
+                                    / {showExpenses ? formatIDR(b.amount) : "••••••••"}
+                                  </span>
+                                </span>
+                              </div>
+                              <div
+                                role="progressbar"
+                                aria-valuenow={b.spent}
+                                aria-valuemin={0}
+                                aria-valuemax={b.amount}
+                                aria-label={b.name}
+                                className="h-2 w-full overflow-hidden rounded-full bg-paper-3">
+                                <div
+                                  style={{ width: `${barWidth}%` }}
+                                  className={`h-full transition-[width] duration-300 ${
+                                    b.status === "exceeded" || b.status === "reached"
+                                      ? "bg-danger"
+                                      : b.status === "near"
+                                      ? "bg-warning"
+                                      : "bg-success"
+                                  }`}
+                                />
+                              </div>
+                              <div className="flex items-center justify-between text-[11px]">
+                                <span className="kbd text-ink-3">{Math.round(b.ratio * 100)}%</span>
+                                <span
+                                  className={`amount font-medium ${
+                                    b.over ? "text-danger" : "text-ink-2"
+                                  }`}>
+                                  {showExpenses
+                                    ? b.over
+                                      ? `${t("budget.over")} ${formatIDR(Math.abs(b.remaining))}`
+                                      : `${t("budget.remaining")} ${formatIDR(b.remaining)}`
+                                    : "••••••••"}
+                                </span>
+                              </div>
+                            </div>
+                          </Card>
+                        );
+                      })}
+                    </div>
+                  </section>
+                )}
 
                 <section className="mb-8">
                   <h2 className="mb-3 text-base font-semibold text-ink">

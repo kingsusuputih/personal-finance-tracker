@@ -5,6 +5,7 @@ export const SHEETS = {
   ADDITIONAL_INCOME: "AdditionalIncome",
   EXPENSES: "Expenses",
   SETTINGS: "Settings",
+  BUDGETS: "Budgets",
 };
 
 export const INCOME_HEADERS = ["month", "amount", "created_at"];
@@ -23,6 +24,16 @@ export const EXPENSE_HEADERS = [
   "created_at",
   "group_override",
   "id",
+];
+export const BUDGET_HEADERS = [
+  "id",
+  "cycle_key",
+  "cutoff_day",
+  "name",
+  "category",
+  "group_key",
+  "amount",
+  "created_at",
 ];
 export const SETTINGS_HEADERS = ["timezone_mode", "timezone", "cutoff_day"];
 export const DEFAULT_SETTINGS = {

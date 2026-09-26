@@ -37,6 +37,10 @@ export const privacy = {
       body: `If you choose to use the optional AI Financial Assistant, your prompts and calculated financial summaries (such as total income, consumption spending, and savings surplus) are transmitted via a Supabase Edge Function proxy to Google's Gemini API (free tier) to generate responses and transaction drafts. An explicit consent dialog is required before any financial summary is sent. Your chat messages are kept only in temporary browser memory and are never persisted in any app database.`,
     },
     {
+      title: "Budget push notifications",
+      body: `If you explicitly enable push notifications on your device, standard web push subscription credentials (endpoint URL and encryption keys) together with your selected time zone and language preference are stored securely in Supabase (Singapore region). When budget alert thresholds (80%, 100%, >100%) are reached, status flags and budget labels are processed to deliver notifications. Financial amounts and transaction details are never transmitted or stored on the server. You can disable notifications at any time in Settings.`,
+    },
+    {
       title: "Your control & deletion",
       body: `Because your financial data lives in your own Google Drive, you remain in full control. Delete the "Finance_Tracker_Data" spreadsheet from your Drive to erase all financial records and settings. You can delete your pseudonymous registry record in the app Settings. Signing out clears local browser storage, and removing app access in your Google Account security settings prevents future sign-ins until reauthorized.`,
     },
@@ -81,6 +85,10 @@ export const privacy = {
     {
       title: "Asisten AI & pemrosesan data",
       body: `Jika Anda memilih untuk menggunakan Asisten Keuangan AI opsional, pertanyaan Anda dan ringkasan kalkulasi keuangan (seperti total pemasukan, pengeluaran konsumsi, dan sisa tabungan) dikirim melalui perantara Supabase Edge Function ke Google Gemini API (tier gratis) guna menghasilkan jawaban dan draf transaksi. Persetujuan eksplisit ditampilkan sebelum ringkasan keuangan dikirim. Pesan percakapan Anda hanya disimpan di memori sementara browser dan tidak pernah disimpan di database aplikasi kami.`,
+    },
+    {
+      title: "Notifikasi push budget",
+      body: `Jika Anda secara eksplisit mengaktifkan notifikasi push di perangkat Anda, kredensial langganan web push standar (URL endpoint dan kunci enkripsi) beserta preferensi zona waktu dan bahasa disimpan dengan aman di Supabase (wilayah Singapura). Saat ambang batas budget tercapai (80%, 100%, >100%), status peringatan dan nama budget diproses untuk mengirim notifikasi. Rincian nominal transaksi tidak pernah dikirim atau disimpan di server. Anda dapat menonaktifkan notifikasi kapan saja di Pengaturan.`,
     },
     {
       title: "Kendali & penghapusan data Anda",

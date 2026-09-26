@@ -40,6 +40,28 @@ export function serializeExpenseRow(
   ];
 }
 
+export function serializeBudgetRow(
+  cycleKey,
+  cutoffDay,
+  name,
+  category,
+  groupKey,
+  amount,
+  createdAt = new Date().toISOString(),
+  id = (typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : String(Date.now())),
+) {
+  return [
+    id || (typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : String(Date.now())),
+    cycleKey,
+    Number(cutoffDay) || 25,
+    name || "",
+    category,
+    groupKey,
+    Number(amount) || 0,
+    createdAt || new Date().toISOString(),
+  ];
+}
+
 export function serializeSettingsRow(settings = {}) {
   const mode = settings.timezone_mode === "manual" ? "manual" : "auto";
   const tz = settings.timezone || DEFAULT_SETTINGS.timezone;

@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "check": "node scripts/self-check.mjs"
+    "check": "node scripts/self-check.mjs && node --experimental-strip-types scripts/chat-function.test.mjs",
+    "check:chat": "node --experimental-strip-types scripts/chat-function.test.mjs"
   },
   "dependencies": {
     "@react-oauth/google": "^0.12.1",

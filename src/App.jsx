@@ -7,6 +7,7 @@ import {
   Routes,
 } from "react-router-dom";
 import { useAuth } from "./hooks/useAuth.js";
+import { useBudgetAlertSync } from "./hooks/useBudgetAlertSync.js";
 import LoginPage from "./pages/LoginPage.jsx";
 import LandingPage from "./pages/LandingPage.jsx";
 import PrivacyPolicyPage from "./pages/PrivacyPolicyPage.jsx";
@@ -35,10 +36,20 @@ function PageFallback() {
   );
 }
 
+function BudgetAlertSyncHandler() {
+  useBudgetAlertSync();
+  return null;
+}
+
 function RequireAuth() {
   const { isAuthed } = useAuth();
   if (!isAuthed) return <Navigate to="/login" replace />;
-  return <Outlet />;
+  return (
+    <>
+      <BudgetAlertSyncHandler />
+      <Outlet />
+    </>
+  );
 }
 
 function GuestOnly() {

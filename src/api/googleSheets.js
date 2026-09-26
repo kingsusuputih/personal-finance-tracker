@@ -3,6 +3,8 @@ import {
   SHEETS,
   SETTINGS_HEADERS,
   DEFAULT_SETTINGS,
+  ADDITIONAL_INCOME_HEADERS,
+  BUDGET_HEADERS,
 } from "../constants/sheets.js";
 import { serializeSettingsRow } from "../utils/sheetsHelpers.js";
 
@@ -33,6 +35,15 @@ export async function ensureSchemaSheets(accessToken, spreadsheetId) {
     valueData.push({
       range: `'${SHEETS.ADDITIONAL_INCOME}'!A1:E1`,
       values: [ADDITIONAL_INCOME_HEADERS],
+    });
+  }
+
+  const hasBudgets = sheets.some((s) => s.properties.title === SHEETS.BUDGETS);
+  if (!hasBudgets) {
+    requests.push({ addSheet: { properties: { title: SHEETS.BUDGETS } } });
+    valueData.push({
+      range: `'${SHEETS.BUDGETS}'!A1:H1`,
+      values: [BUDGET_HEADERS],
     });
   }
 

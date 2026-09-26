@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useSpreadsheet } from "../hooks/useSpreadsheet.js";
-import { useT } from "../i18n/LanguageProvider.jsx";
+import { usePushNotifications } from "../hooks/usePushNotifications.js";
+import { useT, useI18n } from "../i18n/LanguageProvider.jsx";
 import { useToast } from "../components/ui/Toast.jsx";
 import { Card } from "../components/ui/Card.jsx";
 import { Button } from "../components/ui/Button.jsx";
@@ -26,7 +27,15 @@ export default function SettingsPage() {
     useSpreadsheet();
   const accessToken = useAuthStore((s) => s.accessToken);
   const t = useT();
+  const { lang } = useI18n();
   const toast = useToast();
+  const {
+    isSupported: isPushSupported,
+    subscribed: isPushSubscribed,
+    loading: pushLoading,
+    subscribe: subscribePush,
+    unsubscribe: unsubscribePush,
+  } = usePushNotifications();
 
   const detectedZone = detectBrowserTimezone();
   const allZones = getSupportedTimezones();
@@ -115,6 +124,24 @@ export default function SettingsPage() {
       toast.error(err.message || t("toast.error"));
     } finally {
       setDeletingRegistry(false);
+    }
+  };
+
+  const handleTogglePush = async () => {
+    if (isPushSubscribed) {
+      await unsubscribePush();
+      toast.success(t("settings.notifyDisabledSuccess"));
+    } else {
+      try {
+        await subscribePush({
+          timezone: mode === "manual" ? selectedZone : detectedZone,
+          cutoffDay: Number(cutoff) || 25,
+          lang,
+        });
+        toast.success(t("settings.notifySuccess"));
+      } catch (err) {
+        toast.error(err.message || t("settings.notifyDenied"));
+      }
     }
   };
 
@@ -262,6 +289,48 @@ export default function SettingsPage() {
                         {t("settings.deleteRegistry")}
                       </Button>
                     </div>
+                  </div>
+                </Card>
+
+                <Card className="p-5">
+                  <h2 className="text-base font-semibold text-ink">
+                    {t("settings.notifyTitle")}
+                  </h2>
+                  <p className="mt-1 text-xs text-ink-3">
+                    {t("settings.notifyDesc")}
+                  </p>
+
+                  <div className="mt-4 space-y-4">
+                    {!isPushSupported ? (
+                      <p className="text-xs text-ink-3">
+                        {t("settings.notifyUnsupported")}
+                      </p>
+                    ) : (
+                      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <div className="flex items-center gap-2">
+                          <span
+                            className={`inline-block h-2 w-2 rounded-full ${
+                              isPushSubscribed ? "bg-success" : "bg-ink-3"
+                            }`}
+                          />
+                          <span className="text-sm text-ink">
+                            {isPushSubscribed
+                              ? t("settings.notifyEnabled")
+                              : t("settings.notifyDisabled")}
+                          </span>
+                        </div>
+                        <Button
+                          type="button"
+                          variant={isPushSubscribed ? "secondary" : "primary"}
+                          size="sm"
+                          loading={pushLoading}
+                          onClick={handleTogglePush}>
+                          {isPushSubscribed
+                            ? t("settings.notifyDisable")
+                            : t("settings.notifyEnable")}
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 </Card>
               </form>
