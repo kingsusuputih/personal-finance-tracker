@@ -32,10 +32,10 @@ export function Sidebar() {
         to="/"
         className="flex h-14 items-center gap-2.5 border-b border-rule px-5 transition-opacity hover:opacity-85"
         title={t("app.name")}>
-        <span className="inline-flex h-6 w-6 items-center justify-center rounded-sm bg-accent font-display text-xs font-bold text-accent-ink">
+        <span className="inline-flex h-6 w-6 items-center justify-center rounded-sm bg-accent font-brand text-xs font-bold text-accent-ink">
           F
         </span>
-        <span className="font-display text-base font-semibold tracking-tight text-ink">
+        <span className="font-brand text-base font-semibold tracking-tight text-ink">
           {t("app.name")}
         </span>
       </Link>

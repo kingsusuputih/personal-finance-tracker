@@ -22,7 +22,7 @@ export function Navbar() {
         <div className="flex h-14 items-center justify-between px-4">
           <Link
             to="/"
-            className="inline-flex h-7 w-7 items-center justify-center rounded-sm bg-accent font-display text-xs font-bold text-accent-ink transition-opacity hover:opacity-85"
+            className="inline-flex h-7 w-7 items-center justify-center rounded-sm bg-accent font-brand text-xs font-bold text-accent-ink transition-opacity hover:opacity-85"
             aria-label={t("app.name")}
             title={t("app.name")}>
             F

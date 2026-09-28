@@ -12,7 +12,7 @@ export function LegalDocument({ titleKey, sections }) {
       <div className="w-full max-w-2xl">
         <header className="mb-8 flex items-start justify-between">
           <Link to="/login" className="group" title={t("legal.back")}>
-            <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-btn bg-accent font-display text-lg font-bold text-accent-ink shadow-sm">
+            <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-btn bg-accent font-brand text-lg font-bold text-accent-ink shadow-sm">
               F
             </div>
             <p className="kbd text-[10px] text-ink-3 transition-colors group-hover:text-accent">

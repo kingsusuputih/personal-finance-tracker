@@ -88,11 +88,12 @@ export function ExpenseForm({ editingRow = null, onCancelEdit, draft = null, onC
   };
 
   return (
-    <Card className="p-5">
-      <h2 className="mb-4 text-base font-semibold text-ink">
-        {editingRow ? t("expense.edit") : t("expense.title")}
-      </h2>
-      <form onSubmit={submit} className="space-y-4" noValidate>
+    <div className="p-5 sm:p-6 bg-paper flex flex-col justify-between">
+      <div>
+        <h2 className="mb-4 text-base font-bold text-ink tracking-tight">
+          {editingRow ? t("expense.edit") : t("expense.title")}
+        </h2>
+        <form onSubmit={submit} className="space-y-4" noValidate>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <label className="block">
             <span className="kbd mb-1.5 block text-[10px] text-ink-3">
@@ -175,6 +176,7 @@ export function ExpenseForm({ editingRow = null, onCancelEdit, draft = null, onC
           </Button>
         </div>
       </form>
-    </Card>
+    </div>
+  </div>
   );
 }

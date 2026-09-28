@@ -144,90 +144,111 @@ export default function RecapPage() {
               </div>
             ) : (
               <>
-                <section className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                  <Card className="p-4 sm:p-5">
-                    <div className="text-xs font-medium text-ink-3">
-                      {t("recap.totalIncome")}
+                {/* Financial Summary - Connected 6-Cell Scoreboard */}
+                <section className="mb-8">
+                  <div className="rounded-card border border-rule bg-paper shadow-sm overflow-hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-rule">
+                    {/* Cell 1: Total Income */}
+                    <div className="p-5 flex flex-col justify-between hover:bg-paper-2/20 transition-colors">
+                      <div>
+                        <div className="kbd text-[10px] uppercase tracking-wider text-ink-3">
+                          {t("recap.totalIncome")}
+                        </div>
+                        <div className="amount mt-2 text-2xl font-bold text-ink sm:text-3xl">
+                          {formatIDR(recap.totalIncome)}
+                        </div>
+                      </div>
+                      <div className="mt-3 text-xs text-ink-3">
+                        {t("recap.incomeBreakdown", {
+                          main: formatIDR(recap.mainIncome),
+                          additional: formatIDR(recap.totalAdditionalIncome),
+                        })}
+                      </div>
                     </div>
-                    <div className="amount mt-1 text-xl font-bold text-ink sm:text-2xl">
-                      {formatIDR(recap.totalIncome)}
-                    </div>
-                    <div className="mt-2 text-[11px] text-ink-3">
-                      {t("recap.incomeBreakdown", {
-                        main: formatIDR(recap.mainIncome),
-                        additional: formatIDR(recap.totalAdditionalIncome),
-                      })}
-                    </div>
-                  </Card>
 
-                  <Card className="p-4 sm:p-5">
-                    <div className="text-xs font-medium text-ink-3">
-                      {t("recap.consumption")}
+                    {/* Cell 2: Consumption */}
+                    <div className="p-5 flex flex-col justify-between hover:bg-paper-2/20 transition-colors">
+                      <div>
+                        <div className="kbd text-[10px] uppercase tracking-wider text-ink-3">
+                          {t("recap.consumption")}
+                        </div>
+                        <div className="amount mt-2 text-2xl font-bold text-ink sm:text-3xl">
+                          {formatIDR(recap.consumptionExpenses)}
+                        </div>
+                      </div>
+                      <div className="mt-3 text-xs text-ink-3">
+                        {t("recap.consumptionHint", {
+                          needs: formatIDR(recap.needsExpenses),
+                          lifestyle: formatIDR(recap.lifestyleExpenses),
+                        })}
+                      </div>
                     </div>
-                    <div className="amount mt-1 text-xl font-bold text-ink sm:text-2xl">
-                      {formatIDR(recap.consumptionExpenses)}
-                    </div>
-                    <div className="mt-2 text-[11px] text-ink-3">
-                      {t("recap.consumptionHint", {
-                        needs: formatIDR(recap.needsExpenses),
-                        lifestyle: formatIDR(recap.lifestyleExpenses),
-                      })}
-                    </div>
-                  </Card>
 
-                  <Card className="p-4 sm:p-5">
-                    <div className="text-xs font-medium text-ink-3">
-                      {t("recap.periodInvest")}
+                    {/* Cell 3: Investments */}
+                    <div className="p-5 flex flex-col justify-between hover:bg-paper-2/20 transition-colors">
+                      <div>
+                        <div className="kbd text-[10px] uppercase tracking-wider text-ink-3">
+                          {t("recap.periodInvest")}
+                        </div>
+                        <div className="amount mt-2 text-2xl font-bold text-success sm:text-3xl">
+                          {formatIDR(recap.investmentExpenses)}
+                        </div>
+                      </div>
+                      <div className="mt-3 text-xs text-ink-3">
+                        {t("allocation.target")}: {formatIDR(recap.totalIncome * 0.3)} (30%)
+                      </div>
                     </div>
-                    <div className="amount mt-1 text-xl font-bold text-success sm:text-2xl">
-                      {formatIDR(recap.investmentExpenses)}
-                    </div>
-                    <div className="mt-2 text-[11px] text-ink-3">
-                      {t("allocation.target")}: {formatIDR(recap.totalIncome * 0.3)} (30%)
-                    </div>
-                  </Card>
 
-                  <Card className="p-4 sm:p-5">
-                    <div className="text-xs font-medium text-ink-3">
-                      {isSurplus ? t("recap.statusSurplus") : t("recap.statusDeficit")}
+                    {/* Cell 4: Surplus / Deficit */}
+                    <div className="p-5 flex flex-col justify-between border-t border-rule hover:bg-paper-2/20 transition-colors">
+                      <div>
+                        <div className="kbd text-[10px] uppercase tracking-wider text-ink-3">
+                          {isSurplus ? t("recap.statusSurplus") : t("recap.statusDeficit")}
+                        </div>
+                        <div
+                          className={`amount mt-2 text-2xl font-bold sm:text-3xl ${
+                            isSurplus ? "text-success" : "text-danger"
+                          }`}>
+                          {formatIDR(recap.surplusBeforeInvestment)}
+                        </div>
+                      </div>
+                      <div className="mt-3 text-xs text-ink-3">
+                        {isSurplus ? "Pemasukan melebihi pengeluaran konsumsi" : "Pengeluaran melebihi pemasukan"}
+                      </div>
                     </div>
-                    <div
-                      className={`amount mt-1 text-xl font-bold sm:text-2xl ${
-                        isSurplus ? "text-success" : "text-danger"
-                      }`}>
-                      {formatIDR(recap.surplusBeforeInvestment)}
-                    </div>
-                    <div className="mt-2 text-[11px] text-ink-3">
-                      {isSurplus ? "Pemasukan melebihi pengeluaran konsumsi" : "Pengeluaran melebihi pemasukan"}
-                    </div>
-                  </Card>
 
-                  <Card className="p-4 sm:p-5">
-                    <div className="text-xs font-medium text-ink-3">
-                      {t("recap.remainingToInvest")}
+                    {/* Cell 5: Remaining */}
+                    <div className="p-5 flex flex-col justify-between border-t border-rule hover:bg-paper-2/20 transition-colors">
+                      <div>
+                        <div className="kbd text-[10px] uppercase tracking-wider text-ink-3">
+                          {t("recap.remainingToInvest")}
+                        </div>
+                        <div
+                          className={`amount mt-2 text-2xl font-bold sm:text-3xl ${
+                            isRemainingPositive ? "text-accent" : "text-danger"
+                          }`}>
+                          {formatIDR(recap.remainingAfterInvestment)}
+                        </div>
+                      </div>
+                      <div className="mt-3 text-xs text-ink-3">
+                        {t("recap.remainingDesc")}
+                      </div>
                     </div>
-                    <div
-                      className={`amount mt-1 text-xl font-bold sm:text-2xl ${
-                        isRemainingPositive ? "text-accent" : "text-danger"
-                      }`}>
-                      {formatIDR(recap.remainingAfterInvestment)}
-                    </div>
-                    <div className="mt-2 text-[11px] text-ink-3">
-                      {t("recap.remainingDesc")}
-                    </div>
-                  </Card>
 
-                  <Card className="p-4 sm:p-5 bg-paper-2/40">
-                    <div className="text-xs font-medium text-ink-3">
-                      {t("recap.cumulativeSaved")}
+                    {/* Cell 6: Cumulative */}
+                    <div className="p-5 flex flex-col justify-between border-t border-rule bg-paper-2/30 hover:bg-paper-2/40 transition-colors">
+                      <div>
+                        <div className="kbd text-[10px] uppercase tracking-wider text-ink-3">
+                          {t("recap.cumulativeSaved")}
+                        </div>
+                        <div className="amount mt-2 text-2xl font-bold text-ink sm:text-3xl">
+                          {formatIDR(recap.cumulativeInvestments)}
+                        </div>
+                      </div>
+                      <div className="mt-3 text-xs text-ink-3">
+                        {t("recap.cumulativeSavedHint")}
+                      </div>
                     </div>
-                    <div className="amount mt-1 text-xl font-bold text-ink sm:text-2xl">
-                      {formatIDR(recap.cumulativeInvestments)}
-                    </div>
-                    <div className="mt-2 text-[11px] text-ink-3">
-                      {t("recap.cumulativeSavedHint")}
-                    </div>
-                  </Card>
+                  </div>
                 </section>
 
                 <BudgetSection selectedCycle={selectedCycle} />

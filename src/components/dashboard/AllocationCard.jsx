@@ -1,4 +1,3 @@
-import { Card } from "../ui/Card.jsx";
 import { Badge } from "../ui/Badge.jsx";
 import { useT } from "../../i18n/LanguageProvider.jsx";
 import { formatIDR } from "../../utils/financeFormulas.js";
@@ -17,32 +16,34 @@ export function AllocationCard({
   const width = `${ratio * 100}%`;
 
   return (
-    <Card className="p-5">
-      <div className="flex items-center justify-between gap-2">
-        <h3 className="text-sm font-semibold text-ink">{label}</h3>
-        <Badge tone={over ? "danger" : "success"}>
-          {over ? t("allocation.over") : t("allocation.onTrack")}
-        </Badge>
-      </div>
-      <p className="kbd mt-1 text-[10px] text-ink-3">
-        {percent}% {t("allocation.percentOf")}
-      </p>
-
-      <div className="mt-4 flex flex-wrap items-end justify-between gap-x-3 gap-y-2">
-        <div className="min-w-0">
-          <p className="kbd text-[10px] text-ink-3">{t("allocation.target")}</p>
-          <p className="amount mt-1 text-base sm:text-lg font-semibold text-ink truncate">
-            {showTarget ? formatIDR(targetAmount) : "••••••••"}
-          </p>
+    <div className="p-5 flex flex-col justify-between bg-paper">
+      <div>
+        <div className="flex items-center justify-between gap-2">
+          <h3 className="text-sm font-bold text-ink">{label}</h3>
+          <Badge tone={over ? "danger" : "success"}>
+            {over ? t("allocation.over") : t("allocation.onTrack")}
+          </Badge>
         </div>
-        <div className="min-w-0 text-right">
-          <p className="kbd text-[10px] text-ink-3">{t("allocation.spent")}</p>
-          <p
-            className={`amount mt-1 text-base sm:text-lg font-semibold truncate ${
-              over ? "text-danger" : "text-success"
-            }`}>
-            {showSpent ? formatIDR(actualAmount) : "••••••••"}
-          </p>
+        <p className="kbd mt-1 text-[10px] text-ink-3">
+          {percent}% {t("allocation.percentOf")}
+        </p>
+
+        <div className="mt-4 flex flex-wrap items-end justify-between gap-x-3 gap-y-2">
+          <div className="min-w-0">
+            <p className="kbd text-[10px] text-ink-3">{t("allocation.target")}</p>
+            <p className="amount mt-1 text-base sm:text-lg font-semibold text-ink truncate">
+              {showTarget ? formatIDR(targetAmount) : "••••••••"}
+            </p>
+          </div>
+          <div className="min-w-0 text-right">
+            <p className="kbd text-[10px] text-ink-3">{t("allocation.spent")}</p>
+            <p
+              className={`amount mt-1 text-base sm:text-lg font-semibold truncate ${
+                over ? "text-danger" : "text-success"
+              }`}>
+              {showSpent ? formatIDR(actualAmount) : "••••••••"}
+            </p>
+          </div>
         </div>
       </div>
 
@@ -60,6 +61,6 @@ export function AllocationCard({
           style={{ width }}
         />
       </div>
-    </Card>
+    </div>
   );
 }

@@ -395,7 +395,7 @@ export default function ChatPage() {
                 </div>
               </Card>
             ) : (
-              <div className="flex flex-1 flex-col overflow-hidden rounded-lg border border-rule bg-paper">
+              <div className="flex flex-1 flex-col overflow-hidden rounded-card border border-rule bg-paper shadow-sm">
                 <div className="border-b border-rule bg-paper-2/40 px-3 py-2 text-xs flex flex-wrap items-center justify-between gap-2">
                   <div className="flex flex-wrap items-center gap-3">
                     <label className="flex items-center gap-1.5">

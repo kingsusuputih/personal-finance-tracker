@@ -171,169 +171,181 @@ export default function SettingsPage() {
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="max-w-xl space-y-6">
-                <Card className="p-5">
-                  <h2 className="text-base font-semibold text-ink">
-                    {t("settings.timezoneTitle")}
-                  </h2>
-                  <p className="mt-1 text-xs text-ink-3">
-                    {t("settings.timezoneDesc")}
-                  </p>
+                <div className="rounded-card border border-rule bg-paper shadow-sm overflow-hidden divide-y divide-rule">
+                  {/* Timezone Section */}
+                  <div className="p-5 sm:p-6">
+                    <h2 className="text-base font-bold text-ink tracking-tight">
+                      {t("settings.timezoneTitle")}
+                    </h2>
+                    <p className="mt-1 text-xs text-ink-3">
+                      {t("settings.timezoneDesc")}
+                    </p>
 
-                  <div className="mt-4 space-y-3">
-                    <label className="flex items-center gap-3">
-                      <input
-                        type="radio"
-                        name="tz_mode"
-                        value="auto"
-                        checked={mode === "auto"}
-                        onChange={() => setMode("auto")}
-                        className="accent-accent"
-                      />
-                      <span className="text-sm text-ink">
-                        {t("settings.modeAuto", { zone: detectedZone })}
-                      </span>
-                    </label>
+                    <div className="mt-4 space-y-3">
+                      <label className="flex items-center gap-3 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="tz_mode"
+                          value="auto"
+                          checked={mode === "auto"}
+                          onChange={() => setMode("auto")}
+                          className="accent-accent"
+                        />
+                        <span className="text-sm text-ink font-medium">
+                          {t("settings.modeAuto", { zone: detectedZone })}
+                        </span>
+                      </label>
 
-                    <label className="flex items-center gap-3">
-                      <input
-                        type="radio"
-                        name="tz_mode"
-                        value="manual"
-                        checked={mode === "manual"}
-                        onChange={() => setMode("manual")}
-                        className="accent-accent"
-                      />
-                      <span className="text-sm text-ink">
-                        {t("settings.modeManual")}
-                      </span>
-                    </label>
+                      <label className="flex items-center gap-3 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="tz_mode"
+                          value="manual"
+                          checked={mode === "manual"}
+                          onChange={() => setMode("manual")}
+                          className="accent-accent"
+                        />
+                        <span className="text-sm text-ink font-medium">
+                          {t("settings.modeManual")}
+                        </span>
+                      </label>
 
-                    {mode === "manual" && (
-                      <div className="pt-2">
+                      {mode === "manual" && (
+                        <div className="pt-2">
+                          <select
+                            value={selectedZone}
+                            onChange={(e) => setSelectedZone(e.target.value)}
+                            aria-label={t("settings.timezoneTitle")}
+                            className="field">
+                            {allZones.map((z) => (
+                              <option key={z} value={z}>
+                                {z}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Cutoff Day Section */}
+                  <div className="p-5 sm:p-6">
+                    <h2 className="text-base font-bold text-ink tracking-tight">
+                      {t("settings.cutoffTitle")}
+                    </h2>
+                    <p className="mt-1 text-xs text-ink-3">
+                      {t("settings.cutoffDesc")}
+                    </p>
+
+                    <div className="mt-4 max-w-xs">
+                      <label className="block">
+                        <span className="kbd mb-1.5 block text-[10px] text-ink-3">
+                          {t("settings.cutoffLabel")}
+                        </span>
                         <select
-                          value={selectedZone}
-                          onChange={(e) => setSelectedZone(e.target.value)}
-                          aria-label={t("settings.timezoneTitle")}
+                          value={cutoff}
+                          onChange={(e) => setCutoff(e.target.value)}
                           className="field">
-                          {allZones.map((z) => (
-                            <option key={z} value={z}>
-                              {z}
+                          {Array.from({ length: 28 }, (_, i) => i + 1).map((day) => (
+                            <option key={day} value={day}>
+                              {day === 25 ? `${day} (${t("settings.defaultTag")})` : day}
                             </option>
                           ))}
                         </select>
-                      </div>
-                    )}
-                  </div>
-                </Card>
-
-                <Card className="p-5">
-                  <h2 className="text-base font-semibold text-ink">
-                    {t("settings.cutoffTitle")}
-                  </h2>
-                  <p className="mt-1 text-xs text-ink-3">
-                    {t("settings.cutoffDesc")}
-                  </p>
-
-                  <div className="mt-4">
-                    <label className="block">
-                      <span className="kbd mb-1.5 block text-[10px] text-ink-3">
-                        {t("settings.cutoffLabel")}
-                      </span>
-                      <select
-                        value={cutoff}
-                        onChange={(e) => setCutoff(e.target.value)}
-                        className="field">
-                        {Array.from({ length: 28 }, (_, i) => i + 1).map((day) => (
-                          <option key={day} value={day}>
-                            {day === 25 ? `${day} (${t("settings.defaultTag")})` : day}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-                  </div>
-                </Card>
-
-                <Button type="submit" loading={saving} className="w-full">
-                  {t("settings.save")}
-                </Button>
-
-                <Card className="p-5">
-                  <h2 className="text-base font-semibold text-ink">
-                    {t("settings.communityTitle")}
-                  </h2>
-                  <p className="mt-1 text-xs text-ink-3">
-                    {t("settings.communityDesc")}
-                  </p>
-
-                  <div className="mt-4 space-y-4">
-                    <label className="flex items-start gap-3">
-                      <input
-                        type="checkbox"
-                        checked={publishName}
-                        disabled={savingCommunity}
-                        onChange={(e) => handleToggleCommunity(e.target.checked)}
-                        className="mt-0.5 h-4 w-4 rounded border-rule-2 accent-accent"
-                      />
-                      <div className="text-sm">
-                        <span className="text-ink">
-                          {t("settings.showName", { name: maskedName || "H*** A***" })}
-                        </span>
-                      </div>
-                    </label>
-
-                    <div className="border-t border-rule pt-4">
-                      <Button
-                        type="button"
-                        variant="danger"
-                        size="sm"
-                        onClick={() => setDeleteModalOpen(true)}>
-                        {t("settings.deleteRegistry")}
-                      </Button>
+                      </label>
                     </div>
                   </div>
-                </Card>
 
-                <Card className="p-5">
-                  <h2 className="text-base font-semibold text-ink">
-                    {t("settings.notifyTitle")}
-                  </h2>
-                  <p className="mt-1 text-xs text-ink-3">
-                    {t("settings.notifyDesc")}
-                  </p>
+                  {/* Save Action Bar */}
+                  <div className="p-4 sm:p-5 bg-paper-2/40 flex justify-end">
+                    <Button type="submit" loading={saving} className="w-full sm:w-auto px-6">
+                      {t("settings.save")}
+                    </Button>
+                  </div>
+                </div>
 
-                  <div className="mt-4 space-y-4">
-                    {!isPushSupported ? (
-                      <p className="text-xs text-ink-3">
-                        {t("settings.notifyUnsupported")}
-                      </p>
-                    ) : (
-                      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                        <div className="flex items-center gap-2">
-                          <span
-                            className={`inline-block h-2 w-2 rounded-full ${
-                              isPushSubscribed ? "bg-success" : "bg-ink-3"
-                            }`}
-                          />
-                          <span className="text-sm text-ink">
-                            {isPushSubscribed
-                              ? t("settings.notifyEnabled")
-                              : t("settings.notifyDisabled")}
+                {/* Secondary Preferences - Connected Panel */}
+                <div className="rounded-card border border-rule bg-paper shadow-sm overflow-hidden divide-y divide-rule">
+                  {/* Community & Social Proof */}
+                  <div className="p-5 sm:p-6">
+                    <h2 className="text-base font-bold text-ink tracking-tight">
+                      {t("settings.communityTitle")}
+                    </h2>
+                    <p className="mt-1 text-xs text-ink-3">
+                      {t("settings.communityDesc")}
+                    </p>
+
+                    <div className="mt-4 space-y-4">
+                      <label className="flex items-start gap-3 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={publishName}
+                          disabled={savingCommunity}
+                          onChange={(e) => handleToggleCommunity(e.target.checked)}
+                          className="mt-0.5 h-4 w-4 rounded border-rule-2 accent-accent"
+                        />
+                        <div className="text-sm">
+                          <span className="text-ink font-medium">
+                            {t("settings.showName", { name: maskedName || "H*** A***" })}
                           </span>
                         </div>
+                      </label>
+
+                      <div className="border-t border-rule pt-4">
                         <Button
                           type="button"
-                          variant={isPushSubscribed ? "secondary" : "primary"}
+                          variant="danger"
                           size="sm"
-                          loading={pushLoading}
-                          onClick={handleTogglePush}>
-                          {isPushSubscribed
-                            ? t("settings.notifyDisable")
-                            : t("settings.notifyEnable")}
+                          onClick={() => setDeleteModalOpen(true)}>
+                          {t("settings.deleteRegistry")}
                         </Button>
                       </div>
-                    )}
+                    </div>
                   </div>
-                </Card>
+
+                  {/* Push Notifications */}
+                  <div className="p-5 sm:p-6">
+                    <h2 className="text-base font-bold text-ink tracking-tight">
+                      {t("settings.notifyTitle")}
+                    </h2>
+                    <p className="mt-1 text-xs text-ink-3">
+                      {t("settings.notifyDesc")}
+                    </p>
+
+                    <div className="mt-4">
+                      {!isPushSupported ? (
+                        <p className="text-xs text-ink-3">
+                          {t("settings.notifyUnsupported")}
+                        </p>
+                      ) : (
+                        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                          <div className="flex items-center gap-2">
+                            <span
+                              className={`inline-block h-2 w-2 rounded-full ${
+                                isPushSubscribed ? "bg-success" : "bg-ink-3"
+                              }`}
+                            />
+                            <span className="text-sm font-medium text-ink">
+                              {isPushSubscribed
+                                ? t("settings.notifyEnabled")
+                                : t("settings.notifyDisabled")}
+                            </span>
+                          </div>
+                          <Button
+                            type="button"
+                            variant={isPushSubscribed ? "secondary" : "primary"}
+                            size="sm"
+                            loading={pushLoading}
+                            onClick={handleTogglePush}>
+                            {isPushSubscribed
+                              ? t("settings.notifyDisable")
+                              : t("settings.notifyEnable")}
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
               </form>
             )}
           </div>

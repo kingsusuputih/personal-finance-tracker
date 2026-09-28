@@ -239,71 +239,118 @@ export default function DashboardPage() {
                   </section>
                 )}
 
-                <section className="mb-8 grid gap-4 sm:grid-cols-2">
-                  <Card className="p-5">
-                    <div className="flex items-center justify-between gap-2">
-                      <p className="kbd text-[10px] text-ink-3">
-                        {t("dash.monthlyIncome")}
-                      </p>
-                      <button
-                        type="button"
-                        onClick={() => setShowIncome((v) => !v)}
-                        aria-label={t(
-                          showIncome ? "dash.hideIncome" : "dash.showIncome",
+                {/* Primary Financial Overview - Connected 3-Cell Command Hub */}
+                <section className="mb-8">
+                  <div className="rounded-card border border-rule bg-paper shadow-sm overflow-hidden grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-rule">
+                    {/* Monthly Income */}
+                    <div className="p-5 sm:p-6 flex flex-col justify-between">
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="kbd text-[10px] text-ink-3 uppercase tracking-wider">
+                          {t("dash.monthlyIncome")}
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => setShowIncome((v) => !v)}
+                          aria-label={t(showIncome ? "dash.hideIncome" : "dash.showIncome")}
+                          title={t(showIncome ? "dash.hideIncome" : "dash.showIncome")}
+                          aria-pressed={showIncome}
+                          className="rounded p-1 text-ink-3 transition-colors hover:bg-paper-2 hover:text-ink">
+                          {showIncome ? <EyeOffIcon /> : <EyeIcon />}
+                        </button>
+                      </div>
+                      <div className="mt-3">
+                        <p className="amount text-2xl sm:text-3xl font-bold tracking-tight text-ink">
+                          {showIncome ? formatIDR(calc.monthlyIncome) : "••••••••"}
+                        </p>
+                        {calc.monthlyIncome === 0 ? (
+                          <p className="mt-1 text-xs text-ink-3">
+                            {t("dash.incomeHint")}
+                          </p>
+                        ) : (
+                          <p className="mt-1 text-xs text-ink-3">
+                            {calc.currentMonth}
+                          </p>
                         )}
-                        title={t(
-                          showIncome ? "dash.hideIncome" : "dash.showIncome",
-                        )}
-                        aria-pressed={showIncome}
-                        className="rounded p-1 text-ink-3 transition-colors hover:bg-paper-3 hover:text-ink">
-                        {showIncome ? <EyeOffIcon /> : <EyeIcon />}
-                      </button>
+                      </div>
                     </div>
-                    <p className="amount mt-2 text-2xl font-semibold text-ink">
-                      {showIncome ? formatIDR(calc.monthlyIncome) : "••••••••"}
-                    </p>
-                    {calc.monthlyIncome === 0 && (
-                      <p className="mt-1 text-xs text-ink-3">
-                        {t("dash.incomeHint")}
-                      </p>
-                    )}
-                  </Card>
-                  <Card className="p-5">
-                    <div className="flex items-center justify-between gap-2">
-                      <p className="kbd text-[10px] text-ink-3">
-                        {t("dash.monthlyExpenses")}
-                      </p>
-                      <button
-                        type="button"
-                        onClick={() => setShowExpenses((v) => !v)}
-                        aria-label={t(
-                          showExpenses
-                            ? "dash.hideExpenses"
-                            : "dash.showExpenses",
-                        )}
-                        title={t(
-                          showExpenses
-                            ? "dash.hideExpenses"
-                            : "dash.showExpenses",
-                        )}
-                        aria-pressed={showExpenses}
-                        className="rounded p-1 text-ink-3 transition-colors hover:bg-paper-3 hover:text-ink">
-                        {showExpenses ? <EyeOffIcon /> : <EyeIcon />}
-                      </button>
+
+                    {/* Monthly Expenses */}
+                    <div className="p-5 sm:p-6 flex flex-col justify-between">
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="kbd text-[10px] text-ink-3 uppercase tracking-wider">
+                          {t("dash.monthlyExpenses")}
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => setShowExpenses((v) => !v)}
+                          aria-label={t(showExpenses ? "dash.hideExpenses" : "dash.showExpenses")}
+                          title={t(showExpenses ? "dash.hideExpenses" : "dash.showExpenses")}
+                          aria-pressed={showExpenses}
+                          className="rounded p-1 text-ink-3 transition-colors hover:bg-paper-2 hover:text-ink">
+                          {showExpenses ? <EyeOffIcon /> : <EyeIcon />}
+                        </button>
+                      </div>
+                      <div className="mt-3">
+                        <p className="amount text-2xl sm:text-3xl font-bold tracking-tight text-ink">
+                          {showExpenses
+                            ? formatIDR(calc.totalMonthlyExpenses)
+                            : "••••••••"}
+                        </p>
+                        <p className="mt-1 text-xs text-ink-3">
+                          {calc.monthlyIncome > 0 && showIncome && showExpenses
+                            ? `${Math.round((calc.totalMonthlyExpenses / calc.monthlyIncome) * 100)}% of income`
+                            : "Recorded spending"}
+                        </p>
+                      </div>
                     </div>
-                    <p className="amount mt-2 text-2xl font-semibold text-ink">
-                      {showExpenses
-                        ? formatIDR(calc.totalMonthlyExpenses)
-                        : "••••••••"}
-                    </p>
-                  </Card>
+
+                    {/* Net Cashflow / Balance */}
+                    <div className="p-5 sm:p-6 flex flex-col justify-between bg-paper-2/30">
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="kbd text-[10px] text-ink-3 uppercase tracking-wider">
+                          Net Balance
+                        </p>
+                        <span
+                          className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold ${
+                            calc.monthlyIncome - calc.totalMonthlyExpenses >= 0
+                              ? "bg-success-soft text-success"
+                              : "bg-danger-soft text-danger"
+                          }`}>
+                          {calc.monthlyIncome - calc.totalMonthlyExpenses >= 0
+                            ? "Surplus"
+                            : "Deficit"}
+                        </span>
+                      </div>
+                      <div className="mt-3">
+                        <p
+                          className={`amount text-2xl sm:text-3xl font-bold tracking-tight ${
+                            calc.monthlyIncome - calc.totalMonthlyExpenses >= 0
+                              ? "text-success"
+                              : "text-danger"
+                          }`}>
+                          {showIncome && showExpenses
+                            ? formatIDR(calc.monthlyIncome - calc.totalMonthlyExpenses)
+                            : "••••••••"}
+                        </p>
+                        <p className="mt-1 text-xs text-ink-3">
+                          {calc.monthlyIncome - calc.totalMonthlyExpenses >= 0
+                            ? "Available for investment/savings"
+                            : "Spending exceeds income"}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 </section>
 
+                {/* 50/30/20 Allocation - Connected 3-Cell Frame */}
                 <section className="mb-8">
-                  <h2 className="mb-3 text-base font-semibold text-ink">
-                    {t("dash.allocation")}
-                  </h2>
-                  <div className="grid gap-4 md:grid-cols-3">
+                  <div className="mb-3 flex items-center justify-between">
+                    <h2 className="text-base font-bold text-ink tracking-tight">
+                      {t("dash.allocation")}
+                    </h2>
+                    <span className="kbd text-[10px] text-ink-3">50 / 30 / 20 Rule</span>
+                  </div>
+                  <div className="rounded-card border border-rule bg-paper shadow-sm overflow-hidden grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-rule">
                     {allocationCards.map((c) => (
                       <AllocationCard
                         key={c.key}
@@ -318,16 +365,16 @@ export default function DashboardPage() {
                 {budgetSummary.budgets.length > 0 && (
                   <section className="mb-8">
                     <div className="mb-3 flex items-center justify-between">
-                      <h2 className="text-base font-semibold text-ink">
+                      <h2 className="text-base font-bold text-ink tracking-tight">
                         {t("budget.dashTitle")}
                       </h2>
                       <Link
                         to="/recap"
-                        className="text-xs font-medium text-accent hover:underline">
+                        className="text-xs font-semibold text-accent hover:underline">
                         {t("budget.viewAll")}
                       </Link>
                     </div>
-                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    <div className="rounded-card border border-rule bg-paper shadow-sm overflow-hidden divide-y divide-rule">
                       {budgetSummary.budgets.map((b) => {
                         const barWidth = Math.min(b.ratio * 100, 100);
                         const statusTone =
@@ -346,14 +393,14 @@ export default function DashboardPage() {
                             : t("budget.statusSafe");
 
                         return (
-                          <Card key={b.id || b.rowNumber} className="p-4 sm:p-5">
-                            <div className="flex items-center justify-between gap-2 border-b border-rule pb-2">
-                              <span className="truncate text-sm font-semibold text-ink" title={b.name}>
+                          <div key={b.id || b.rowNumber} className="p-4 sm:p-5 hover:bg-paper-2/30 transition-colors">
+                            <div className="flex items-center justify-between gap-2 mb-2">
+                              <span className="truncate text-sm font-bold text-ink" title={b.name}>
                                 {b.name}
                               </span>
                               <Badge tone={statusTone}>{statusLabel}</Badge>
                             </div>
-                            <div className="mt-3 space-y-1.5">
+                            <div className="space-y-1.5">
                               <div className="flex items-baseline justify-between text-xs">
                                 <span className="text-ink-3">{t("budget.spent")}:</span>
                                 <span className="amount font-semibold text-ink">
@@ -395,18 +442,22 @@ export default function DashboardPage() {
                                 </span>
                               </div>
                             </div>
-                          </Card>
+                          </div>
                         );
                       })}
                     </div>
                   </section>
                 )}
 
+                {/* Fund Targets - Connected 2-Cell Frame */}
                 <section className="mb-8">
-                  <h2 className="mb-3 text-base font-semibold text-ink">
-                    {t("dash.fundTargets")}
-                  </h2>
-                  <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="mb-3 flex items-center justify-between">
+                    <h2 className="text-base font-bold text-ink tracking-tight">
+                      {t("dash.fundTargets")}
+                    </h2>
+                    <span className="kbd text-[10px] text-ink-3">6× & 300× Metrics</span>
+                  </div>
+                  <div className="rounded-card border border-rule bg-paper shadow-sm overflow-hidden grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-rule">
                     <FundTargetCard
                       label={t("dash.emergency")}
                       multiplier={6}

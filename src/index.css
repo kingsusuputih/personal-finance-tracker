@@ -27,6 +27,7 @@
   --chart-warning: var(--chart-warning);
   --chart-success: var(--chart-success);
 
+  --font-brand: var(--font-brand);
   --font-display: var(--font-display);
   --font-body: var(--font-body);
   --font-mono: var(--font-mono);

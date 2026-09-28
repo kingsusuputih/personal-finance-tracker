@@ -20,7 +20,7 @@ export default function ChangelogPage() {
       <div className="w-full max-w-2xl">
         <header className="mb-8 flex items-start justify-between">
           <Link to="/" className="group" title={t("legal.back")}>
-            <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-btn bg-accent font-display text-lg font-bold text-accent-ink shadow-sm">
+            <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-btn bg-accent font-brand text-lg font-bold text-accent-ink shadow-sm">
               F
             </div>
             <p className="kbd text-[10px] text-ink-3 transition-colors group-hover:text-accent">
@@ -37,17 +37,17 @@ export default function ChangelogPage() {
           {t("changelog.subtitle")}
         </p>
 
-        <div className="space-y-10">
+        <div className="rounded-card border border-rule bg-paper shadow-sm overflow-hidden divide-y divide-rule">
           {changelogEntries.map((entry) => {
             const data = entry[lang] || entry.en;
             return (
-              <article key={entry.version} className="rounded-card border border-rule bg-paper-2/40 p-5">
+              <article key={entry.version} className="p-5 sm:p-6 hover:bg-paper-2/20 transition-colors">
                 <div className="flex flex-wrap items-center justify-between gap-2 border-b border-rule pb-3">
                   <div className="flex items-center gap-2">
                     <span className="kbd rounded bg-accent-soft px-2 py-0.5 text-xs font-semibold text-accent">
                       {entry.version}
                     </span>
-                    <h2 className="text-base font-semibold text-ink">
+                    <h2 className="text-base font-bold text-ink">
                       {data.title}
                     </h2>
                   </div>

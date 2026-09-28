@@ -45,13 +45,16 @@ export default function LedgerPage() {
               </div>
             ) : (
               <>
-                <section className="mb-8 grid gap-4 lg:grid-cols-2">
-                  <IncomeForm />
-                  <ExpenseForm
-                    key={editingRow ? `edit-${editingRow.rowNumber}` : "new"}
-                    editingRow={editingRow}
-                    onCancelEdit={() => setEditingRow(null)}
-                  />
+                {/* Connected Dual Entry Workspace */}
+                <section className="mb-8">
+                  <div className="rounded-card border border-rule bg-paper shadow-sm overflow-hidden grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-rule">
+                    <IncomeForm />
+                    <ExpenseForm
+                      key={editingRow ? `edit-${editingRow.rowNumber}` : "new"}
+                      editingRow={editingRow}
+                      onCancelEdit={() => setEditingRow(null)}
+                    />
+                  </div>
                 </section>
                 <TransactionTable
                   transactions={transactions}

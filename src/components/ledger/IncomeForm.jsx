@@ -109,28 +109,30 @@ export function IncomeForm({ draft = null, onClearDraft = null }) {
   };
 
   return (
-    <Card className="p-5">
-      <div className="mb-4 flex items-center justify-between border-b border-rule pb-3">
-        <h2 className="text-base font-semibold text-ink">
-          {t("income.title")}
-        </h2>
-        <div className="flex rounded-md bg-paper-2 p-0.5">
-          <button
-            type="button"
-            onClick={() => { setActiveTab("main"); setError(""); }}
-            className={`rounded px-3 py-1 text-xs font-medium transition-colors ${
-              activeTab === "main" ? "bg-paper-1 text-ink shadow-sm" : "text-ink-3 hover:text-ink"
-            }`}>
-            {t("income.tabMain")}
-          </button>
-          <button
-            type="button"
-            onClick={() => { setActiveTab("additional"); setError(""); }}
-            className={`rounded px-3 py-1 text-xs font-medium transition-colors ${
-              activeTab === "additional" ? "bg-paper-1 text-ink shadow-sm" : "text-ink-3 hover:text-ink"
-            }`}>
-            {t("income.tabAdditional")}
-          </button>
+    <div className="p-5 sm:p-6 bg-paper flex flex-col justify-between">
+      <div>
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-base font-bold text-ink tracking-tight">
+            {t("income.title")}
+          </h2>
+          <div className="flex rounded-btn bg-paper-2 p-0.5 border border-rule">
+            <button
+              type="button"
+              onClick={() => { setActiveTab("main"); setError(""); }}
+              className={`rounded px-3 py-1 text-xs font-semibold transition-colors ${
+                activeTab === "main" ? "bg-paper text-ink shadow-sm" : "text-ink-3 hover:text-ink"
+              }`}>
+              {t("income.tabMain")}
+            </button>
+            <button
+              type="button"
+              onClick={() => { setActiveTab("additional"); setError(""); }}
+              className={`rounded px-3 py-1 text-xs font-semibold transition-colors ${
+                activeTab === "additional" ? "bg-paper text-ink shadow-sm" : "text-ink-3 hover:text-ink"
+              }`}>
+              {t("income.tabAdditional")}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -229,6 +231,6 @@ export function IncomeForm({ draft = null, onClearDraft = null }) {
           </ul>
         </div>
       )}
-    </Card>
+    </div>
   );
 }
