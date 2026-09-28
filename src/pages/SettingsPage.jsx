@@ -151,7 +151,7 @@ export default function SettingsPage() {
       <div className="flex min-h-dvh min-w-0 flex-1 flex-col lg:pl-64">
         <Navbar />
         <main className="flex-1">
-          <div className="mx-auto max-w-5xl px-4 pb-32 pt-6 md:px-8 md:py-10">
+          <div className="mx-auto max-w-5xl px-4 pb-32 pt-6 md:px-8 md:pt-10 md:pb-32 lg:pb-12">
             <header className="mb-8">
               <p className="kbd mb-1 text-[11px] text-ink-3">
                 {t("app.name")}
@@ -213,6 +213,7 @@ export default function SettingsPage() {
                         <select
                           value={selectedZone}
                           onChange={(e) => setSelectedZone(e.target.value)}
+                          aria-label={t("settings.timezoneTitle")}
                           className="field">
                           {allZones.map((z) => (
                             <option key={z} value={z}>

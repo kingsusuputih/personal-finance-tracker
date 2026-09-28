@@ -91,7 +91,7 @@ function ProposalCard({ proposal, onSaved }) {
         <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
           <polyline points="20 6 9 17 4 12" />
         </svg>
-        {t("chat.draftSaved")} ({descOrSource || type} — {amountStr})
+        {t("chat.draftSaved")} ({descOrSource || type} - {amountStr})
       </div>
     );
   }
@@ -275,7 +275,8 @@ export default function ChatPage() {
   }, [ensureSpreadsheet, loadData]);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    const reduceMotion = typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    messagesEndRef.current?.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth" });
   }, [messages]);
 
   useEffect(() => {
@@ -350,7 +351,7 @@ export default function ChatPage() {
       <div className="flex min-h-dvh min-w-0 flex-1 flex-col lg:pl-64">
         <Navbar />
         <main className="flex-1">
-          <div className="mx-auto flex h-[calc(100dvh-3.5rem)] max-w-3xl flex-col px-4 pb-20 pt-4 md:px-6 md:py-6 lg:pb-6">
+          <div className="mx-auto flex h-[calc(100dvh-3.5rem)] max-w-3xl flex-col px-4 pb-24 pt-4 md:px-6 md:pb-28 lg:pb-6">
             <header className="mb-4">
               <p className="kbd mb-0.5 text-[11px] text-ink-3">
                 {t("chat.kicker")}
@@ -537,6 +538,7 @@ export default function ChatPage() {
                       onChange={(e) => setInput(e.target.value)}
                       disabled={loading || cooldownSeconds > 0}
                       placeholder={t("chat.inputPlaceholder")}
+                      aria-label={t("chat.inputPlaceholder")}
                       className="field flex-1 text-xs sm:text-sm"
                     />
                     <Button

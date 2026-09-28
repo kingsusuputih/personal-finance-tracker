@@ -55,9 +55,27 @@ export function SpendingChart({ data = [], loading = false, showAmount = true })
         },
       ],
     });
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    const onThemeChange = () => {
+      const updatedColors = chartColors();
+      chart.setOption({
+        series: [
+          {
+            data: data.map((d) => ({
+              name: d.name,
+              value: d.value,
+              itemStyle: { color: updatedColors[d.name] },
+            })),
+          },
+        ],
+      });
+    };
+    mq.addEventListener?.("change", onThemeChange);
+
     const ro = new ResizeObserver(() => chart.resize());
     ro.observe(containerRef.current);
     return () => {
+      mq.removeEventListener?.("change", onThemeChange);
       ro.disconnect();
       chart.dispose();
     };

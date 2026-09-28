@@ -28,17 +28,17 @@ export function AllocationCard({
         {percent}% {t("allocation.percentOf")}
       </p>
 
-      <div className="mt-4 flex items-end justify-between gap-3">
-        <div>
+      <div className="mt-4 flex flex-wrap items-end justify-between gap-x-3 gap-y-2">
+        <div className="min-w-0">
           <p className="kbd text-[10px] text-ink-3">{t("allocation.target")}</p>
-          <p className="amount mt-1 text-lg font-semibold text-ink">
+          <p className="amount mt-1 text-base sm:text-lg font-semibold text-ink truncate">
             {showTarget ? formatIDR(targetAmount) : "••••••••"}
           </p>
         </div>
-        <div className="text-right">
+        <div className="min-w-0 text-right">
           <p className="kbd text-[10px] text-ink-3">{t("allocation.spent")}</p>
           <p
-            className={`amount mt-1 text-lg font-semibold ${
+            className={`amount mt-1 text-base sm:text-lg font-semibold truncate ${
               over ? "text-danger" : "text-success"
             }`}>
             {showSpent ? formatIDR(actualAmount) : "••••••••"}

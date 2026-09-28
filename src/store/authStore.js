@@ -24,7 +24,7 @@ export const useAuthStore = create((set) => ({
       localStorage.setItem(TOKEN_KEY, accessToken);
       localStorage.setItem(USER_KEY, JSON.stringify(user));
     } catch {
-      // ignore storage failures — state still updates in memory
+      // ignore storage failures - state still updates in memory
     }
     set({ user, accessToken, isAuthed: true });
   },

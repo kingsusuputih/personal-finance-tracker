@@ -13,7 +13,7 @@ export async function authedRequest(accessToken, url, options = {}) {
     if (window.location.pathname !== "/login") {
       window.location.assign("/login");
     }
-    throw new Error("Session expired — sign in again");
+    throw new Error("Session expired - sign in again");
   }
   return res;
 }

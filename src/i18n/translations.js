@@ -2,7 +2,7 @@ export const translations = {
   en: {
     "app.name": "Finance Tracker",
     "login.tagline":
-      "Your private, zero-cost finance dashboard — data lives in your own Google Drive.",
+      "Your private, zero-cost finance dashboard - data lives in your own Google Drive.",
     "login.badgeDrive": "Google Drive Storage",
     "login.badgeMemory": "Direct Sheets Sync",
     "login.note":
@@ -92,7 +92,7 @@ export const translations = {
     "chat.subtitle": "Ask questions about your finances or dictate transactions to log directly into your sheet.",
     "chat.selectPeriod": "Analysis Period",
     "chat.comparePeriod": "Compare With",
-    "chat.noCompare": "— None —",
+    "chat.noCompare": "- None -",
     "chat.activeBadge": "Active",
     "chat.periodRange": "{start} – {end}",
     "chat.defaultGreeting": "Hello! I am your Finance Tracker AI assistant. You can ask for financial analysis on the selected period (e.g. 'How much did I spend?', 'Compare with last period') or quickly log a transaction (e.g. 'Bought coffee 35k lifestyle').",
@@ -222,7 +222,7 @@ export const translations = {
     "landing.featQuickTitle": "Record in seconds, not minutes",
     "landing.featQuickBody": "Clean, distraction-free input designed for quick daily entry. Today's date is pre-filled so you can record an expense before you forget.",
     "landing.featAllocTitle": "Automatic 50 / 30 / 20 allocation",
-    "landing.featAllocBody": "Needs 50%, investments 30%, lifestyle 20% — measured against your real spending to keep budgets balanced.",
+    "landing.featAllocBody": "Needs 50%, investments 30%, lifestyle 20% - measured against your real spending to keep budgets balanced.",
     "landing.featFundsTitle": "Fund targets you can actually measure",
     "landing.featFundsBody": "Emergency fund (6×) and retirement fund (300×) calculated directly from your living costs.",
     "landing.featChartTitle": "Visual spending breakdowns",
@@ -258,7 +258,7 @@ export const translations = {
     "settings.timezoneTitle": "Time Zone",
     "settings.timezoneDesc":
       "Used for transaction timestamps and tracking period boundaries.",
-    "settings.modeAuto": "Automatic — browser time zone ({zone})",
+    "settings.modeAuto": "Automatic - browser time zone ({zone})",
     "settings.modeManual": "Manual selection",
     "settings.cutoffTitle": "Monthly Cutoff Day",
     "settings.cutoffDesc":
@@ -300,7 +300,7 @@ export const translations = {
   id: {
     "app.name": "Finance Tracker",
     "login.tagline":
-      "Dashboard keuangan pribadi Anda, gratis — data tersimpan di Google Drive Anda sendiri.",
+      "Dashboard keuangan pribadi Anda, gratis - data tersimpan di Google Drive Anda sendiri.",
     "login.badgeDrive": "Penyimpanan Google Drive",
     "login.badgeMemory": "Sinkronisasi Langsung",
     "login.note":
@@ -390,7 +390,7 @@ export const translations = {
     "chat.subtitle": "Tanyakan analisa pengeluaran Anda atau diktekan transaksi untuk langsung dicatat ke Google Sheet.",
     "chat.selectPeriod": "Periode Analisis",
     "chat.comparePeriod": "Bandingkan Dengan",
-    "chat.noCompare": "— Tidak Ada —",
+    "chat.noCompare": "- Tidak Ada -",
     "chat.activeBadge": "Aktif",
     "chat.periodRange": "{start} – {end}",
     "chat.defaultGreeting": "Halo! Saya asisten pintar Finance Tracker. Anda dapat menanyakan analisa keuangan pada periode terpilih (misal: 'Berapa sisa uang saya?', 'Bandingkan dengan periode sebelumnya') atau mencatat pengeluaran secara cepat (misal: 'Tadi beli rokok 25rb lifestyle').",
@@ -519,7 +519,7 @@ export const translations = {
     "landing.featQuickTitle": "Catat dalam hitungan detik",
     "landing.featQuickBody": "Formulir cepat tanpa distraksi. Tanggal hari ini otomatis terisi agar pengeluaran langsung tercatat sebelum lupa.",
     "landing.featAllocTitle": "Alokasi otomatis 50 / 30 / 20",
-    "landing.featAllocBody": "Kebutuhan 50%, investasi 30%, gaya hidup 20% — terukur dari pengeluaran riil untuk menjaga arus kas tetap sehat.",
+    "landing.featAllocBody": "Kebutuhan 50%, investasi 30%, gaya hidup 20% - terukur dari pengeluaran riil untuk menjaga arus kas tetap sehat.",
     "landing.featFundsTitle": "Target dana terukur",
     "landing.featFundsBody": "Dana darurat (6×) dan target pensiun (300×) dihitung otomatis dari biaya hidup bulanan Anda.",
     "landing.featChartTitle": "Grafik pengeluaran visual",
@@ -556,7 +556,7 @@ export const translations = {
     "settings.timezoneTitle": "Zona Waktu",
     "settings.timezoneDesc":
       "Digunakan untuk stempel waktu transaksi dan batas siklus periode pencatatan.",
-    "settings.modeAuto": "Otomatis — zona waktu browser ({zone})",
+    "settings.modeAuto": "Otomatis - zona waktu browser ({zone})",
     "settings.modeManual": "Pilih manual",
     "settings.cutoffTitle": "Tanggal Batas Siklus Bulanan",
     "settings.cutoffDesc":

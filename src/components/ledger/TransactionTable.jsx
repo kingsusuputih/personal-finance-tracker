@@ -28,7 +28,7 @@ function ActionButton({ label, tone, onClick, children }) {
       onClick={onClick}
       aria-label={label}
       title={label}
-      className={`rounded p-2.5 text-ink-3 transition-colors hover:bg-paper-3 ${tone}`}>
+      className={`rounded-btn p-2 text-ink-3 transition-colors hover:bg-paper-3 ${tone}`}>
       {children}
     </button>
   );
@@ -216,7 +216,7 @@ export function TransactionTable({
                       </Badge>
                     </td>
                     <td className="px-5 py-3 text-ink-2">
-                      {row.description || <span className="text-ink-3">—</span>}
+                      {row.description || <span className="text-ink-3">-</span>}
                       {row.group_override && (
                         <span className="ml-2 rounded bg-paper-3 px-1.5 py-0.5 text-[10px] text-ink-3">
                           {row.group_override}

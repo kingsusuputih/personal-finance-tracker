@@ -84,7 +84,7 @@ export default function RecapPage() {
       <div className="flex min-h-dvh min-w-0 flex-1 flex-col lg:pl-64">
         <Navbar />
         <main className="flex-1">
-          <div className="mx-auto max-w-5xl px-4 pb-32 pt-6 md:px-8 md:py-10">
+          <div className="mx-auto max-w-5xl px-4 pb-32 pt-6 md:px-8 md:pt-10 md:pb-32 lg:pb-12">
             <header className="mb-8">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
@@ -288,8 +288,8 @@ export default function RecapPage() {
                                   </span>
                                 </summary>
 
-                                <div className="mt-2 pl-6 pr-2">
-                                  <table className="w-full text-xs">
+                                <div className="mt-2 pl-6 pr-2 overflow-x-auto">
+                                  <table className="w-full text-xs min-w-[280px]">
                                     <thead>
                                       <tr className="border-b border-rule text-left text-[10px] text-ink-3">
                                         <th className="py-1 font-medium">{t("table.date")}</th>
@@ -301,7 +301,7 @@ export default function RecapPage() {
                                       {g.items.map((item) => (
                                         <tr key={item.id || item.rowNumber} className="text-ink-2">
                                           <td className="py-1.5 whitespace-nowrap text-ink-3">{item.date}</td>
-                                          <td className="py-1.5">{item.description || "—"}</td>
+                                          <td className="py-1.5">{item.description || "-"}</td>
                                           <td className="py-1.5 text-right font-medium text-ink">
                                             {formatIDR(item.amount)}
                                           </td>

@@ -4,7 +4,7 @@
 
 # Finance Tracker
 
-Dashboard keuangan pribadi, gratis — data keuangan tersimpan di Google Drive Anda sendiri.
+Dashboard keuangan pribadi, gratis - data keuangan tersimpan di Google Drive Anda sendiri.
 
 Finance Tracker adalah aplikasi web untuk mencatat pemasukan dan pengeluaran serta menghitung target keuangan. Setiap pengguna masuk dengan akun Google miliknya; aplikasi membuat spreadsheet `Finance_Tracker_Data` otomatis di Google Drive pengguna dan menulis semua data keuangan langsung ke spreadsheet tersebut. Registry pengguna pseudonim di Supabase (wilayah Singapura) digunakan semata-mata untuk mencatat jumlah pengguna unik dan menampilkan bukti sosial komunitas tersamarkan (`H*** A***`) secara opsional.
 

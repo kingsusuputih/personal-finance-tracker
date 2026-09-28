@@ -23,7 +23,7 @@ const SettingsPage = lazy(() => import("./pages/SettingsPage.jsx"));
 
 function PageFallback() {
   return (
-    <div className="mx-auto max-w-5xl px-4 pb-32 pt-6 md:px-8 md:py-10">
+    <div className="mx-auto max-w-5xl px-4 pb-32 pt-6 md:px-8 md:pt-10 md:pb-32 lg:pb-12">
       <div className="mb-8">
         <Skeleton className="mb-2 h-4 w-24" />
         <Skeleton className="h-10 w-56" />

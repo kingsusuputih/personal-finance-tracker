@@ -9,7 +9,7 @@ function detectLang() {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved === "id" || saved === "en") return saved;
   } catch {
-    // storage unavailable — fall through to navigator
+    // storage unavailable - fall through to navigator
   }
   return navigator.language.toLowerCase().startsWith("id") ? "id" : "en";
 }

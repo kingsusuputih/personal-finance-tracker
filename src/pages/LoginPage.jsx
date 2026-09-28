@@ -3,6 +3,7 @@ import { useAuth } from "../hooks/useAuth.js";
 import { LoginButton } from "../components/auth/LoginButton.jsx";
 import { Card } from "../components/ui/Card.jsx";
 import { Badge } from "../components/ui/Badge.jsx";
+import { LangToggle } from "../components/ui/LangToggle.jsx";
 import { useT } from "../i18n/LanguageProvider.jsx";
 
 export default function LoginPage() {
@@ -12,7 +13,10 @@ export default function LoginPage() {
   if (isAuthed) return <Navigate to="/dashboard" replace />;
 
   return (
-    <main className="flex min-h-dvh items-center justify-center p-4">
+    <main className="flex min-h-dvh flex-col items-center justify-center p-4 bg-paper">
+      <div className="absolute top-4 right-4">
+        <LangToggle />
+      </div>
       <div className="w-full max-w-sm">
         <div className="mb-8 text-center">
           <Link
@@ -20,19 +24,19 @@ export default function LoginPage() {
             className="group inline-flex flex-col items-center"
             title={t("app.name")}
           >
-            <span className="mx-auto mb-4 inline-flex h-12 w-12 items-center justify-center rounded-lg bg-accent font-display text-xl font-bold text-accent-ink transition-colors group-hover:bg-accent-strong">
+            <span className="mx-auto mb-3 inline-flex h-11 w-11 items-center justify-center rounded-btn bg-accent font-display text-lg font-bold text-accent-ink transition-colors group-hover:bg-accent-strong shadow-sm">
               F
             </span>
-            <h1 className="font-bold leading-tight text-[clamp(1.75rem,6vw,2.5rem)] text-ink transition-colors group-hover:text-accent">
+            <h1 className="font-bold leading-tight text-2xl sm:text-3xl text-ink transition-colors group-hover:text-accent font-display">
               {t("app.name")}
             </h1>
           </Link>
-          <p className="mt-2 text-sm leading-relaxed text-ink-3">
+          <p className="mt-2 text-xs sm:text-sm leading-relaxed text-ink-3">
             {t("login.tagline")}
           </p>
         </div>
 
-        <Card className="p-6">
+        <Card className="p-6 shadow-sm">
           <LoginButton />
           <div className="mt-4 flex items-center justify-center gap-2">
             <Badge>{t("login.badgeDrive")}</Badge>

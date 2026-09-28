@@ -166,7 +166,7 @@ export default function DashboardPage() {
       <div className="flex min-h-dvh min-w-0 flex-1 flex-col lg:pl-64">
         <Navbar />
         <main className="flex-1">
-          <div className="mx-auto max-w-5xl px-4 pb-32 pt-6 md:px-8 md:py-10">
+          <div className="mx-auto max-w-5xl px-4 pb-32 pt-6 md:px-8 md:pt-10 md:pb-32 lg:pb-12">
             <header className="mb-8">
               <div className="kbd mb-1 flex flex-wrap items-center gap-1.5 text-[11px] text-ink-3">
                 <span className="font-semibold text-ink-2">{calc.currentMonth}</span>
