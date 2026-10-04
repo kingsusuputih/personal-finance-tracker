@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useI18n } from "../../i18n/LanguageProvider.jsx";
 import { LangToggle } from "./LangToggle.jsx";
+import { ThemeToggle } from "./ThemeToggle.jsx";
 import { CONTACT_EMAIL } from "../../constants/legalContent.js";
 
 export function LegalDocument({ titleKey, sections }) {
@@ -19,7 +20,10 @@ export function LegalDocument({ titleKey, sections }) {
               ← {t("legal.back")}
             </p>
           </Link>
-          <LangToggle />
+          <div className="flex items-center gap-1.5">
+            <ThemeToggle />
+            <LangToggle />
+          </div>
         </header>
 
         <h1 className="mb-2 text-[clamp(1.75rem,5vw,2.5rem)] font-bold text-ink font-display">

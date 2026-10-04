@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useT, useI18n } from "../i18n/LanguageProvider.jsx";
 import { LangToggle } from "../components/ui/LangToggle.jsx";
+import { ThemeToggle } from "../components/ui/ThemeToggle.jsx";
 import { SocialProof } from "../components/landing/SocialProof.jsx";
 import { DONATE_URL } from "../constants/donate.js";
 
@@ -56,7 +57,8 @@ export default function LandingPage() {
               </a>
             </nav>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <ThemeToggle />
               <LangToggle />
               <Link
                 to="/login"

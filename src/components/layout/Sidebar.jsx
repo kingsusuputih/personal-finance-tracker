@@ -4,6 +4,7 @@ import { useAuth } from "../../hooks/useAuth.js";
 import { Modal } from "../ui/Modal.jsx";
 import { Button } from "../ui/Button.jsx";
 import { LangToggle } from "../ui/LangToggle.jsx";
+import { ThemeToggle } from "../ui/ThemeToggle.jsx";
 import { useT } from "../../i18n/LanguageProvider.jsx";
 import { DONATE_URL } from "../../constants/donate.js";
 
@@ -81,7 +82,8 @@ export function Sidebar() {
           </svg>
           {t("nav.donate")}
         </a>
-        <div className="mb-2 flex justify-center">
+        <div className="mb-2 flex items-center justify-center gap-1.5">
+          <ThemeToggle />
           <LangToggle />
         </div>
         <div className="flex items-center gap-3 rounded-btn px-3 py-2">

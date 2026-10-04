@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useI18n } from "../i18n/LanguageProvider.jsx";
 import { LangToggle } from "../components/ui/LangToggle.jsx";
+import { ThemeToggle } from "../components/ui/ThemeToggle.jsx";
 import { Badge } from "../components/ui/Badge.jsx";
 import { changelogEntries } from "../constants/changelog.js";
 import { CONTACT_EMAIL } from "../constants/legalContent.js";
@@ -27,7 +28,10 @@ export default function ChangelogPage() {
               ← {t("app.name")}
             </p>
           </Link>
-          <LangToggle />
+          <div className="flex items-center gap-1.5">
+            <ThemeToggle />
+            <LangToggle />
+          </div>
         </header>
 
         <h1 className="mb-2 text-[clamp(1.75rem,5vw,2.5rem)] font-bold text-ink font-display">

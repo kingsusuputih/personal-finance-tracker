@@ -296,6 +296,10 @@ export const translations = {
     "settings.notifyDenied": "Notification permission was denied. Please allow notifications in browser settings.",
     "settings.notifySuccess": "Push notifications enabled",
     "settings.notifyDisabledSuccess": "Push notifications disabled",
+    "theme.title": "Theme",
+    "theme.system": "System",
+    "theme.light": "Light",
+    "theme.dark": "Dark",
   },
   id: {
     "app.name": "Finance Tracker",
@@ -594,5 +598,9 @@ export const translations = {
     "settings.notifyDenied": "Izin notifikasi ditolak. Harap izinkan notifikasi pada pengaturan browser Anda.",
     "settings.notifySuccess": "Notifikasi berhasil diaktifkan",
     "settings.notifyDisabledSuccess": "Notifikasi berhasil dinonaktifkan",
+    "theme.title": "Tema",
+    "theme.system": "Sistem",
+    "theme.light": "Terang",
+    "theme.dark": "Gelap",
   },
 };

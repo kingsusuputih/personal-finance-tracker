@@ -6,6 +6,7 @@ import { CanvasRenderer } from "echarts/renderers";
 import { Card } from "../ui/Card.jsx";
 import { Skeleton } from "../ui/Skeleton.jsx";
 import { useT } from "../../i18n/LanguageProvider.jsx";
+import { useTheme } from "../../theme/ThemeProvider.jsx";
 import { formatIDR } from "../../utils/financeFormulas.js";
 
 echarts.use([PieChart, TooltipComponent, CanvasRenderer]);
@@ -24,6 +25,7 @@ function chartColors() {
 export function SpendingChart({ data = [], loading = false, showAmount = true }) {
   const containerRef = useRef(null);
   const t = useT();
+  const { resolvedTheme } = useTheme();
   const total = data.reduce((sum, d) => sum + d.value, 0);
 
   useEffect(() => {
@@ -79,7 +81,7 @@ export function SpendingChart({ data = [], loading = false, showAmount = true })
       ro.disconnect();
       chart.dispose();
     };
-  }, [loading, total, data, showAmount]);
+  }, [loading, total, data, showAmount, resolvedTheme]);
 
   if (loading) {
     return (

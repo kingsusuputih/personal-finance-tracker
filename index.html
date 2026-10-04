@@ -5,6 +5,20 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <meta name="theme-color" content="#f8faff" />
+    <script>
+      (function () {
+        try {
+          var saved = localStorage.getItem("pft_theme");
+          var prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+          var isDark = saved === "dark" || (saved !== "light" && prefersDark);
+          if (isDark) {
+            document.documentElement.classList.add("dark");
+            var meta = document.querySelector('meta[name="theme-color"]');
+            if (meta) meta.setAttribute("content", "#14161f");
+          }
+        } catch (e) {}
+      })();
+    </script>
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <link rel="apple-touch-icon" href="/favicon.svg" />

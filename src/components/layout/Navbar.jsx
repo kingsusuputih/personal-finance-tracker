@@ -4,6 +4,8 @@ import { useAuth } from "../../hooks/useAuth.js";
 import { useT } from "../../i18n/LanguageProvider.jsx";
 import { Modal } from "../ui/Modal.jsx";
 import { Button } from "../ui/Button.jsx";
+import { LangToggle } from "../ui/LangToggle.jsx";
+import { ThemeToggle } from "../ui/ThemeToggle.jsx";
 
 export function Navbar() {
   const { user, logout } = useAuth();
@@ -27,7 +29,9 @@ export function Navbar() {
             title={t("app.name")}>
             F
           </Link>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <ThemeToggle />
+            <LangToggle />
             {user?.picture ? (
               <img
                 src={user.picture}

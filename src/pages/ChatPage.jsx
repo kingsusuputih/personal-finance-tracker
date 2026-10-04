@@ -351,15 +351,15 @@ export default function ChatPage() {
       <div className="flex min-h-dvh min-w-0 flex-1 flex-col lg:pl-64">
         <Navbar />
         <main className="flex-1">
-          <div className="mx-auto flex h-[calc(100dvh-3.5rem)] max-w-3xl flex-col px-4 pb-24 pt-4 md:px-6 md:pb-28 lg:pb-6">
-            <header className="mb-4">
-              <p className="kbd mb-0.5 text-[11px] text-ink-3">
+          <div className="mx-auto flex h-[calc(100dvh-3.5rem)] max-w-5xl flex-col px-4 pb-24 pt-6 md:px-8 md:pt-10 md:pb-28 lg:pb-6">
+            <header className="mb-8">
+              <p className="kbd mb-1 text-[11px] text-ink-3">
                 {t("chat.kicker")}
               </p>
-              <h1 className="text-xl font-bold tracking-tight text-ink sm:text-2xl">
+              <h1 className="text-xl font-bold tracking-tight text-ink sm:text-2xl lg:text-[clamp(1.75rem,4vw,2.5rem)]">
                 {t("chat.title")}
               </h1>
-              <p className="text-xs text-ink-3">
+              <p className="mt-2 text-sm text-ink-3">
                 {t("chat.subtitle")}
               </p>
             </header>

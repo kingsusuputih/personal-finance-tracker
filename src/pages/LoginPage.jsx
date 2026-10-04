@@ -4,6 +4,7 @@ import { LoginButton } from "../components/auth/LoginButton.jsx";
 import { Card } from "../components/ui/Card.jsx";
 import { Badge } from "../components/ui/Badge.jsx";
 import { LangToggle } from "../components/ui/LangToggle.jsx";
+import { ThemeToggle } from "../components/ui/ThemeToggle.jsx";
 import { useT } from "../i18n/LanguageProvider.jsx";
 
 export default function LoginPage() {
@@ -14,7 +15,8 @@ export default function LoginPage() {
 
   return (
     <main className="flex min-h-dvh flex-col items-center justify-center p-4 bg-paper text-ink font-body">
-      <div className="absolute top-4 right-4">
+      <div className="absolute top-4 right-4 flex items-center gap-1.5">
+        <ThemeToggle />
         <LangToggle />
       </div>
       <div className="w-full max-w-sm">
@@ -41,7 +43,7 @@ export default function LoginPage() {
           {/* Action Box */}
           <div className="p-6 text-center bg-paper">
             <LoginButton />
-            <div className="mt-4 flex items-center justify-center gap-2">
+            <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
               <Badge>{t("login.badgeDrive")}</Badge>
               <Badge>{t("login.badgeMemory")}</Badge>
             </div>

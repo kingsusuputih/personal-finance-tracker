@@ -1,6 +1,5 @@
 import { NavLink } from "react-router-dom";
 import { useT } from "../../i18n/LanguageProvider.jsx";
-import { LangToggle } from "../ui/LangToggle.jsx";
 
 const items = [
   {
@@ -117,9 +116,6 @@ export function BottomNav() {
             )}
           </NavLink>
         ))}
-        <div className="flex h-16 min-w-0 flex-1 items-center justify-center">
-          <LangToggle />
-        </div>
       </div>
     </nav>
   );

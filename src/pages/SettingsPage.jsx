@@ -156,7 +156,7 @@ export default function SettingsPage() {
               <p className="kbd mb-1 text-[11px] text-ink-3">
                 {t("app.name")}
               </p>
-              <h1 className="text-[clamp(1.75rem,4vw,2.5rem)] font-bold">
+              <h1 className="text-xl font-bold tracking-tight text-ink sm:text-2xl lg:text-[clamp(1.75rem,4vw,2.5rem)]">
                 {t("settings.title")}
               </h1>
               <p className="mt-2 text-sm text-ink-3">

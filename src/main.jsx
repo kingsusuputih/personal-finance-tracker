@@ -5,6 +5,7 @@ import { Analytics } from "@vercel/analytics/react";
 import App from "./App.jsx";
 import { ToastProvider } from "./components/ui/Toast.jsx";
 import { LanguageProvider } from "./i18n/LanguageProvider.jsx";
+import { ThemeProvider } from "./theme/ThemeProvider.jsx";
 import "./index.css";
 
 const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
@@ -40,10 +41,12 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     {clientId ? (
       <GoogleOAuthProvider clientId={clientId}>
         <LanguageProvider>
-          <ToastProvider>
-            <App />
-            <Analytics />
-          </ToastProvider>
+          <ThemeProvider>
+            <ToastProvider>
+              <App />
+              <Analytics />
+            </ToastProvider>
+          </ThemeProvider>
         </LanguageProvider>
       </GoogleOAuthProvider>
     ) : (

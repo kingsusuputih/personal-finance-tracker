@@ -182,7 +182,7 @@ export default function DashboardPage() {
                   </>
                 )}
               </div>
-              <h1 className="text-[clamp(1.75rem,4vw,2.5rem)] font-bold">
+              <h1 className="text-xl font-bold tracking-tight text-ink sm:text-2xl lg:text-[clamp(1.75rem,4vw,2.5rem)]">
                 {t("dash.title")}
               </h1>
             </header>
