@@ -1,5 +1,75 @@
 export const changelogEntries = [
   {
+    version: "v1.4.2",
+    date: "2026-10-04",
+    en: {
+      title: "Dark Mode with Auto-Detect, Mobile Navigation Streamlining & Layout Consistency",
+      sections: [
+        {
+          type: "added",
+          label: "Added",
+          items: [
+            "Dark mode theme support with automatic system preference detection (System / Light / Dark) and zero-flicker initial page load.",
+            "Dark theme OKLCH design tokens across all components, cards, forms, and interactive charts.",
+            "Unified ThemeToggle control integrated across Mobile Header, Desktop Sidebar, Login, Landing, and Legal pages.",
+          ],
+        },
+        {
+          type: "changed",
+          label: "Changed",
+          items: [
+            "Moved language toggle from mobile bottom navigation bar into the top mobile header for improved navigation ergonomics.",
+            "Unified page heading typography (h1) and container padding across Dashboard, Ledger, Recap, Settings, and AI Assistant pages.",
+            "Fixed badge overflow and clipping on the login page on narrow mobile viewports.",
+            "Standardized button heights and pixel-perfect vertical alignment between ThemeToggle and LangToggle.",
+          ],
+        },
+      ],
+      items: [
+        "Dark mode theme support with automatic system preference detection (System / Light / Dark) and zero-flicker initial page load.",
+        "Dark theme OKLCH design tokens across all components, cards, forms, and interactive charts.",
+        "Unified ThemeToggle control integrated across Mobile Header, Desktop Sidebar, Login, Landing, and Legal pages.",
+        "Moved language toggle from mobile bottom navigation bar into the top mobile header for improved navigation ergonomics.",
+        "Unified page heading typography (h1) and container padding across Dashboard, Ledger, Recap, Settings, and AI Assistant pages.",
+        "Fixed badge overflow and clipping on the login page on narrow mobile viewports.",
+        "Standardized button heights and pixel-perfect vertical alignment between ThemeToggle and LangToggle.",
+      ],
+    },
+    id: {
+      title: "Dark Mode dengan Deteksi Otomatis, Penyederhanaan Navigasi Mobile & Konsistensi Layout",
+      sections: [
+        {
+          type: "added",
+          label: "Fitur Baru (Added)",
+          items: [
+            "Dukungan mode gelap (Dark Mode) dengan deteksi otomatis preferensi HP/sistem (Sistem / Terang / Gelap) tanpa kedipan saat halaman dimuat.",
+            "Palet warna OKLCH tema gelap untuk seluruh komponen, kartu, formulir, dan grafik.",
+            "Kontrol ThemeToggle terstandarisasi di Header Mobile, Sidebar Desktop, Halaman Login, Landing Page, dan Dokumen Legal.",
+          ],
+        },
+        {
+          type: "changed",
+          label: "Perubahan (Changed)",
+          items: [
+            "Memindahkan toggle bahasa dari menu navigasi bawah mobile ke header navbar atas.",
+            "Menyeragamkan tipografi judul halaman (h1) serta padding layout di halaman Dasbor, Buku Besar, Rekap, Pengaturan, dan Asisten AI.",
+            "Memperbaiki lencana (badge) yang terpotong di halaman login pada layar perangkat sempit.",
+            "Menyelaraskan tinggi dan tata letak vertikal antara tombol ThemeToggle dan LangToggle agar presisi.",
+          ],
+        },
+      ],
+      items: [
+        "Dukungan mode gelap (Dark Mode) dengan deteksi otomatis preferensi HP/sistem (Sistem / Terang / Gelap) tanpa kedipan saat halaman dimuat.",
+        "Palet warna OKLCH tema gelap untuk seluruh komponen, kartu, formulir, dan grafik.",
+        "Kontrol ThemeToggle terstandarisasi di Header Mobile, Sidebar Desktop, Halaman Login, Landing Page, dan Dokumen Legal.",
+        "Memindahkan toggle bahasa dari menu navigasi bawah mobile ke header navbar atas.",
+        "Menyeragamkan tipografi judul halaman (h1) serta padding layout di halaman Dasbor, Buku Besar, Rekap, Pengaturan, dan Asisten AI.",
+        "Memperbaiki lencana (badge) yang terpotong di halaman login pada layar perangkat sempit.",
+        "Menyelaraskan tinggi dan tata letak vertikal antara tombol ThemeToggle dan LangToggle agar presisi.",
+      ],
+    },
+  },
+  {
     version: "v1.4.1",
     date: "2026-09-27",
     en: {
