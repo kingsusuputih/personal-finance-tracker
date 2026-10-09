@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { useAuthStore } from "../store/authStore.js";
 import { useFinanceStore } from "../store/financeStore.js";
 import { calculateBudgetProgress } from "../utils/budgetCalculations.js";
-import { syncAlertState } from "../api/notifications.js";
+import { syncAlertState, pingActivity } from "../api/notifications.js";
 import {
   getEffectiveCutoff,
   getEffectiveTimezone,
@@ -41,4 +41,15 @@ export function useBudgetAlertSync() {
       // Fire-and-forget; push sync failures never block client finance workflows
     });
   }, [accessToken, budgets, transactions, settings]);
+
+  useEffect(() => {
+    if (!accessToken) return;
+    const ping = () => pingActivity(accessToken).catch(() => {});
+    ping();
+    const onVisibility = () => {
+      if (document.visibilityState === "visible") ping();
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => document.removeEventListener("visibilitychange", onVisibility);
+  }, [accessToken, transactions.length]);
 }

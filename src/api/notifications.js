@@ -59,6 +59,18 @@ export async function syncAlertState(accessToken, payload) {
   return parseJsonResponse(res, "Failed to sync alert state");
 }
 
+export async function pingActivity(accessToken) {
+  const res = await fetch("/api/notify/activity", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({}),
+  });
+  return parseJsonResponse(res, "Failed to ping activity");
+}
+
 export async function unsubscribeDevice(accessToken, endpoint) {
   const res = await fetch("/api/notify/unsubscribe", {
     method: "POST",

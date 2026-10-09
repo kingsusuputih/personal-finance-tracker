@@ -317,6 +317,85 @@ Deno.serve(async (req: Request) => {
         ).catch(() => {});
       }
 
+      // 2. Process recurring transaction reminders (every 3 hours)
+      const txSubsRes = await fetch(
+        `${SUPABASE_URL}/rest/v1/push_subscriptions?next_tx_reminder_at=lte.${encodeURIComponent(nowIso)}&select=*`,
+        {
+          headers: {
+            apikey: SUPABASE_SERVICE_ROLE_KEY,
+            Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+          },
+        },
+      );
+      const dueTxSubs: any[] = txSubsRes.ok ? await txSubsRes.json() : [];
+
+      for (const sub of dueTxSubs) {
+        const now = new Date();
+        if (isQuietHour(now, sub.timezone)) {
+          postponedCount += 1;
+          continue;
+        }
+
+        const pushSubscription = {
+          endpoint: sub.endpoint,
+          keys: {
+            p256dh: sub.p256dh,
+            auth: sub.auth,
+          },
+        };
+
+        const isId = sub.lang === "id";
+        const title = "Finance Tracker";
+        const body = isId
+          ? "Jangan lupa mencatat transaksi keuanganmu hari ini!"
+          : "Don't forget to log your transactions today!";
+
+        const payload = JSON.stringify({
+          title,
+          body,
+          tag: "tx-reminder",
+          data: {
+            url: "/dashboard",
+          },
+        });
+
+        try {
+          await webpush.sendNotification(pushSubscription, payload);
+          sentCount += 1;
+        } catch (err: any) {
+          console.error("Push send error (tx reminder):", err?.statusCode, err?.message);
+          if (err?.statusCode === 404 || err?.statusCode === 410) {
+            await fetch(
+              `${SUPABASE_URL}/rest/v1/push_subscriptions?id=eq.${sub.id}`,
+              {
+                method: "DELETE",
+                headers: {
+                  apikey: SUPABASE_SERVICE_ROLE_KEY,
+                  Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+                },
+              },
+            ).catch(() => {});
+            continue;
+          }
+        }
+
+        const nextTime = new Date(Date.now() + 3 * 60 * 60 * 1000).toISOString();
+        await fetch(
+          `${SUPABASE_URL}/rest/v1/push_subscriptions?id=eq.${sub.id}`,
+          {
+            method: "PATCH",
+            headers: {
+              apikey: SUPABASE_SERVICE_ROLE_KEY,
+              Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              next_tx_reminder_at: nextTime,
+            }),
+          },
+        ).catch(() => {});
+      }
+
       return jsonResponse({
         success: true,
         sent: sentCount,
@@ -378,12 +457,39 @@ Deno.serve(async (req: Request) => {
           lang,
           consent_version: consentVersion,
           last_seen_at: new Date().toISOString(),
+          next_tx_reminder_at: new Date(Date.now() + 3 * 60 * 60 * 1000).toISOString(),
         }),
       });
 
       return jsonResponse({ success: true }, 200, corsHeaders);
     } catch {
       return jsonResponse({ error: "Failed to save subscription" }, 500, corsHeaders);
+    }
+  }
+
+  // Activity ping to reset 3-hour transaction reminder (POST /activity)
+  if (req.method === "POST" && (path === "/activity" || path === "/ping")) {
+    try {
+      const nextReminder = new Date(Date.now() + 3 * 60 * 60 * 1000).toISOString();
+      await fetch(
+        `${SUPABASE_URL}/rest/v1/push_subscriptions?identity_hash=eq.${identityHash}`,
+        {
+          method: "PATCH",
+          headers: {
+            apikey: SUPABASE_SERVICE_ROLE_KEY,
+            Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            next_tx_reminder_at: nextReminder,
+            last_seen_at: new Date().toISOString(),
+          }),
+        },
+      );
+
+      return jsonResponse({ success: true }, 200, corsHeaders);
+    } catch {
+      return jsonResponse({ error: "Failed to update activity" }, 500, corsHeaders);
     }
   }
 
