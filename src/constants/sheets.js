@@ -6,6 +6,7 @@ export const SHEETS = {
   EXPENSES: "Expenses",
   SETTINGS: "Settings",
   BUDGETS: "Budgets",
+  CHAT_HISTORY: "ChatHistory",
 };
 
 export const INCOME_HEADERS = ["month", "amount", "created_at"];
@@ -34,6 +35,14 @@ export const BUDGET_HEADERS = [
   "group_key",
   "amount",
   "created_at",
+];
+export const CHAT_HISTORY_HEADERS = [
+  "id",
+  "timestamp",
+  "cycle_key",
+  "role",
+  "message",
+  "proposal_json",
 ];
 export const SETTINGS_HEADERS = ["timezone_mode", "timezone", "cutoff_day"];
 export const DEFAULT_SETTINGS = {

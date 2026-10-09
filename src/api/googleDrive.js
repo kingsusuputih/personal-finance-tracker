@@ -7,6 +7,7 @@ import {
   ADDITIONAL_INCOME_HEADERS,
   EXPENSE_HEADERS,
   BUDGET_HEADERS,
+  CHAT_HISTORY_HEADERS,
   SETTINGS_HEADERS,
   DEFAULT_SETTINGS,
 } from "../constants/sheets.js";
@@ -40,6 +41,7 @@ async function writeHeaders(accessToken, spreadsheetId) {
           { range: `'${SHEETS.ADDITIONAL_INCOME}'!A1:E1`, values: [ADDITIONAL_INCOME_HEADERS] },
           { range: `'${SHEETS.EXPENSES}'!A1:G1`, values: [EXPENSE_HEADERS] },
           { range: `'${SHEETS.BUDGETS}'!A1:H1`, values: [BUDGET_HEADERS] },
+          { range: `'${SHEETS.CHAT_HISTORY}'!A1:F1`, values: [CHAT_HISTORY_HEADERS] },
           { range: `'${SHEETS.SETTINGS}'!A1:C1`, values: [SETTINGS_HEADERS] },
           {
             range: `'${SHEETS.SETTINGS}'!A2:C2`,
@@ -67,6 +69,7 @@ export async function createSpreadsheet(accessToken) {
           { properties: { title: SHEETS.EXPENSES, index: 2 } },
           { properties: { title: SHEETS.SETTINGS, index: 3 } },
           { properties: { title: SHEETS.BUDGETS, index: 4 } },
+          { properties: { title: SHEETS.CHAT_HISTORY, index: 5 } },
         ],
       }),
     },

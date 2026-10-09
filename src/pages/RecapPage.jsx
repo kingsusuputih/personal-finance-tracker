@@ -5,7 +5,7 @@ import { useFinanceStore } from "../store/financeStore.js";
 import { useFinanceCalc } from "../hooks/useFinanceCalc.js";
 import { groupExpenses } from "../utils/expenseGrouping.js";
 import { formatIDR } from "../utils/financeFormulas.js";
-import { getCycleKeyForDate, getEffectiveCutoff, getEffectiveTimezone, getCycleInfo, formatDisplayDate } from "../utils/dateTime.js";
+import { getCycleKeyForDate, getEffectiveCutoff, getEffectiveTimezone, getCycleInfo, formatDisplayDate, getCycleDayProgress } from "../utils/dateTime.js";
 import { listAvailableCycles } from "../utils/cycleInventory.js";
 import { Card } from "../components/ui/Card.jsx";
 import { Badge } from "../components/ui/Badge.jsx";
@@ -60,6 +60,7 @@ export default function RecapPage() {
   const { recap, cycle } = useFinanceCalc(selectedCycle);
 
   const isActivePeriod = selectedCycle === currentCycle;
+  const dayProgress = getCycleDayProgress(cycle.startDate, cycle.endDate, timeZone);
 
   const grouped = useMemo(() => {
     return groupExpenses(recap.cycleTransactions);
@@ -124,9 +125,21 @@ export default function RecapPage() {
                     end: formatDisplayDate(cycle.endDate, lang),
                   })}
                 </span>
-                {isActivePeriod && (
+                {isActivePeriod && dayProgress?.isCurrent ? (
+                  <Badge tone="accent">
+                    {t("recap.activeBadge")} · {t("recap.dayProgress", {
+                      current: dayProgress.currentDay,
+                      total: dayProgress.totalDays,
+                      remaining: dayProgress.remainingDays,
+                    })}
+                  </Badge>
+                ) : isActivePeriod ? (
                   <Badge tone="accent">{t("recap.activeBadge")}</Badge>
-                )}
+                ) : dayProgress?.status === "finished" ? (
+                  <Badge tone="neutral">
+                    {t("recap.cycleFinished", { total: dayProgress.totalDays })}
+                  </Badge>
+                ) : null}
                 {!recap.hasMainIncome && (
                   <Badge tone="warning">{t("recap.noMainIncome")}</Badge>
                 )}

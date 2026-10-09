@@ -191,3 +191,62 @@ export function transactionSortTimestamp(row) {
   }
   return 0;
 }
+
+export function getCycleDayProgress(
+  startDate,
+  endDate,
+  timeZone = "Asia/Jakarta",
+  asOfDate = new Date(),
+) {
+  if (!startDate || !endDate || typeof startDate !== "string" || typeof endDate !== "string") {
+    return null;
+  }
+  const parseUtcMidnight = (str) => {
+    const [y, m, d] = str.split("-").map(Number);
+    if (!y || !m || !d) return null;
+    return Date.UTC(y, m - 1, d);
+  };
+
+  const startMs = parseUtcMidnight(startDate);
+  const endMs = parseUtcMidnight(endDate);
+  if (startMs === null || endMs === null || endMs < startMs) return null;
+
+  const todayKey = currentZonedDateKey(asOfDate, timeZone);
+  const todayMs = parseUtcMidnight(todayKey);
+  if (todayMs === null) return null;
+
+  const MS_PER_DAY = 86400000;
+  const totalDays = Math.round((endMs - startMs) / MS_PER_DAY) + 1;
+
+  if (todayMs < startMs) {
+    return {
+      status: "upcoming",
+      totalDays,
+      currentDay: 0,
+      remainingDays: totalDays,
+      isCurrent: false,
+    };
+  }
+
+  if (todayMs > endMs) {
+    return {
+      status: "finished",
+      totalDays,
+      currentDay: totalDays,
+      remainingDays: 0,
+      isCurrent: false,
+    };
+  }
+
+  const currentDay = Math.round((todayMs - startMs) / MS_PER_DAY) + 1;
+  const remainingDays = Math.max(0, totalDays - currentDay);
+
+  return {
+    status: "active",
+    totalDays,
+    currentDay,
+    remainingDays,
+    isCurrent: true,
+  };
+}
+

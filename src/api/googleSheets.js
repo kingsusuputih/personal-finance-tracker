@@ -5,6 +5,7 @@ import {
   DEFAULT_SETTINGS,
   ADDITIONAL_INCOME_HEADERS,
   BUDGET_HEADERS,
+  CHAT_HISTORY_HEADERS,
 } from "../constants/sheets.js";
 import { serializeSettingsRow } from "../utils/sheetsHelpers.js";
 
@@ -44,6 +45,15 @@ export async function ensureSchemaSheets(accessToken, spreadsheetId) {
     valueData.push({
       range: `'${SHEETS.BUDGETS}'!A1:H1`,
       values: [BUDGET_HEADERS],
+    });
+  }
+
+  const hasChatHistory = sheets.some((s) => s.properties.title === SHEETS.CHAT_HISTORY);
+  if (!hasChatHistory) {
+    requests.push({ addSheet: { properties: { title: SHEETS.CHAT_HISTORY } } });
+    valueData.push({
+      range: `'${SHEETS.CHAT_HISTORY}'!A1:F1`,
+      values: [CHAT_HISTORY_HEADERS],
     });
   }
 
@@ -166,3 +176,15 @@ export async function deleteRow(
   if (!res.ok) throw new Error("Failed to delete row");
   return res.json();
 }
+
+export async function clearSheetRows(accessToken, spreadsheetId, sheetName) {
+  const range = `'${sheetName}'!A2:Z`;
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encodeURIComponent(range)}:clear`;
+  const res = await authedRequest(accessToken, url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+  });
+  if (!res.ok) throw new Error("Failed to clear sheet rows");
+  return res.json();
+}
+

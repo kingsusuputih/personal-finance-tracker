@@ -62,6 +62,32 @@ export function serializeBudgetRow(
   ];
 }
 
+export function serializeChatRow(
+  role,
+  message,
+  cycleKey = "",
+  proposal = null,
+  timestamp = new Date().toISOString(),
+  id = (typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : String(Date.now())),
+) {
+  let proposalJson = "";
+  if (proposal) {
+    try {
+      proposalJson = JSON.stringify(proposal);
+    } catch {
+      proposalJson = "";
+    }
+  }
+  return [
+    id || (typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : String(Date.now())),
+    timestamp || new Date().toISOString(),
+    cycleKey || "",
+    role || "user",
+    message || "",
+    proposalJson,
+  ];
+}
+
 export function serializeSettingsRow(settings = {}) {
   const mode = settings.timezone_mode === "manual" ? "manual" : "auto";
   const tz = settings.timezone || DEFAULT_SETTINGS.timezone;

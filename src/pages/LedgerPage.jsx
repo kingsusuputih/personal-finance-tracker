@@ -7,6 +7,7 @@ import { Sidebar } from "../components/layout/Sidebar.jsx";
 import { Navbar } from "../components/layout/Navbar.jsx";
 import { BottomNav } from "../components/layout/BottomNav.jsx";
 import { Skeleton } from "../components/ui/Skeleton.jsx";
+import { Modal } from "../components/ui/Modal.jsx";
 import { useT } from "../i18n/LanguageProvider.jsx";
 
 export default function LedgerPage() {
@@ -49,11 +50,7 @@ export default function LedgerPage() {
                 <section className="mb-8">
                   <div className="rounded-card border border-rule bg-paper shadow-sm overflow-hidden grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-rule">
                     <IncomeForm />
-                    <ExpenseForm
-                      key={editingRow ? `edit-${editingRow.rowNumber}` : "new"}
-                      editingRow={editingRow}
-                      onCancelEdit={() => setEditingRow(null)}
-                    />
+                    <ExpenseForm />
                   </div>
                 </section>
                 <TransactionTable
@@ -61,6 +58,21 @@ export default function LedgerPage() {
                   loading={loading}
                   onEdit={setEditingRow}
                 />
+
+                <Modal
+                  open={Boolean(editingRow)}
+                  onClose={() => setEditingRow(null)}
+                  title={t("expense.edit")}
+                  maxWidth="max-w-lg">
+                  {editingRow && (
+                    <ExpenseForm
+                      key={`edit-${editingRow.rowNumber}`}
+                      editingRow={editingRow}
+                      onCancelEdit={() => setEditingRow(null)}
+                      isModal
+                    />
+                  )}
+                </Modal>
               </>
             )}
           </div>

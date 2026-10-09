@@ -12,7 +12,14 @@ import {
   currentZonedDateKey,
 } from "../../utils/dateTime.js";
 
-export function ExpenseForm({ editingRow = null, onCancelEdit, draft = null, onClearDraft = null, onSuccess = null }) {
+export function ExpenseForm({
+  editingRow = null,
+  onCancelEdit,
+  draft = null,
+  onClearDraft = null,
+  onSuccess = null,
+  isModal = false,
+}) {
   const { addTransaction, updateTransaction, settings } = useSpreadsheet();
   const toast = useToast();
   const t = useT();
@@ -88,11 +95,13 @@ export function ExpenseForm({ editingRow = null, onCancelEdit, draft = null, onC
   };
 
   return (
-    <div className="p-5 sm:p-6 bg-paper flex flex-col justify-between">
+    <div className={isModal ? "flex flex-col justify-between" : "p-5 sm:p-6 bg-paper flex flex-col justify-between"}>
       <div>
-        <h2 className="mb-4 text-base font-bold text-ink tracking-tight">
-          {editingRow ? t("expense.edit") : t("expense.title")}
-        </h2>
+        {!isModal && (
+          <h2 className="mb-4 text-base font-bold text-ink tracking-tight">
+            {editingRow ? t("expense.edit") : t("expense.title")}
+          </h2>
+        )}
         <form onSubmit={submit} className="space-y-4" noValidate>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <label className="block">

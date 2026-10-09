@@ -7,6 +7,7 @@ import {
   appendRow,
   updateRow,
   deleteRow,
+  clearSheetRows,
 } from "../api/googleSheets.js";
 import {
   SHEETS,
@@ -141,12 +142,22 @@ export function useSpreadsheet() {
     [accessToken, setSettings],
   );
 
+  const clearSheet = useCallback(
+    async (sheetName) => {
+      const id = useFinanceStore.getState().spreadsheetId;
+      if (!id || !accessToken) throw new Error("Spreadsheet not ready");
+      return clearSheetRows(accessToken, id, sheetName);
+    },
+    [accessToken],
+  );
+
   return {
     ensureSpreadsheet,
     loadData,
     addTransaction,
     updateTransaction,
     deleteTransaction,
+    clearSheet,
     saveSettings,
     spreadsheetId,
     income,

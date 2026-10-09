@@ -4,11 +4,14 @@ import { useFinanceStore } from "../store/financeStore.js";
 import { useSpreadsheet } from "../hooks/useSpreadsheet.js";
 import { useFinanceCalc } from "../hooks/useFinanceCalc.js";
 import { sendChatMessage } from "../api/chat.js";
-import { SHEETS, EXPENSE_CATEGORIES } from "../constants/sheets.js";
+import { getRows, appendRow, clearSheetRows } from "../api/googleSheets.js";
+import { SHEETS, EXPENSE_CATEGORIES, CHAT_HISTORY_HEADERS } from "../constants/sheets.js";
 import {
   serializeExpenseRow,
   serializeIncomeRow,
   serializeAdditionalIncomeRow,
+  serializeChatRow,
+  deserializeRows,
 } from "../utils/sheetsHelpers.js";
 import { formatIDR, formatRupiah, parseRupiah } from "../utils/financeFormulas.js";
 import { parseBoldSegments } from "../utils/chatFormatting.js";
@@ -27,6 +30,8 @@ import { BottomNav } from "../components/layout/BottomNav.jsx";
 import { Card } from "../components/ui/Card.jsx";
 import { Button } from "../components/ui/Button.jsx";
 import { Badge } from "../components/ui/Badge.jsx";
+import { Modal } from "../components/ui/Modal.jsx";
+import { Skeleton } from "../components/ui/Skeleton.jsx";
 import { useToast } from "../components/ui/Toast.jsx";
 import { useT, useI18n } from "../i18n/LanguageProvider.jsx";
 
@@ -239,6 +244,9 @@ export default function ChatPage() {
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [historyLoading, setHistoryLoading] = useState(false);
+  const [clearConfirmOpen, setClearConfirmOpen] = useState(false);
+  const [clearing, setClearing] = useState(false);
   const [cooldownSeconds, setCooldownSeconds] = useState(0);
 
   const messagesEndRef = useRef(null);
@@ -249,30 +257,77 @@ export default function ChatPage() {
     if (compareCycle === nextCycle) {
       setCompareCycle("");
     }
-    setMessages([
-      {
-        role: "assistant",
-        text: t("chat.defaultGreeting"),
-      },
-    ]);
   };
 
   const handleCompareCycleChange = (nextCompare) => {
     if (nextCompare === compareCycle) return;
     setCompareCycle(nextCompare);
-    setMessages([
-      {
-        role: "assistant",
-        text: t("chat.defaultGreeting"),
-      },
-    ]);
   };
 
   useEffect(() => {
-    ensureSpreadsheet().then((id) => {
-      if (id) loadData();
+    let active = true;
+    ensureSpreadsheet().then(async (id) => {
+      if (!id || !active) return;
+      loadData();
+      if (!accessToken) return;
+      try {
+        setHistoryLoading(true);
+        const rawRows = await getRows(accessToken, id, SHEETS.CHAT_HISTORY).catch(() => []);
+        if (!active) return;
+        const rows = deserializeRows(CHAT_HISTORY_HEADERS, rawRows);
+        if (rows.length > 0) {
+          const loaded = rows.map((r) => {
+            let proposal = null;
+            if (r.proposal_json) {
+              try {
+                proposal = JSON.parse(r.proposal_json);
+              } catch {
+                proposal = null;
+              }
+            }
+            return {
+              id: r.id,
+              role: r.role,
+              text: r.message,
+              proposal,
+              timestamp: r.timestamp,
+              cycleKey: r.cycle_key,
+            };
+          });
+          setMessages(loaded);
+        }
+      } catch (err) {
+        console.error("Failed to load chat history:", err);
+      } finally {
+        if (active) setHistoryLoading(false);
+      }
     });
-  }, [ensureSpreadsheet, loadData]);
+
+    return () => {
+      active = false;
+    };
+  }, [ensureSpreadsheet, loadData, accessToken]);
+
+  const handleClearHistory = async () => {
+    const spreadsheetId = useFinanceStore.getState().spreadsheetId;
+    if (!accessToken || !spreadsheetId) return;
+    setClearing(true);
+    try {
+      await clearSheetRows(accessToken, spreadsheetId, SHEETS.CHAT_HISTORY);
+      setMessages([
+        {
+          role: "assistant",
+          text: t("chat.defaultGreeting"),
+        },
+      ]);
+      toast.success(t("chat.historyCleared"));
+      setClearConfirmOpen(false);
+    } catch (err) {
+      toast.error(err.message || t("toast.error"));
+    } finally {
+      setClearing(false);
+    }
+  };
 
   useEffect(() => {
     const reduceMotion = typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
@@ -297,9 +352,26 @@ export default function ChatPage() {
     if (!textToSend || loading || cooldownSeconds > 0) return;
 
     setInput("");
-    const newHistory = [...messages, { role: "user", text: textToSend }];
+    const userMsg = {
+      role: "user",
+      text: textToSend,
+      timestamp: new Date().toISOString(),
+      cycleKey: activeCycle,
+    };
+    const newHistory = [...messages, userMsg];
     setMessages(newHistory);
     setLoading(true);
+
+    const spreadsheetId = useFinanceStore.getState().spreadsheetId;
+
+    if (accessToken && spreadsheetId) {
+      appendRow(
+        accessToken,
+        spreadsheetId,
+        SHEETS.CHAT_HISTORY,
+        serializeChatRow("user", textToSend, activeCycle),
+      ).catch((e) => console.error("Failed to save user chat to sheet:", e));
+    }
 
     try {
       const summary = buildChatContext({
@@ -315,18 +387,28 @@ export default function ChatPage() {
       const res = await sendChatMessage({
         accessToken,
         message: textToSend,
-        history: newHistory,
+        history: newHistory.slice(-10),
         summary,
       });
 
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "assistant",
-          text: res.reply,
-          proposal: res.proposal,
-        },
-      ]);
+      const assistantMsg = {
+        role: "assistant",
+        text: res.reply,
+        proposal: res.proposal,
+        timestamp: new Date().toISOString(),
+        cycleKey: activeCycle,
+      };
+
+      setMessages((prev) => [...prev, assistantMsg]);
+
+      if (accessToken && spreadsheetId) {
+        appendRow(
+          accessToken,
+          spreadsheetId,
+          SHEETS.CHAT_HISTORY,
+          serializeChatRow("assistant", res.reply, activeCycle, res.proposal),
+        ).catch((e) => console.error("Failed to save assistant chat to sheet:", e));
+      }
     } catch (err) {
       if (err.retryAfter) {
         setCooldownSeconds(err.retryAfter);
@@ -430,11 +512,21 @@ export default function ChatPage() {
                     </label>
                   </div>
 
-                  <div className="text-[11px] text-ink-3 font-medium">
+                  <div className="flex items-center gap-2 text-[11px] text-ink-3 font-medium">
                     {activeBounds && (
                       <span>
                         {formatDisplayDate(activeBounds.startDate, lang)} – {formatDisplayDate(activeBounds.endDate, lang)}
                       </span>
+                    )}
+                    {messages.length > 1 && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setClearConfirmOpen(true)}
+                        className="h-6 px-2 text-[10px] text-ink-3 hover:text-danger">
+                        {t("chat.clearHistory")}
+                      </Button>
                     )}
                   </div>
                 </div>
@@ -449,6 +541,12 @@ export default function ChatPage() {
                 )}
 
                 <div className="flex-1 space-y-4 overflow-y-auto p-4 text-sm">
+                  {historyLoading && (
+                    <div className="space-y-2 p-2">
+                      <Skeleton className="h-8 w-2/3" />
+                      <Skeleton className="ml-auto h-8 w-1/2" />
+                    </div>
+                  )}
                   {messages.map((m, idx) => (
                     <div
                       key={idx}
@@ -555,6 +653,30 @@ export default function ChatPage() {
           </div>
         </main>
       </div>
+
+      <Modal
+        open={clearConfirmOpen}
+        onClose={() => setClearConfirmOpen(false)}
+        title={t("chat.clearHistoryConfirm")}
+        footer={
+          <>
+            <Button
+              variant="ghost"
+              onClick={() => setClearConfirmOpen(false)}
+              disabled={clearing}>
+              {t("common.cancel")}
+            </Button>
+            <Button
+              variant="danger"
+              loading={clearing}
+              onClick={handleClearHistory}>
+              {t("common.delete")}
+            </Button>
+          </>
+        }>
+        {t("chat.clearHistoryDesc")}
+      </Modal>
+
       <BottomNav />
     </div>
   );

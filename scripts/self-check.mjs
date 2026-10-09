@@ -12,6 +12,7 @@ import {
   formatTransactionTime,
   formatDisplayDate,
   transactionSortTimestamp,
+  getCycleDayProgress,
 } from "../src/utils/dateTime.js";
 
 assert(isValidTimezone("Asia/Jakarta"));
@@ -45,6 +46,19 @@ const infoMid = getCycleInfo(midPeriod, "Asia/Jakarta", 25);
 assert.equal(infoMid.cycleKey, "2026-08");
 assert.equal(infoMid.startDate, "2026-08-25");
 assert.equal(infoMid.endDate, "2026-09-24");
+
+const progressActive = getCycleDayProgress("2026-08-25", "2026-09-24", "Asia/Jakarta", new Date("2026-09-10T05:00:00Z"));
+assert.equal(progressActive.status, "active");
+assert.equal(progressActive.totalDays, 31);
+assert.equal(progressActive.currentDay, 17);
+assert.equal(progressActive.remainingDays, 14);
+assert.equal(progressActive.isCurrent, true);
+
+const progressPast = getCycleDayProgress("2026-07-25", "2026-08-24", "Asia/Jakarta", new Date("2026-09-10T05:00:00Z"));
+assert.equal(progressPast.status, "finished");
+assert.equal(progressPast.totalDays, 31);
+assert.equal(progressPast.isCurrent, false);
+
 
 const postCutoff = new Date("2026-09-26T05:00:00Z");
 const infoPost = getCycleInfo(postCutoff, "Asia/Jakarta", 25);
@@ -101,6 +115,7 @@ import {
   serializeExpenseRow,
   serializeAdditionalIncomeRow,
   serializeBudgetRow,
+  serializeChatRow,
   serializeSettingsRow,
   deserializeSettings,
   deserializeRows,
@@ -109,6 +124,7 @@ import {
   EXPENSE_HEADERS,
   ADDITIONAL_INCOME_HEADERS,
   BUDGET_HEADERS,
+  CHAT_HISTORY_HEADERS,
 } from "../src/constants/sheets.js";
 
 const oldCreatedAt = "2026-09-01T08:00:00.000Z";
@@ -137,6 +153,20 @@ assert.equal(addIncRow[1], "Bonus");
 assert.equal(addIncRow[2], 250000);
 assert.equal(addIncRow[3], oldCreatedAt);
 assert.equal(addIncRow[4], "inc-uuid-456");
+
+const chatRow = serializeChatRow("assistant", "Pengeluaran dicatat", "2026-09", { type: "expense" }, oldCreatedAt, "chat-1");
+assert.deepEqual(chatRow, ["chat-1", oldCreatedAt, "2026-09", "assistant", "Pengeluaran dicatat", '{"type":"expense"}']);
+
+const rawChatData = [
+  CHAT_HISTORY_HEADERS,
+  ["chat-1", oldCreatedAt, "2026-09", "assistant", "Pengeluaran dicatat", '{"type":"expense"}'],
+];
+const parsedChat = deserializeRows(CHAT_HISTORY_HEADERS, rawChatData);
+assert.equal(parsedChat.length, 1);
+assert.equal(parsedChat[0].role, "assistant");
+assert.equal(parsedChat[0].message, "Pengeluaran dicatat");
+assert.equal(parsedChat[0].proposal_json, '{"type":"expense"}');
+
 
 const legacyExpenseRaw = [
   ["date", "category", "description", "amount", "created_at"],

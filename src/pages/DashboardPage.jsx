@@ -15,7 +15,7 @@ import { Button } from "../components/ui/Button.jsx";
 import { Skeleton } from "../components/ui/Skeleton.jsx";
 import { useI18n } from "../i18n/LanguageProvider.jsx";
 import { formatIDR } from "../utils/financeFormulas.js";
-import { formatDisplayDate } from "../utils/dateTime.js";
+import { formatDisplayDate, getCycleDayProgress } from "../utils/dateTime.js";
 import { PublicationConsent } from "../components/auth/PublicationConsent.jsx";
 import { registerUser } from "../api/registry.js";
 import { useAuthStore } from "../store/authStore.js";
@@ -160,6 +160,12 @@ export default function DashboardPage() {
     { name: "Investment", value: calc.actualSpending.investments },
   ];
 
+  const dayProgress = getCycleDayProgress(
+    calc.cycle?.startDate,
+    calc.cycle?.endDate,
+    calc.timeZone,
+  );
+
   return (
     <div className="flex min-h-dvh">
       <Sidebar />
@@ -179,6 +185,23 @@ export default function DashboardPage() {
                         end: formatDisplayDate(calc.cycle.endDate, lang),
                       })}
                     </span>
+                    {dayProgress?.isCurrent && (
+                      <>
+                        <span>·</span>
+                        <span className="font-medium text-accent">
+                          {dayProgress.remainingDays === 0
+                            ? t("dash.dayProgressZero", {
+                                current: dayProgress.currentDay,
+                                total: dayProgress.totalDays,
+                              })
+                            : t("dash.dayProgress", {
+                                current: dayProgress.currentDay,
+                                total: dayProgress.totalDays,
+                                remaining: dayProgress.remainingDays,
+                              })}
+                        </span>
+                      </>
+                    )}
                   </>
                 )}
               </div>

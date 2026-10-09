@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 
-export function Modal({ open, onClose, title, children, footer }) {
+export function Modal({ open, onClose, title, children, footer, maxWidth = "max-w-sm" }) {
   const panelRef = useRef(null);
   const previouslyFocusedRef = useRef(null);
 
@@ -58,7 +58,7 @@ export function Modal({ open, onClose, title, children, footer }) {
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        className="relative w-full max-w-sm max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-card border border-rule bg-paper p-6 outline-none shadow-2xl">
+        className={`relative w-full ${maxWidth} max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-card border border-rule bg-paper p-6 outline-none shadow-2xl`}>
         <h2 className="text-lg font-semibold">{title}</h2>
         <div className="mt-2 text-sm leading-relaxed text-ink-2">
           {children}
