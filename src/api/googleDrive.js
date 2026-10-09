@@ -41,7 +41,7 @@ async function writeHeaders(accessToken, spreadsheetId) {
           { range: `'${SHEETS.ADDITIONAL_INCOME}'!A1:E1`, values: [ADDITIONAL_INCOME_HEADERS] },
           { range: `'${SHEETS.EXPENSES}'!A1:G1`, values: [EXPENSE_HEADERS] },
           { range: `'${SHEETS.BUDGETS}'!A1:H1`, values: [BUDGET_HEADERS] },
-          { range: `'${SHEETS.CHAT_HISTORY}'!A1:F1`, values: [CHAT_HISTORY_HEADERS] },
+          { range: `'${SHEETS.CHAT_HISTORY}'!A1:H1`, values: [CHAT_HISTORY_HEADERS] },
           { range: `'${SHEETS.SETTINGS}'!A1:C1`, values: [SETTINGS_HEADERS] },
           {
             range: `'${SHEETS.SETTINGS}'!A2:C2`,

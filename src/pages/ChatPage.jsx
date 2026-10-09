@@ -4,7 +4,7 @@ import { useFinanceStore } from "../store/financeStore.js";
 import { useSpreadsheet } from "../hooks/useSpreadsheet.js";
 import { useFinanceCalc } from "../hooks/useFinanceCalc.js";
 import { sendChatMessage } from "../api/chat.js";
-import { getRows, appendRow, clearSheetRows } from "../api/googleSheets.js";
+import { getRows, appendRow, clearSheetRows, deleteRows } from "../api/googleSheets.js";
 import { SHEETS, EXPENSE_CATEGORIES, CHAT_HISTORY_HEADERS } from "../constants/sheets.js";
 import {
   serializeExpenseRow,
@@ -23,6 +23,7 @@ import {
   getCycleInfo,
   getCycleBounds,
   formatDisplayDate,
+  formatTransactionTime,
 } from "../utils/dateTime.js";
 import { Sidebar } from "../components/layout/Sidebar.jsx";
 import { Navbar } from "../components/layout/Navbar.jsx";
@@ -195,6 +196,12 @@ function ProposalCard({ proposal, onSaved }) {
   );
 }
 
+function createSessionId() {
+  return typeof crypto !== "undefined" && crypto.randomUUID
+    ? crypto.randomUUID()
+    : `sess_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+}
+
 export default function ChatPage() {
   const t = useT();
   const { lang } = useI18n();
@@ -236,20 +243,71 @@ export default function ChatPage() {
     return localStorage.getItem("finance_ai_consent") === "true";
   });
 
-  const [messages, setMessages] = useState([
-    {
-      role: "assistant",
-      text: t("chat.defaultGreeting"),
-    },
-  ]);
+  const [rawChatRows, setRawChatRows] = useState([]);
+  const [activeSessionId, setActiveSessionId] = useState(() => createSessionId());
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [historyLoading, setHistoryLoading] = useState(false);
   const [clearConfirmOpen, setClearConfirmOpen] = useState(false);
   const [clearing, setClearing] = useState(false);
+  const [deletingSession, setDeletingSession] = useState(null);
+  const [deletingSessionLoading, setDeletingSessionLoading] = useState(false);
+  const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const [cooldownSeconds, setCooldownSeconds] = useState(0);
 
   const messagesEndRef = useRef(null);
+  const initialLoadedRef = useRef(false);
+
+  const sessions = useMemo(() => {
+    const map = new Map();
+    rawChatRows.forEach((r) => {
+      const sid = r.session_id || "legacy_session";
+      if (!map.has(sid)) {
+        map.set(sid, {
+          id: sid,
+          title: r.session_title || t("chat.untitledSession"),
+          lastTimestamp: r.timestamp || "",
+          cycleKey: r.cycle_key || "",
+          rowNumbers: [],
+          messageCount: 0,
+        });
+      }
+      const s = map.get(sid);
+      s.messageCount += 1;
+      if (r.rowNumber) s.rowNumbers.push(r.rowNumber);
+      if (r.timestamp && (!s.lastTimestamp || r.timestamp > s.lastTimestamp)) {
+        s.lastTimestamp = r.timestamp;
+      }
+      if (r.session_title && r.session_title !== t("chat.untitledSession")) {
+        s.title = r.session_title;
+      }
+    });
+    return Array.from(map.values()).sort((a, b) => {
+      return (b.lastTimestamp || "").localeCompare(a.lastTimestamp || "");
+    });
+  }, [rawChatRows, t]);
+
+  const activeSessionMessages = useMemo(() => {
+    const sessionRows = rawChatRows.filter(
+      (r) => (r.session_id || "legacy_session") === activeSessionId,
+    );
+    if (sessionRows.length === 0) {
+      return [
+        {
+          role: "assistant",
+          text: t("chat.defaultGreeting"),
+        },
+      ];
+    }
+    return sessionRows.map((r) => ({
+      id: r.id,
+      role: r.role,
+      text: r.message,
+      proposal: r.proposal,
+      timestamp: r.timestamp,
+      isError: r.isError,
+    }));
+  }, [rawChatRows, activeSessionId, t]);
 
   const handleActiveCycleChange = (nextCycle) => {
     if (nextCycle === activeCycle) return;
@@ -262,6 +320,12 @@ export default function ChatPage() {
   const handleCompareCycleChange = (nextCompare) => {
     if (nextCompare === compareCycle) return;
     setCompareCycle(nextCompare);
+  };
+
+  const handleNewChat = () => {
+    const nextId = createSessionId();
+    setActiveSessionId(nextId);
+    setMobileDrawerOpen(false);
   };
 
   useEffect(() => {
@@ -286,15 +350,35 @@ export default function ChatPage() {
               }
             }
             return {
+              rowNumber: r.rowNumber,
               id: r.id,
+              session_id: r.session_id || "legacy_session",
+              session_title: r.session_title || "",
               role: r.role,
-              text: r.message,
+              message: r.message,
               proposal,
               timestamp: r.timestamp,
-              cycleKey: r.cycle_key,
+              cycle_key: r.cycle_key,
             };
           });
-          setMessages(loaded);
+          setRawChatRows(loaded);
+
+          if (!initialLoadedRef.current) {
+            const map = new Map();
+            loaded.forEach((m) => {
+              const sid = m.session_id || "legacy_session";
+              if (!map.has(sid) || (m.timestamp && m.timestamp > map.get(sid))) {
+                map.set(sid, m.timestamp || "");
+              }
+            });
+            const sortedSessions = Array.from(map.entries()).sort((a, b) =>
+              b[1].localeCompare(a[1]),
+            );
+            if (sortedSessions.length > 0) {
+              setActiveSessionId(sortedSessions[0][0]);
+            }
+            initialLoadedRef.current = true;
+          }
         }
       } catch (err) {
         console.error("Failed to load chat history:", err);
@@ -308,20 +392,47 @@ export default function ChatPage() {
     };
   }, [ensureSpreadsheet, loadData, accessToken]);
 
+  const handleDeleteSession = async () => {
+    if (!deletingSession) return;
+    const spreadsheetId = useFinanceStore.getState().spreadsheetId;
+    if (!accessToken || !spreadsheetId) return;
+    setDeletingSessionLoading(true);
+    try {
+      if (deletingSession.rowNumbers.length > 0) {
+        await deleteRows(
+          accessToken,
+          spreadsheetId,
+          SHEETS.CHAT_HISTORY,
+          deletingSession.rowNumbers,
+        );
+      }
+      setRawChatRows((prev) =>
+        prev.filter((r) => (r.session_id || "legacy_session") !== deletingSession.id),
+      );
+      toast.success(t("chat.sessionDeleted"));
+      if (activeSessionId === deletingSession.id) {
+        const remaining = sessions.filter((s) => s.id !== deletingSession.id);
+        setActiveSessionId(remaining.length > 0 ? remaining[0].id : createSessionId());
+      }
+      setDeletingSession(null);
+    } catch (err) {
+      toast.error(err.message || t("toast.error"));
+    } finally {
+      setDeletingSessionLoading(false);
+    }
+  };
+
   const handleClearHistory = async () => {
     const spreadsheetId = useFinanceStore.getState().spreadsheetId;
     if (!accessToken || !spreadsheetId) return;
     setClearing(true);
     try {
       await clearSheetRows(accessToken, spreadsheetId, SHEETS.CHAT_HISTORY);
-      setMessages([
-        {
-          role: "assistant",
-          text: t("chat.defaultGreeting"),
-        },
-      ]);
+      setRawChatRows([]);
+      setActiveSessionId(createSessionId());
       toast.success(t("chat.historyCleared"));
       setClearConfirmOpen(false);
+      setMobileDrawerOpen(false);
     } catch (err) {
       toast.error(err.message || t("toast.error"));
     } finally {
@@ -330,9 +441,11 @@ export default function ChatPage() {
   };
 
   useEffect(() => {
-    const reduceMotion = typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    const reduceMotion =
+      typeof window !== "undefined" &&
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
     messagesEndRef.current?.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth" });
-  }, [messages]);
+  }, [activeSessionMessages]);
 
   useEffect(() => {
     if (cooldownSeconds <= 0) return;
@@ -352,14 +465,30 @@ export default function ChatPage() {
     if (!textToSend || loading || cooldownSeconds > 0) return;
 
     setInput("");
-    const userMsg = {
+
+    const currentSession = sessions.find((s) => s.id === activeSessionId);
+    const sessionTitle =
+      currentSession?.title && currentSession.title !== t("chat.untitledSession")
+        ? currentSession.title
+        : textToSend.slice(0, 32) + (textToSend.length > 32 ? "..." : "");
+
+    const msgId =
+      typeof crypto !== "undefined" && crypto.randomUUID
+        ? crypto.randomUUID()
+        : String(Date.now());
+    const timestamp = new Date().toISOString();
+
+    const userRow = {
+      id: msgId,
+      session_id: activeSessionId,
+      session_title: sessionTitle,
       role: "user",
-      text: textToSend,
-      timestamp: new Date().toISOString(),
-      cycleKey: activeCycle,
+      message: textToSend,
+      cycle_key: activeCycle,
+      timestamp,
     };
-    const newHistory = [...messages, userMsg];
-    setMessages(newHistory);
+
+    setRawChatRows((prev) => [...prev, userRow]);
     setLoading(true);
 
     const spreadsheetId = useFinanceStore.getState().spreadsheetId;
@@ -369,7 +498,16 @@ export default function ChatPage() {
         accessToken,
         spreadsheetId,
         SHEETS.CHAT_HISTORY,
-        serializeChatRow("user", textToSend, activeCycle),
+        serializeChatRow(
+          activeSessionId,
+          sessionTitle,
+          "user",
+          textToSend,
+          activeCycle,
+          null,
+          timestamp,
+          msgId,
+        ),
       ).catch((e) => console.error("Failed to save user chat to sheet:", e));
     }
 
@@ -384,29 +522,51 @@ export default function ChatPage() {
         availableCycles,
       });
 
+      const sessionHistory = [...activeSessionMessages, { role: "user", text: textToSend }]
+        .filter((m) => !m.isError)
+        .slice(-10);
+
       const res = await sendChatMessage({
         accessToken,
         message: textToSend,
-        history: newHistory.slice(-10),
+        history: sessionHistory,
         summary,
       });
 
-      const assistantMsg = {
+      const assistantMsgId =
+        typeof crypto !== "undefined" && crypto.randomUUID
+          ? crypto.randomUUID()
+          : String(Date.now() + 1);
+      const assistantTimestamp = new Date().toISOString();
+
+      const assistantRow = {
+        id: assistantMsgId,
+        session_id: activeSessionId,
+        session_title: sessionTitle,
         role: "assistant",
-        text: res.reply,
+        message: res.reply,
         proposal: res.proposal,
-        timestamp: new Date().toISOString(),
-        cycleKey: activeCycle,
+        cycle_key: activeCycle,
+        timestamp: assistantTimestamp,
       };
 
-      setMessages((prev) => [...prev, assistantMsg]);
+      setRawChatRows((prev) => [...prev, assistantRow]);
 
       if (accessToken && spreadsheetId) {
         appendRow(
           accessToken,
           spreadsheetId,
           SHEETS.CHAT_HISTORY,
-          serializeChatRow("assistant", res.reply, activeCycle, res.proposal),
+          serializeChatRow(
+            activeSessionId,
+            sessionTitle,
+            "assistant",
+            res.reply,
+            activeCycle,
+            res.proposal,
+            assistantTimestamp,
+            assistantMsgId,
+          ),
         ).catch((e) => console.error("Failed to save assistant chat to sheet:", e));
       }
     } catch (err) {
@@ -414,12 +574,17 @@ export default function ChatPage() {
         setCooldownSeconds(err.retryAfter);
       }
       toast.error(err.message || t("toast.error"));
-      setMessages((prev) => [
+      setRawChatRows((prev) => [
         ...prev,
         {
+          id: String(Date.now() + 1),
+          session_id: activeSessionId,
+          session_title: sessionTitle,
           role: "assistant",
-          text: err.message || t("chat.quotaExceeded"),
+          message: err.message || t("chat.quotaExceeded"),
           isError: true,
+          cycle_key: activeCycle,
+          timestamp: new Date().toISOString(),
         },
       ]);
     } finally {
@@ -477,77 +642,152 @@ export default function ChatPage() {
                 </div>
               </Card>
             ) : (
-              <div className="flex flex-1 flex-col overflow-hidden rounded-card border border-rule bg-paper shadow-sm">
-                <div className="border-b border-rule bg-paper-2/40 px-3 py-2 text-xs flex flex-wrap items-center justify-between gap-2">
-                  <div className="flex flex-wrap items-center gap-3">
-                    <label className="flex items-center gap-1.5">
-                      <span className="text-ink-3 font-medium">{t("chat.selectPeriod")}:</span>
-                      <select
-                        value={activeCycle}
-                        onChange={(e) => handleActiveCycleChange(e.target.value)}
-                        className="field py-1 px-2 text-xs h-7">
-                        {availableCycles.map((c) => (
-                          <option key={c} value={c}>
-                            {c} {c === currentCycle ? `(${t("chat.activeBadge")})` : ""}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
+              <div className="flex flex-1 overflow-hidden rounded-card border border-rule bg-paper shadow-sm">
+                {/* Desktop Sessions Sidebar */}
+                <aside className="hidden md:flex w-56 lg:w-64 shrink-0 flex-col border-r border-rule bg-paper-2/30">
+                  <div className="p-3 border-b border-rule">
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      size="sm"
+                      onClick={handleNewChat}
+                      className="w-full justify-center gap-1.5 text-xs font-semibold py-1.5 shadow-xs">
+                      <span>+</span> {t("chat.newChat")}
+                    </Button>
+                  </div>
+                  <div className="flex-1 overflow-y-auto p-2 space-y-1">
+                    {sessions.length === 0 ? (
+                      <p className="p-3 text-center text-xs text-ink-3">
+                        {t("chat.noSessions")}
+                      </p>
+                    ) : (
+                      sessions.map((sess) => (
+                        <div
+                          key={sess.id}
+                          onClick={() => setActiveSessionId(sess.id)}
+                          role="button"
+                          tabIndex={0}
+                          className={`group flex items-center justify-between rounded-btn p-2 text-xs transition-colors cursor-pointer ${
+                            sess.id === activeSessionId
+                              ? "bg-paper border border-rule font-medium text-ink shadow-xs"
+                              : "text-ink-2 hover:bg-paper-2"
+                          }`}>
+                          <div className="min-w-0 flex-1 pr-1.5">
+                            <p className="truncate">{sess.title}</p>
+                            {sess.lastTimestamp && (
+                              <p className="text-[10px] text-ink-3">
+                                {formatTransactionTime(sess.lastTimestamp, timeZone, lang)}
+                              </p>
+                            )}
+                          </div>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setDeletingSession(sess);
+                            }}
+                            title={t("chat.deleteSession")}
+                            className="opacity-0 group-hover:opacity-100 p-1 text-ink-3 hover:text-danger rounded transition-opacity">
+                            <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                          </button>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                  {sessions.length > 0 && (
+                    <div className="p-2 border-t border-rule">
+                      <button
+                        type="button"
+                        onClick={() => setClearConfirmOpen(true)}
+                        className="w-full text-center text-[10px] text-ink-3 hover:text-danger transition-colors py-1">
+                        {t("chat.clearHistory")}
+                      </button>
+                    </div>
+                  )}
+                </aside>
 
-                    <label className="flex items-center gap-1.5">
-                      <span className="text-ink-3 font-medium">{t("chat.comparePeriod")}:</span>
-                      <select
-                        value={compareCycle}
-                        onChange={(e) => handleCompareCycleChange(e.target.value)}
-                        className="field py-1 px-2 text-xs h-7">
-                        <option value="">{t("chat.noCompare")}</option>
-                        {availableCycles
-                          .filter((c) => c !== activeCycle)
-                          .map((c) => (
+                {/* Main Chat Content */}
+                <div className="flex flex-1 flex-col min-w-0">
+                  <div className="border-b border-rule bg-paper-2/40 px-3 py-2 text-xs flex flex-wrap items-center justify-between gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setMobileDrawerOpen(true)}
+                        className="md:hidden flex items-center gap-1.5 rounded-btn border border-rule bg-paper px-2 py-1 text-xs text-ink-2 hover:bg-paper-2">
+                        <svg className="h-3.5 w-3.5 text-ink-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                        </svg>
+                        <span>{t("chat.sessions")} ({sessions.length})</span>
+                      </button>
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        size="sm"
+                        onClick={handleNewChat}
+                        className="md:hidden h-7 px-2 text-xs">
+                        {t("chat.newChat")}
+                      </Button>
+
+                      <label className="flex items-center gap-1.5">
+                        <span className="text-ink-3 font-medium">{t("chat.selectPeriod")}:</span>
+                        <select
+                          value={activeCycle}
+                          onChange={(e) => handleActiveCycleChange(e.target.value)}
+                          className="field py-1 px-2 text-xs h-7">
+                          {availableCycles.map((c) => (
                             <option key={c} value={c}>
                               {c} {c === currentCycle ? `(${t("chat.activeBadge")})` : ""}
                             </option>
                           ))}
-                      </select>
-                    </label>
+                        </select>
+                      </label>
+
+                      <label className="flex items-center gap-1.5">
+                        <span className="text-ink-3 font-medium">{t("chat.comparePeriod")}:</span>
+                        <select
+                          value={compareCycle}
+                          onChange={(e) => handleCompareCycleChange(e.target.value)}
+                          className="field py-1 px-2 text-xs h-7">
+                          <option value="">{t("chat.noCompare")}</option>
+                          {availableCycles
+                            .filter((c) => c !== activeCycle)
+                            .map((c) => (
+                              <option key={c} value={c}>
+                                {c} {c === currentCycle ? `(${t("chat.activeBadge")})` : ""}
+                              </option>
+                            ))}
+                        </select>
+                      </label>
+                    </div>
+
+                    <div className="flex items-center gap-2 text-[11px] text-ink-3 font-medium">
+                      {activeBounds && (
+                        <span>
+                          {formatDisplayDate(activeBounds.startDate, lang)} – {formatDisplayDate(activeBounds.endDate, lang)}
+                        </span>
+                      )}
+                    </div>
                   </div>
 
-                  <div className="flex items-center gap-2 text-[11px] text-ink-3 font-medium">
-                    {activeBounds && (
-                      <span>
-                        {formatDisplayDate(activeBounds.startDate, lang)} – {formatDisplayDate(activeBounds.endDate, lang)}
+                  {cooldownSeconds > 0 && (
+                    <div className="border-b border-warning/30 bg-warning/10 px-4 py-2 text-xs font-medium text-warning flex items-center justify-between">
+                      <span>{t("chat.quotaExceeded")}</span>
+                      <span className="font-mono">
+                        {t("chat.cooldownTimer", { seconds: cooldownSeconds })}
                       </span>
-                    )}
-                    {messages.length > 1 && (
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setClearConfirmOpen(true)}
-                        className="h-6 px-2 text-[10px] text-ink-3 hover:text-danger">
-                        {t("chat.clearHistory")}
-                      </Button>
-                    )}
-                  </div>
-                </div>
-
-                {cooldownSeconds > 0 && (
-                  <div className="border-b border-warning/30 bg-warning/10 px-4 py-2 text-xs font-medium text-warning flex items-center justify-between">
-                    <span>{t("chat.quotaExceeded")}</span>
-                    <span className="font-mono">
-                      {t("chat.cooldownTimer", { seconds: cooldownSeconds })}
-                    </span>
-                  </div>
-                )}
-
-                <div className="flex-1 space-y-4 overflow-y-auto p-4 text-sm">
-                  {historyLoading && (
-                    <div className="space-y-2 p-2">
-                      <Skeleton className="h-8 w-2/3" />
-                      <Skeleton className="ml-auto h-8 w-1/2" />
                     </div>
                   )}
-                  {messages.map((m, idx) => (
+
+                  <div className="flex-1 space-y-4 overflow-y-auto p-4 text-sm">
+                    {historyLoading && (
+                      <div className="space-y-2 p-2">
+                        <Skeleton className="h-8 w-2/3" />
+                        <Skeleton className="ml-auto h-8 w-1/2" />
+                      </div>
+                    )}
+                    {activeSessionMessages.map((m, idx) => (
                     <div
                       key={idx}
                       className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
@@ -649,35 +889,132 @@ export default function ChatPage() {
                   </form>
                 </div>
               </div>
-            )}
-          </div>
-        </main>
-      </div>
-
-      <Modal
-        open={clearConfirmOpen}
-        onClose={() => setClearConfirmOpen(false)}
-        title={t("chat.clearHistoryConfirm")}
-        footer={
-          <>
-            <Button
-              variant="ghost"
-              onClick={() => setClearConfirmOpen(false)}
-              disabled={clearing}>
-              {t("common.cancel")}
-            </Button>
-            <Button
-              variant="danger"
-              loading={clearing}
-              onClick={handleClearHistory}>
-              {t("common.delete")}
-            </Button>
-          </>
-        }>
-        {t("chat.clearHistoryDesc")}
-      </Modal>
-
-      <BottomNav />
+            </div>
+          )}
+        </div>
+      </main>
     </div>
-  );
+
+    <Modal
+      open={clearConfirmOpen}
+      onClose={() => setClearConfirmOpen(false)}
+      title={t("chat.clearHistoryConfirm")}
+      footer={
+        <>
+          <Button
+            variant="ghost"
+            onClick={() => setClearConfirmOpen(false)}
+            disabled={clearing}>
+            {t("common.cancel")}
+          </Button>
+          <Button
+            variant="danger"
+            loading={clearing}
+            onClick={handleClearHistory}>
+            {t("common.delete")}
+          </Button>
+        </>
+      }>
+      {t("chat.clearHistoryDesc")}
+    </Modal>
+
+    <Modal
+      open={Boolean(deletingSession)}
+      onClose={() => setDeletingSession(null)}
+      title={t("chat.deleteSessionConfirm")}
+      footer={
+        <>
+          <Button
+            variant="ghost"
+            onClick={() => setDeletingSession(null)}
+            disabled={deletingSessionLoading}>
+            {t("common.cancel")}
+          </Button>
+          <Button
+            variant="danger"
+            loading={deletingSessionLoading}
+            onClick={handleDeleteSession}>
+            {t("common.delete")}
+          </Button>
+        </>
+      }>
+      {t("chat.deleteSessionDesc")}
+    </Modal>
+
+    <Modal
+      open={mobileDrawerOpen}
+      onClose={() => setMobileDrawerOpen(false)}
+      title={t("chat.sessions")}
+      maxWidth="max-w-sm">
+      <div className="space-y-3">
+        <Button
+          type="button"
+          variant="secondary"
+          size="sm"
+          onClick={handleNewChat}
+          className="w-full justify-center gap-1.5 text-xs font-semibold py-2">
+          <span>+</span> {t("chat.newChat")}
+        </Button>
+        <div className="max-h-64 overflow-y-auto space-y-1 py-1">
+          {sessions.length === 0 ? (
+            <p className="p-3 text-center text-xs text-ink-3">
+              {t("chat.noSessions")}
+            </p>
+          ) : (
+            sessions.map((sess) => (
+              <div
+                key={sess.id}
+                onClick={() => {
+                  setActiveSessionId(sess.id);
+                  setMobileDrawerOpen(false);
+                }}
+                role="button"
+                tabIndex={0}
+                className={`flex items-center justify-between rounded-btn p-2 text-xs transition-colors cursor-pointer ${
+                  sess.id === activeSessionId
+                    ? "bg-paper-2 border border-rule font-medium text-ink"
+                    : "text-ink-2 hover:bg-paper-2"
+                }`}>
+                <div className="min-w-0 flex-1 pr-1.5">
+                  <p className="truncate">{sess.title}</p>
+                  {sess.lastTimestamp && (
+                    <p className="text-[10px] text-ink-3">
+                      {formatTransactionTime(sess.lastTimestamp, timeZone, lang)}
+                    </p>
+                  )}
+                </div>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setDeletingSession(sess);
+                  }}
+                  title={t("chat.deleteSession")}
+                  className="p-1 text-ink-3 hover:text-danger rounded">
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </button>
+              </div>
+            ))
+          )}
+        </div>
+        {sessions.length > 0 && (
+          <div className="pt-2 border-t border-rule text-center">
+            <button
+              type="button"
+              onClick={() => {
+                setClearConfirmOpen(true);
+              }}
+              className="text-xs text-ink-3 hover:text-danger">
+              {t("chat.clearHistory")}
+            </button>
+          </div>
+        )}
+      </div>
+    </Modal>
+
+    <BottomNav />
+  </div>
+);
 }

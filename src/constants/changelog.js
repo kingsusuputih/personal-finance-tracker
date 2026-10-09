@@ -1,5 +1,79 @@
 export const changelogEntries = [
   {
+    version: "v1.5.0",
+    date: "2026-10-10",
+    en: {
+      title: "Multi-Session AI Chat in Google Sheets, Ledger Search & Pagination, Modal Edit, Day Progress & Founder Story",
+      sections: [
+        {
+          type: "added",
+          label: "Added",
+          items: [
+            "Multi-session AI chat history persisted directly in user's own Google Drive spreadsheet (ChatHistory tab), ensuring complete privacy with zero server-side chat storage.",
+            "Desktop session sidebar and mobile session drawer with '+ New Chat' button, auto-titling from opening prompt, and individual session deletion.",
+            "Active payday cycle day progress indicator on Dashboard and Recap (Day X of Y · Z days left) respecting user cutoff day and time zone.",
+            "Real-time multi-field transaction search and 15-item pagination controls on the Ledger table.",
+            "Popup modal dialog for editing expenses, keeping the primary dual-entry creation form clean.",
+            "Authentic founder's backstory section by @susuputih on the landing page sharing personal motivation, overcoming perfectionism, and mindful frugal living.",
+          ],
+        },
+        {
+          type: "changed",
+          label: "Changed",
+          items: [
+            "Idempotent Google Sheets schema auto-provisions the 8-column ChatHistory tab upon connection.",
+            "Updated Privacy Policy and Terms of Service disclosures regarding private Google Drive chat history storage.",
+          ],
+        },
+      ],
+      items: [
+        "Multi-session AI chat history persisted directly in user's own Google Drive spreadsheet (ChatHistory tab), ensuring complete privacy with zero server-side chat storage.",
+        "Desktop session sidebar and mobile session drawer with '+ New Chat' button, auto-titling from opening prompt, and individual session deletion.",
+        "Active payday cycle day progress indicator on Dashboard and Recap (Day X of Y · Z days left) respecting user cutoff day and time zone.",
+        "Real-time multi-field transaction search and 15-item pagination controls on the Ledger table.",
+        "Popup modal dialog for editing expenses, keeping the primary dual-entry creation form clean.",
+        "Authentic founder's backstory section by @susuputih on the landing page sharing personal motivation, overcoming perfectionism, and mindful frugal living.",
+        "Idempotent Google Sheets schema auto-provisions the 8-column ChatHistory tab upon connection.",
+        "Updated Privacy Policy and Terms of Service disclosures regarding private Google Drive chat history storage.",
+      ],
+    },
+    id: {
+      title: "Riwayat Multi-Sesi Asisten AI di Google Sheets, Pencarian & Pagination Buku Besar, Modal Edit, Hari Berjalan & Cerita Pembuat",
+      sections: [
+        {
+          type: "added",
+          label: "Fitur Baru (Added)",
+          items: [
+            "Riwayat percakapan multi-sesi asisten AI tersimpan langsung di spreadsheet Google Drive pribadi pengguna (tab ChatHistory), menjaga privasi penuh tanpa penyimpanan chat di server.",
+            "Sidebar sesi di desktop dan drawer sesi di mobile dengan tombol '+ Chat Baru', penamaan judul sesi otomatis, dan opsi hapus per sesi.",
+            "Indikator hari berjalan pada Dasbor dan Rekap (Hari ke-X dari Y · Sisa Z hari) sesuai tanggal cutoff dan zona waktu.",
+            "Pencarian transaksi instan dan pagination (15 data per halaman) di tabel Buku Besar.",
+            "Popup modal untuk mengubah transaksi, menjaga formulir input utama tetap rapi.",
+            "Bagian cerita latar belakang founder oleh @susuputih di Landing Page mengenai pengalaman gaji bulanan, mengatasi perfeksionisme, dan frugal living.",
+          ],
+        },
+        {
+          type: "changed",
+          label: "Perubahan (Changed)",
+          items: [
+            "Skema Google Sheets otomatis membuat dan memigrasikan tab ChatHistory dengan 8 kolom saat login.",
+            "Pembaruan Kebijakan Privasi dan Ketentuan Layanan terkait penyimpanan histori chat di Google Drive pribadi.",
+          ],
+        },
+      ],
+      items: [
+        "Riwayat percakapan multi-sesi asisten AI tersimpan langsung di spreadsheet Google Drive pribadi pengguna (tab ChatHistory), menjaga privasi penuh tanpa penyimpanan chat di server.",
+        "Sidebar sesi di desktop dan drawer sesi di mobile dengan tombol '+ Chat Baru', penamaan judul sesi otomatis, dan opsi hapus per sesi.",
+        "Indikator hari berjalan pada Dasbor dan Rekap (Hari ke-X dari Y · Sisa Z hari) sesuai tanggal cutoff dan zona waktu.",
+        "Pencarian transaksi instan dan pagination (15 data per halaman) di tabel Buku Besar.",
+        "Popup modal untuk mengubah transaksi, menjaga formulir input utama tetap rapi.",
+        "Bagian cerita latar belakang founder oleh @susuputih di Landing Page mengenai pengalaman gaji bulanan, mengatasi perfeksionisme, dan frugal living.",
+        "Skema Google Sheets otomatis membuat dan memigrasikan tab ChatHistory dengan 8 kolom saat login.",
+        "Pembaruan Kebijakan Privasi dan Ketentuan Layanan terkait penyimpanan histori chat di Google Drive pribadi.",
+      ],
+    },
+  },
+  {
     version: "v1.4.2",
     date: "2026-10-04",
     en: {

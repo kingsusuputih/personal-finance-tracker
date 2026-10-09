@@ -46,6 +46,11 @@ export default function LandingPage() {
                 {t("landing.navHowItWorks")}
               </a>
               <a
+                href="#cerita"
+                className="text-sm font-medium text-ink-2 hover:text-accent transition-colors">
+                {t("landing.storyKicker")}
+              </a>
+              <a
                 href="#privasi"
                 className="text-sm font-medium text-ink-2 hover:text-accent transition-colors">
                 {t("landing.navTransparency")}
@@ -76,6 +81,9 @@ export default function LandingPage() {
           </a>
           <a href="#cara-kerja" className="hover:text-accent transition-colors">
             {t("landing.navHowItWorks")}
+          </a>
+          <a href="#cerita" className="hover:text-accent transition-colors">
+            {t("landing.storyKicker")}
           </a>
           <a href="#privasi" className="hover:text-accent transition-colors">
             {t("landing.navTransparency")}
@@ -433,7 +441,7 @@ export default function LandingPage() {
                 </p>
               </div>
 
-              <div className="p-6 sm:p-8 text-left hover:bg-paper-2/30 transition-colors">
+                <div className="p-6 sm:p-8 text-left hover:bg-paper-2/30 transition-colors">
                 <div className="w-9 h-9 rounded-btn bg-accent-soft text-accent font-bold flex items-center justify-center text-sm mb-4">
                   3
                 </div>
@@ -443,6 +451,53 @@ export default function LandingPage() {
                 <p className="text-xs sm:text-sm leading-relaxed text-ink-3">
                   {t("landing.howStep3Body")}
                 </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Founder Story Section */}
+        <section id="cerita" className="py-14 sm:py-20 border-b border-rule bg-paper-2/20">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6">
+            <div className="rounded-card border border-rule bg-paper p-6 sm:p-10 shadow-sm relative overflow-hidden">
+              <div className="mb-5 flex flex-wrap items-center justify-between gap-2">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-btn bg-accent-soft border border-accent/20 text-xs font-semibold text-accent">
+                  <span className="inline-block h-1.5 w-1.5 rounded-full bg-accent" />
+                  {t("landing.storyKicker")}
+                </span>
+                <span className="kbd text-[11px] text-ink-3 font-mono">
+                  by @susuputih
+                </span>
+              </div>
+
+              <h2 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-ink mb-2">
+                {t("landing.storyTitle")}
+              </h2>
+              <p className="text-sm sm:text-base text-ink-3 mb-6">
+                {t("landing.storySubtitle")}
+              </p>
+
+              <div className="space-y-4 text-sm sm:text-base leading-relaxed text-ink-2 border-t border-rule pt-6">
+                <p>{t("landing.storyP1")}</p>
+                <p>{t("landing.storyP2")}</p>
+                <p>{t("landing.storyP3")}</p>
+              </div>
+
+              <div className="mt-8 pt-6 border-t border-rule flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-full bg-accent text-accent-ink font-bold flex items-center justify-center text-sm shadow-sm font-brand">
+                    SP
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-sm text-ink">{t("landing.storyAuthor")}</h3>
+                    <p className="text-xs text-ink-3">{t("landing.storyRole")}</p>
+                  </div>
+                </div>
+                <Link
+                  to="/login"
+                  className="inline-flex items-center justify-center rounded-btn bg-paper hover:bg-paper-2 text-ink border border-rule-2 font-semibold px-4 h-9 text-xs sm:text-sm shadow-sm transition-all hover:-translate-y-px">
+                  {t("landing.primaryCta")} →
+                </Link>
               </div>
             </div>
           </div>

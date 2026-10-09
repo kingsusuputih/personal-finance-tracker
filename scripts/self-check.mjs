@@ -154,15 +154,17 @@ assert.equal(addIncRow[2], 250000);
 assert.equal(addIncRow[3], oldCreatedAt);
 assert.equal(addIncRow[4], "inc-uuid-456");
 
-const chatRow = serializeChatRow("assistant", "Pengeluaran dicatat", "2026-09", { type: "expense" }, oldCreatedAt, "chat-1");
-assert.deepEqual(chatRow, ["chat-1", oldCreatedAt, "2026-09", "assistant", "Pengeluaran dicatat", '{"type":"expense"}']);
+const chatRow = serializeChatRow("sess-1", "Tanya pengeluaran", "assistant", "Pengeluaran dicatat", "2026-09", { type: "expense" }, oldCreatedAt, "chat-1");
+assert.deepEqual(chatRow, ["chat-1", "sess-1", "Tanya pengeluaran", oldCreatedAt, "2026-09", "assistant", "Pengeluaran dicatat", '{"type":"expense"}']);
 
 const rawChatData = [
   CHAT_HISTORY_HEADERS,
-  ["chat-1", oldCreatedAt, "2026-09", "assistant", "Pengeluaran dicatat", '{"type":"expense"}'],
+  ["chat-1", "sess-1", "Tanya pengeluaran", oldCreatedAt, "2026-09", "assistant", "Pengeluaran dicatat", '{"type":"expense"}'],
 ];
 const parsedChat = deserializeRows(CHAT_HISTORY_HEADERS, rawChatData);
 assert.equal(parsedChat.length, 1);
+assert.equal(parsedChat[0].session_id, "sess-1");
+assert.equal(parsedChat[0].session_title, "Tanya pengeluaran");
 assert.equal(parsedChat[0].role, "assistant");
 assert.equal(parsedChat[0].message, "Pengeluaran dicatat");
 assert.equal(parsedChat[0].proposal_json, '{"type":"expense"}');

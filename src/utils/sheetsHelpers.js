@@ -63,6 +63,8 @@ export function serializeBudgetRow(
 }
 
 export function serializeChatRow(
+  sessionId,
+  sessionTitle,
   role,
   message,
   cycleKey = "",
@@ -80,6 +82,8 @@ export function serializeChatRow(
   }
   return [
     id || (typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : String(Date.now())),
+    sessionId || "",
+    sessionTitle || "",
     timestamp || new Date().toISOString(),
     cycleKey || "",
     role || "user",

@@ -1,7 +1,7 @@
 # PRD: Personal Finance Tracker
-**Version:** 1.4.0
-**Status:** Implemented (Recap, Additional Income, Smart Grouping, AI Chat, Custom Budgets, Web Push, PWA)
-**Last Updated:** 2026-09-27
+**Version:** 1.5.0
+**Status:** Implemented (Recap, Additional Income, Smart Grouping, Multi-Session AI Chat in Google Sheets, Custom Budgets, Day Progress, Ledger Search & Pagination, Modal Edit, Web Push, PWA)
+**Last Updated:** 2026-10-10
 **Prepared for:** AI Agent CLI Execution
 
 ---
@@ -241,66 +241,70 @@ VITE_GOOGLE_CLIENT_ID=xxxxxxxxxxxx.apps.googleusercontent.com
 
 ---
 
-### Feature 4: Ledger Module — Expense Input
+### Feature 4: Ledger Module — Expense Input & Transaction Management
 
-**User Story:** As a user, I want to record my daily/monthly expenses by category.
+**User Story:** As a user, I want to record my daily/monthly expenses by category, search through transaction history, navigate pages, and edit transactions via a clean popup modal.
 
 **Acceptance Criteria:**
-- [ ] Form fields:
+- [x] Form fields:
   - Date (date picker, defaults to today)
   - Category (dropdown: Needs, Lifestyle, Investment)
   - Description (text, optional)
   - Amount (numeric, in IDR)
-- [ ] On submit: append a row to the `Expenses` sheet
-- [ ] Validation: amount > 0, category required
-- [ ] Show success toast on save
-- [ ] Transaction table below the form shows the last 30 entries
+  - Custom Group Override (optional, manual grouping)
+- [x] On submit: append a row to the `Expenses` sheet
+- [x] Validation: amount > 0, category required
+- [x] Show success toast on save
+- [x] Real-time client-side transaction search filtering across description, category, group, date, and amount
+- [x] Transaction table pagination (15 records per page) with previous/next navigation and record count indicators
+- [x] Editing a transaction opens a focused Modal dialog (`Modal.jsx`), leaving the main creation workspace clean and uncluttered
 
 **Sheet written to:** `Expenses` (see Data Schema)
-**Components:** `ExpenseForm.jsx`, `TransactionTable.jsx`, `LedgerPage.jsx`
+**Components:** `ExpenseForm.jsx`, `TransactionTable.jsx`, `LedgerPage.jsx`, `Modal.jsx`
 
 ---
 
 ### Feature 5: Financial Formula Calculator & Dashboard
 
-**User Story:** As a user, I want to see a clear breakdown of how my income should be allocated and what my financial targets are.
+**User Story:** As a user, I want to see a clear breakdown of how my income should be allocated, my day progress in the active payday cycle, and what my financial targets are.
 
 **Acceptance Criteria:**
-- [ ] Dashboard fetches current month's income and all-time expenses from Sheets
-- [ ] Display **Allocation Cards** (based on monthly income):
+- [x] Dashboard fetches current month's income and all-time expenses from Sheets
+- [x] Active payday cycle day progress indicator (`getCycleDayProgress`) showing current day of cycle and days remaining
+- [x] Display **Allocation Cards** (based on monthly income):
   - Needs: 50% of income → show target amount + actual spending in "Needs" category
   - Investments: 30% of income → show target amount + actual spending in "Investment" category
   - Lifestyle: 20% of income → show target amount + actual spending in "Lifestyle" category
-- [ ] Display **Fund Target Cards** (based on total monthly expenses):
+- [x] Display **Fund Target Cards** (based on total monthly expenses):
   - Emergency Fund Target = 6 × Total Monthly Expenses
   - Retirement Fund Target = 300 × Total Monthly Expenses
-- [ ] Display **Spending Chart**: Apache ECharts donut (pie) chart showing expense breakdown by category for current month
-- [ ] All currency displayed in IDR format (`Rp 1.000.000`)
+- [x] Display **Spending Chart**: Apache ECharts donut (pie) chart showing expense breakdown by category for current month
+- [x] All currency displayed in IDR format (`Rp 1.000.000`)
 
 **Components:** `DashboardPage.jsx`, `AllocationCard.jsx`, `FundTargetCard.jsx`, `SpendingChart.jsx`
-**Hook:** `useFinanceCalc.js`
+**Hook:** `useFinanceCalc.js`, `dateTime.js`
 
 ---
 
 ### Feature 6: Historical Recap & Savings Tracker
 
-**User Story:** As a user, I want to review past payday cycles to see if my spending exceeded income (surplus vs deficit), how much money remains available to save/invest, and track total accumulated money placed in investments.
+**User Story:** As a user, I want to review past payday cycles to see if my spending exceeded income (surplus vs deficit), how much money remains available to save/invest, track cycle completion, and monitor total accumulated money placed in investments.
 
 **Acceptance Criteria:**
-- [ ] Dedicated `/recap` page accessible from sidebar and bottom navigation
-- [ ] Cycle selector allowing users to switch between historical and current payday cycles
-- [ ] Displays date bounds (e.g. 25 Aug – 24 Sep) and indicates if it is the active cycle
-- [ ] Calculates:
+- [x] Dedicated `/recap` page accessible from sidebar and bottom navigation
+- [x] Cycle selector allowing users to switch between historical and current payday cycles
+- [x] Displays date bounds (e.g. 25 Aug – 24 Sep) and indicates if it is the active cycle along with cycle day progress / completed badge
+- [x] Calculates:
   - Total Income: Main Salary (latest entry for the cycle) + Additional Incomes in cycle
   - Consumption Expenses: Needs + Lifestyle expenses
   - Period Investment: Total `Investment` category contributions during cycle
   - Surplus/Deficit Before Investment: Total Income − Consumption Expenses
   - Remaining After Investment: Total Income − Consumption Expenses − Investment Expenses
   - Cumulative Saved: Total sum of all recorded `Investment` entries up to the cycle cutoff
-- [ ] Does not double-count investment expenses as consumption
+- [x] Does not double-count investment expenses as consumption
 
 **Components:** `RecapPage.jsx`
-**Hook:** `useFinanceCalc.js`, `financeFormulas.js`
+**Hook:** `useFinanceCalc.js`, `financeFormulas.js`, `dateTime.js`
 
 ---
 
@@ -320,22 +324,25 @@ VITE_GOOGLE_CLIENT_ID=xxxxxxxxxxxx.apps.googleusercontent.com
 
 ---
 
-### Feature 8: AI Financial Assistant (Gemini Free Tier)
+### Feature 8: AI Financial Assistant (Gemini Free Tier & Google Sheets Multi-Session Chat History)
 
-**User Story:** As a user, I want an intelligent chatbot inside the member area to analyze my financial numbers and draft new transactions with explicit confirmation.
+**User Story:** As a user, I want an intelligent chatbot inside the member area to analyze my financial numbers, draft new transactions with explicit confirmation, and maintain persistent multi-session chat history saved exclusively in my own Google Sheet for total privacy.
 
 **Acceptance Criteria:**
 - [x] Dedicated `/chat` route with mobile & desktop navigation links
+- [x] Multi-session chat management: Desktop session sidebar and mobile session drawer with `+ Chat Baru` button
+- [x] Auto-titling of chat sessions based on the user's opening prompt
+- [x] Persistent chat history stored directly in user's own Google Sheet tab (`ChatHistory`) with 8 columns; zero chat transcripts saved on servers
+- [x] Ability to switch between previous conversations, delete specific chat sessions, or clear all history with atomic row deletion
 - [x] Explicit consent dialog previewing financial metrics before sending data to AI
 - [x] Client calls Supabase Edge Function (`/api/chat`) with Google OAuth bearer token
 - [x] Server validates token audience and expiry before calling Google Gemini API (gemini-3.5-flash-lite / configurable GEMINI_MODEL)
 - [x] Displays transaction proposals as editable cards; user must explicitly click "Confirm & save" to write to Google Sheets
 - [x] Rate limit & quota guard (429 handling) with countdown timer when retry headers are present; no paid fallback
-- [x] Ephemeral in-memory chat session; no chat transcripts or credentials saved to server
 - [x] Multi-period historical analysis & comparison via period selector dropdowns
 - [x] Rich markdown bold text rendering (`**bold**`) in assistant message bubbles
 
-**Components:** `ChatPage.jsx`, `api/chat.js`, `utils/chatContext.js`, `utils/chatFormatting.js`
+**Components:** `ChatPage.jsx`, `api/chat.js`, `api/googleSheets.js`, `utils/chatContext.js`, `utils/chatFormatting.js`
 **Backend:** `supabase/functions/chat/index.ts`
 
 ---
@@ -371,7 +378,7 @@ VITE_GOOGLE_CLIENT_ID=xxxxxxxxxxxx.apps.googleusercontent.com
 
 ## 8. Data Schema (Google Sheets)
 
-The spreadsheet `Finance_Tracker_Data` contains **5 sheets (tabs)**:
+The spreadsheet `Finance_Tracker_Data` contains **6 sheets (tabs)**:
 
 ### Sheet 1: `Income`
 
@@ -424,10 +431,24 @@ The spreadsheet `Finance_Tracker_Data` contains **5 sheets (tabs)**:
 | G | `amount` | Number | Limit in IDR |
 | H | `created_at` | String | ISO 8601 timestamp |
 
+### Sheet 6: `ChatHistory`
+
+| Column | Header | Type | Notes |
+|---|---|---|---|
+| A | `id` | String | Unique message ID / UUID |
+| B | `session_id` | String | Conversation session UUID |
+| C | `session_title` | String | Auto-generated session title from prompt |
+| D | `timestamp` | String | ISO 8601 UTC timestamp |
+| E | `cycle_key` | String | Associated payday cycle key (e.g. `2026-09`) |
+| F | `role` | String | `user` or `assistant` |
+| G | `message` | String | Message text |
+| H | `proposal_json` | String | JSON string of proposed transaction (or empty) |
+
 ### Initialization & Migration Logic
 When connecting to a spreadsheet:
-1. Ensure all 5 sheets (`Income`, `AdditionalIncome`, `Expenses`, `Settings`, `Budgets`) exist via idempotent `ensureSchemaSheets`.
+1. Ensure all 6 sheets (`Income`, `AdditionalIncome`, `Expenses`, `Settings`, `Budgets`, `ChatHistory`) exist via idempotent `ensureSchemaSheets`.
 2. Existing 5-column `Expenses` rows remain compatible; new columns `group_override` and `id` are appended gracefully.
+3. Chat history is initialized with 8 columns; older chat rows without `session_id` are gracefully grouped under default session.
 
 ---
 
@@ -492,12 +513,12 @@ function formatIDR(amount) {
 ### Pages & Routes
 | Route | Component | Guard | Description |
 |---|---|---|---|
-| `/` | `LandingPage.jsx` | Public | Conversion-optimized split hero, realistic sample data visual preview, bento features, FAQ, and privacy clarity |
+| `/` | `LandingPage.jsx` | Public | Conversion-optimized split hero, realistic sample data visual preview, founder background story by @susuputih, bento features, FAQ, and privacy clarity |
 | `/login` | `LoginPage.jsx` | Guest only | Google OAuth authentication, spreadsheet preparation context |
-| `/dashboard` | `DashboardPage.jsx` | Require auth | Financial overview, 50/30/20 cards, spending charts, inline first-transaction onboarding for empty accounts |
-| `/recap` | `RecapPage.jsx` | Require auth | Monthly and cycle history recap, custom budget controls |
-| `/ledger` | `LedgerPage.jsx` | Require auth | Monthly income and expense transaction logs |
-| `/chat` | `ChatPage.jsx` | Require auth | AI financial assistant with multi-period context |
+| `/dashboard` | `DashboardPage.jsx` | Require auth | Financial overview, active cycle day progress, 50/30/20 cards, spending charts, inline first-transaction onboarding for empty accounts |
+| `/recap` | `RecapPage.jsx` | Require auth | Monthly and cycle history recap, cycle day progress / completion status, custom budget controls |
+| `/ledger` | `LedgerPage.jsx` | Require auth | Monthly income and expense transaction logs with multi-field search, pagination, and modal popup edit |
+| `/chat` | `ChatPage.jsx` | Require auth | AI financial assistant with multi-session chat history saved directly to Google Sheets |
 | `/settings` | `SettingsPage.jsx` | Require auth | Timezone, cutoff day, and community registry preferences |
 | `/privacy` | `PrivacyPolicyPage.jsx` | Public | Data processing disclosures (Google Drive, Supabase, Gemini AI, Web Push) |
 | `/terms` | `TermsOfServicePage.jsx` | Public | Terms and conditions of service |

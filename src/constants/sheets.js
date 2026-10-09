@@ -38,6 +38,8 @@ export const BUDGET_HEADERS = [
 ];
 export const CHAT_HISTORY_HEADERS = [
   "id",
+  "session_id",
+  "session_title",
   "timestamp",
   "cycle_key",
   "role",

@@ -52,7 +52,7 @@ export async function ensureSchemaSheets(accessToken, spreadsheetId) {
   if (!hasChatHistory) {
     requests.push({ addSheet: { properties: { title: SHEETS.CHAT_HISTORY } } });
     valueData.push({
-      range: `'${SHEETS.CHAT_HISTORY}'!A1:F1`,
+      range: `'${SHEETS.CHAT_HISTORY}'!A1:H1`,
       values: [CHAT_HISTORY_HEADERS],
     });
   }
@@ -176,6 +176,41 @@ export async function deleteRow(
   if (!res.ok) throw new Error("Failed to delete row");
   return res.json();
 }
+
+export async function deleteRows(
+  accessToken,
+  spreadsheetId,
+  sheetName,
+  rowNumbers,
+) {
+  if (!rowNumbers || rowNumbers.length === 0) return null;
+  const sheetId = await resolveSheetId(accessToken, spreadsheetId, sheetName);
+  const sortedDesc = [...new Set(rowNumbers.map(Number))]
+    .filter((n) => Number.isInteger(n) && n >= 2)
+    .sort((a, b) => b - a);
+  if (sortedDesc.length === 0) return null;
+
+  const requests = sortedDesc.map((rowNumber) => ({
+    deleteDimension: {
+      range: {
+        sheetId,
+        dimension: "ROWS",
+        startIndex: rowNumber - 1,
+        endIndex: rowNumber,
+      },
+    },
+  }));
+
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}:batchUpdate`;
+  const res = await authedRequest(accessToken, url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ requests }),
+  });
+  if (!res.ok) throw new Error("Failed to delete rows");
+  return res.json();
+}
+
 
 export async function clearSheetRows(accessToken, spreadsheetId, sheetName) {
   const range = `'${sheetName}'!A2:Z`;
