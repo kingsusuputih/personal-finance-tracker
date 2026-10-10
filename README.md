@@ -10,7 +10,8 @@ Finance Tracker adalah aplikasi web untuk mencatat pemasukan dan pengeluaran ser
 
 ## Fitur
 
-- Landing page modern berbasis prinsip Taste Skill dengan proposisi nilai jelas, pratinjau produk visual nyata, bento layout, dan FAQ interaktif
+- Landing page modern responsif dengan mockup antarmuka fidelitas tinggi, dock preferensi melayang (tema & bahasa) dengan animasi expand saat hover, tombol dukungan proyek melayang, variasi latar belakang antar-section, dan animasi scroll halus antar-navigasi
+- Sistem notifikasi terpusat di atas tengah: notifikasi komunitas bergabung di landing page & halaman login, serta toast aksi (simpan, edit, hapus) di area member
 - Onboarding pencatatan transaksi pertama langsung di dashboard kosong tanpa interupsi
 - Masuk dengan Google OAuth 2.0
 - Spreadsheet otomatis dibuat di Google Drive Anda (`drive.file` scope, hanya file yang dibuat aplikasi)
@@ -20,7 +21,7 @@ Finance Tracker adalah aplikasi web untuk mencatat pemasukan dan pengeluaran ser
 - Pencatatan budget custom per kelompok pengeluaran dan kategori untuk setiap siklus gajian
 - Notifikasi Web Push di HP saat belanja mendekati (80%) atau melebihi batas budget
 - Progressive Web App (PWA) yang dapat diinstall ke layar utama (Home Screen)
-- Asisten Keuangan AI pintar (`/chat`) bertenaga Google Gemini dengan dukungan multi-periode dan perbandingan antarperiode
+- Asisten Keuangan AI pintar (`/chat`) bertenaga Google Gemini dengan multi-sesi percakapan langsung di Google Sheets
 - Siklus tanggal gajian kustom (1–28, default 25) dan deteksi/pilihan zona waktu IANA
 - Fitur privasi untuk menyembunyikan nominal pemasukan dan pengeluaran di dasbor
 - Alokasi 50 / 30 / 20 (Kebutuhan 50%, Investasi 30%, Gaya Hidup 20%)

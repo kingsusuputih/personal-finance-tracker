@@ -1,6 +1,6 @@
 # PRD: Personal Finance Tracker
-**Version:** 1.5.0
-**Status:** Implemented (Recap, Additional Income, Smart Grouping, Multi-Session AI Chat in Google Sheets, Custom Budgets, Day Progress, Ledger Search & Pagination, Modal Edit, Web Push, PWA)
+**Version:** 1.6.0
+**Status:** Implemented (Recap, Additional Income, Smart Grouping, Multi-Session AI Chat in Google Sheets, Custom Budgets, Day Progress, Ledger Search & Pagination, Modal Edit, Web Push, PWA, Modern Landing Redesign, Centered Toast System)
 **Last Updated:** 2026-10-10
 **Prepared for:** AI Agent CLI Execution
 
@@ -513,7 +513,7 @@ function formatIDR(amount) {
 ### Pages & Routes
 | Route | Component | Guard | Description |
 |---|---|---|---|
-| `/` | `LandingPage.jsx` | Public | Conversion-optimized split hero, realistic sample data visual preview, founder background story by @susuputih, bento features, FAQ, and privacy clarity |
+| `/` | `LandingPage.jsx` | Public | Conversion-optimized responsive SaaS landing page with high-fidelity dashboard mockup, floating expanding theme/lang dock, floating support widget, smooth anchor scrolling, alternating background tones, founder backstory (@susuputih), real feature matrix, FAQ, and privacy clarity |
 | `/login` | `LoginPage.jsx` | Guest only | Google OAuth authentication, spreadsheet preparation context |
 | `/dashboard` | `DashboardPage.jsx` | Require auth | Financial overview, active cycle day progress, 50/30/20 cards, spending charts, inline first-transaction onboarding for empty accounts |
 | `/recap` | `RecapPage.jsx` | Require auth | Monthly and cycle history recap, cycle day progress / completion status, custom budget controls |
@@ -537,8 +537,9 @@ function formatIDR(amount) {
 - Skeleton loaders for dashboard cards while fetching Sheets data
 - Spinner on form submit buttons
 
-### Error States
-- Toast notification for API errors (Sheets write failure, auth failure)
+### Notification & Feedback States
+- Top-centered toast notifications (`Toast.jsx`) for API successes, warnings, and errors (Sheets write failure, auth failure) with slide-down animation
+- Top-centered community join notifications (`SocialProof.jsx`) on landing and login pages
 - Empty state illustration on TransactionTable when no data
 
 ---
@@ -733,4 +734,4 @@ cp .env.example .env.local
 
 ---
 
-*End of PRD — Finance Tracker v1.4.1*
+*End of PRD — Finance Tracker v1.6.0*

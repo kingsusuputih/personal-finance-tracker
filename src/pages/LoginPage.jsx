@@ -5,6 +5,7 @@ import { Card } from "../components/ui/Card.jsx";
 import { Badge } from "../components/ui/Badge.jsx";
 import { LangToggle } from "../components/ui/LangToggle.jsx";
 import { ThemeToggle } from "../components/ui/ThemeToggle.jsx";
+import { SocialProof } from "../components/landing/SocialProof.jsx";
 import { useT } from "../i18n/LanguageProvider.jsx";
 
 export default function LoginPage() {
@@ -14,7 +15,8 @@ export default function LoginPage() {
   if (isAuthed) return <Navigate to="/dashboard" replace />;
 
   return (
-    <main className="flex min-h-dvh flex-col items-center justify-center p-4 bg-paper text-ink font-body">
+    <main className="flex min-h-dvh flex-col items-center justify-center p-4 bg-paper text-ink font-body relative">
+      <SocialProof position="top-center" />
       <div className="absolute top-4 right-4 flex items-center gap-1.5">
         <ThemeToggle />
         <LangToggle />

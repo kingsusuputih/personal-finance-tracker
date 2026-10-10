@@ -61,12 +61,12 @@ export function ToastProvider({ children }) {
       <div
         role="status"
         aria-live="polite"
-        className="pointer-events-none fixed bottom-[calc(4.75rem+env(safe-area-inset-bottom,0px))] left-[max(1rem,env(safe-area-inset-left,0px))] right-[max(1rem,env(safe-area-inset-right,0px))] z-50 mx-auto flex w-auto max-w-sm flex-col gap-2 lg:bottom-[max(1rem,env(safe-area-inset-bottom,0px))] lg:left-auto lg:right-4 lg:mx-0 lg:w-full">
+        className="pointer-events-none fixed top-[max(1.25rem,env(safe-area-inset-top,0px))] left-1/2 -translate-x-1/2 z-[60] mx-auto flex w-full max-w-sm px-4 flex-col items-center gap-2">
         {toasts.map((t) => (
           <button
             key={t.id}
             onClick={() => dismiss(t.id)}
-            className={`pointer-events-auto flex items-start gap-2 rounded-card border border-rule-2 border-l-4 bg-paper px-4 py-3 text-left text-sm text-ink-2 shadow-lg transition-[transform,opacity] duration-(--dur-base) ease-out hover:-translate-y-px ${toneStyles[t.tone]}`}>
+            className={`pointer-events-auto flex w-full items-start gap-2 rounded-card border border-rule-2 border-l-4 bg-paper/95 dark:bg-paper/90 backdrop-blur-md px-4 py-3 text-left text-sm text-ink-2 shadow-xl transition-all duration-(--dur-base) ease-out hover:-translate-y-px animate-in fade-in slide-in-from-top-3 ${toneStyles[t.tone]}`}>
             <span className="kbd mt-0.5 shrink-0 text-[10px] text-ink-3">
               {toneLabels[t.tone]}
             </span>

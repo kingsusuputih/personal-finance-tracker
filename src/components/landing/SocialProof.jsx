@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { fetchCommunityProof } from "../../api/registry.js";
 import { useI18n } from "../../i18n/LanguageProvider.jsx";
 
-export function SocialProof({ onCountLoaded }) {
+export function SocialProof({ onCountLoaded, position = "top-center" }) {
   const { t } = useI18n();
   const [recentList, setRecentList] = useState([]);
   const [activeToast, setActiveToast] = useState(null);
@@ -65,12 +65,17 @@ export function SocialProof({ onCountLoaded }) {
 
   if (!activeToast) return null;
 
+  const positionClasses =
+    position === "bottom-left"
+      ? "bottom-5 left-5 slide-in-from-bottom-3"
+      : "top-[max(1.25rem,env(safe-area-inset-top,0px))] left-1/2 -translate-x-1/2 slide-in-from-top-3";
+
   return (
     <aside
       aria-live="polite"
       role="status"
-      className="pointer-events-auto fixed bottom-5 left-5 z-40 max-w-[calc(100vw-2.5rem)] sm:max-w-xs animate-in fade-in slide-in-from-bottom-3 duration-300">
-      <div className="flex items-center gap-3 rounded-card border border-rule bg-paper/95 backdrop-blur-md px-4 py-3 text-left shadow-lg">
+      className={`pointer-events-auto fixed z-[60] w-full max-w-[calc(100vw-2rem)] sm:max-w-sm animate-in fade-in duration-300 ${positionClasses}`}>
+      <div className="flex items-center gap-3 rounded-card border border-rule bg-paper/95 dark:bg-paper/90 backdrop-blur-md px-4 py-3 text-left shadow-xl">
         <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-btn bg-accent-soft text-xs font-bold text-accent">
           ✓
         </div>
@@ -86,7 +91,7 @@ export function SocialProof({ onCountLoaded }) {
           type="button"
           onClick={() => setActiveToast(null)}
           aria-label={t("common.cancel")}
-          className="shrink-0 rounded p-1 text-ink-3 transition-colors hover:text-ink hover:bg-paper-3">
+          className="shrink-0 rounded p-1 text-ink-3 transition-colors hover:text-ink hover:bg-paper-2">
           ✕
         </button>
       </div>
